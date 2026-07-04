@@ -11,6 +11,20 @@
 
 ## Run Fingerprint Bridge
 
+Simple launcher from the repository root:
+
+```bash
+run-bridge.cmd
+```
+
+To skip rebuilding and only launch the existing EXE:
+
+```bash
+run-bridge.cmd -NoBuild
+```
+
+Manual Visual Studio flow:
+
 1. Open `../recordit-fingerprint-bridge/RecordIT.FingerprintBridge.sln` in Visual Studio.
 2. Set platform to `x86`.
 3. Run the WinForms app.
@@ -24,6 +38,14 @@ C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe ..\recordit-fingerprin
 
 ## Run Next.js POC
 
+Simple launcher from the repository root:
+
+```bash
+run-app.cmd
+```
+
+Or manually:
+
 ```bash
 pnpm install
 pnpm dev
@@ -33,6 +55,12 @@ Open:
 
 ```txt
 http://localhost:3000
+```
+
+To launch both bridge and frontend from the repository root:
+
+```bash
+run-recordit-demo.cmd
 ```
 
 ## Testing Flow
