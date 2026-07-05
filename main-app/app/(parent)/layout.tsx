@@ -1,11 +1,19 @@
 import { requireDashboardRole } from "@/lib/dashboard-auth"
+import { ParentShell } from "@/components/parent/parent-shell"
 
 export default async function ParentLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  await requireDashboardRole(["PARENT", "PARENT_GUARDIAN"])
+  const user = await requireDashboardRole(["PARENT", "PARENT_GUARDIAN"])
 
-  return children
+  return (
+    <ParentShell
+      schoolName={user.schoolName ?? "RecordIT School"}
+      userName={user.name}
+    >
+      {children}
+    </ParentShell>
+  )
 }

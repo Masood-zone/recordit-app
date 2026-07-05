@@ -103,6 +103,14 @@ export type NotificationChannel = "EMAIL" | "SMS" | "WHATSAPP" | "IN_APP"
 
 export type NotificationStatus = "PENDING" | "SENT" | "FAILED" | "CANCELLED"
 
+export type NotificationType =
+  | "ABSENCE_ALERT"
+  | "LATENESS_ALERT"
+  | "WEEKLY_SUMMARY"
+  | "TERMLY_SUMMARY"
+  | "SCHOOL_ANNOUNCEMENT"
+  | "ACCOUNT_UPDATE"
+
 export type ReportType = "DAILY" | "WEEKLY" | "MONTHLY" | "TERMLY" | "CUSTOM"
 export type ExportFormat = "PDF" | "CSV" | "EXCEL"
 
@@ -336,8 +344,11 @@ export interface AppNotification extends Timestamped {
   id: ID
   userId?: Nullable<ID>
   schoolId?: Nullable<ID>
+  studentId?: Nullable<ID>
+  attendanceRecordId?: Nullable<ID>
   channel: NotificationChannel
   status: NotificationStatus
+  type: NotificationType
   title: string
   message: string
   read?: boolean
@@ -348,6 +359,21 @@ export interface AppNotification extends Timestamped {
 }
 
 export type Notification = AppNotification
+
+export interface ParentNotificationPreference extends Timestamped {
+  id: ID
+  userId: ID
+  guardianId: ID
+  schoolId?: Nullable<ID>
+  emailEnabled: boolean
+  smsEnabled: boolean
+  whatsappEnabled: boolean
+  inAppEnabled: boolean
+  absentAlerts: boolean
+  lateAlerts: boolean
+  weeklySummary: boolean
+  termlySummary: boolean
+}
 
 export interface AuditLog {
   id: ID

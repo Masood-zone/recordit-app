@@ -105,6 +105,15 @@ enum NotificationStatus {
   CANCELLED
 }
 
+enum NotificationType {
+  ABSENCE_ALERT
+  LATENESS_ALERT
+  WEEKLY_SUMMARY
+  TERMLY_SUMMARY
+  SCHOOL_ANNOUNCEMENT
+  ACCOUNT_UPDATE
+}
+
 enum ReportType {
   DAILY
   WEEKLY
@@ -146,22 +155,23 @@ model School {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users              User[]
-  teachers           Teacher[]
-  guardians          ParentGuardian[]
-  students           Student[]
-  classes            Class[]
-  academicYears      AcademicYear[]
-  academicTerms      AcademicTerm[]
-  biometricDevices   BiometricDevice[]
-  fingerprintRecords FingerprintTemplate[]
-  attendanceSessions AttendanceSession[]
-  attendanceRecords  AttendanceRecord[]
-  reports            Report[]
-  notifications      Notification[]
-  settings           SchoolSetting[]
-  auditLogs          AuditLog[]
-  biometricScanLogs  BiometricScanLog[]
+  users                         User[]
+  teachers                      Teacher[]
+  guardians                     ParentGuardian[]
+  students                      Student[]
+  classes                       Class[]
+  academicYears                 AcademicYear[]
+  academicTerms                 AcademicTerm[]
+  biometricDevices              BiometricDevice[]
+  fingerprintRecords            FingerprintTemplate[]
+  attendanceSessions            AttendanceSession[]
+  attendanceRecords             AttendanceRecord[]
+  reports                       Report[]
+  notifications                 Notification[]
+  settings                      SchoolSetting[]
+  auditLogs                     AuditLog[]
+  biometricScanLogs             BiometricScanLog[]
+  parentNotificationPreferences ParentNotificationPreference[]
 
   @@index([name])
   @@index([status])
@@ -254,13 +264,14 @@ model User {
   teacherProfile  Teacher?
   guardianProfile ParentGuardian?
 
-  enrolledFingerprints      FingerprintTemplate[] @relation("EnrolledFingerprints")
-  createdAttendanceSessions AttendanceSession[]   @relation("CreatedAttendanceSessions")
-  markedAttendanceRecords   AttendanceRecord[]    @relation("MarkedAttendanceRecords")
-  generatedReports          Report[]
-  biometricScanLogs         BiometricScanLog[]
-  auditLogs                 AuditLog[]
-  notifications             Notification[]
+  enrolledFingerprints          FingerprintTemplate[]         @relation("EnrolledFingerprints")
+  createdAttendanceSessions     AttendanceSession[]           @relation("CreatedAttendanceSessions")
+  markedAttendanceRecords       AttendanceRecord[]            @relation("MarkedAttendanceRecords")
+  generatedReports              Report[]
+  biometricScanLogs             BiometricScanLog[]
+  auditLogs                     AuditLog[]
+  notifications                 Notification[]
+  parentNotificationPreferences ParentNotificationPreference?
 
   @@index([schoolId])
   @@index([role])
@@ -352,7 +363,8 @@ model ParentGuardian {
   user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   school School? @relation(fields: [schoolId], references: [id], onDelete: SetNull)
 
-  students StudentGuardian[]
+  students                StudentGuardian[]
+  notificationPreferences ParentNotificationPreference?
 
   @@index([schoolId])
 }
@@ -381,6 +393,7 @@ model Student {
   guardians         StudentGuardian[]
   biometricScanLogs BiometricScanLog[]
   reports           Report[]
+  notifications     Notification[]
 
   @@unique([schoolId, studentNumber])
   @@index([schoolId])
@@ -595,6 +608,7 @@ model AttendanceRecord {
   markedBy User?                @relation("MarkedAttendanceRecords", fields: [markedByUserId], references: [id], onDelete: SetNull)
 
   biometricScanLogs BiometricScanLog[]
+  notifications     Notification[]
 
   @@unique([sessionId, studentId])
   @@index([schoolId])
@@ -639,27 +653,63 @@ model Report {
 }
 
 model Notification {
-  id            String              @id @default(cuid())
-  userId        String?
-  schoolId      String?
-  channel       NotificationChannel
-  status        NotificationStatus  @default(PENDING)
-  title         String
-  message       String
-  sentAt        DateTime?
-  failedAt      DateTime?
-  failureReason String?
+  id                 String              @id @default(cuid())
+  userId             String?
+  schoolId           String?
+  studentId          String?
+  attendanceRecordId String?
+  channel            NotificationChannel
+  status             NotificationStatus  @default(PENDING)
+  type               NotificationType    @default(ACCOUNT_UPDATE)
+  title              String
+  message            String
+  readAt             DateTime?
+  sentAt             DateTime?
+  failedAt           DateTime?
+  failureReason      String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
-  school School? @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  user             User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  school           School?           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  student          Student?          @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  attendanceRecord AttendanceRecord? @relation(fields: [attendanceRecordId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([schoolId])
+  @@index([studentId])
+  @@index([attendanceRecordId])
   @@index([status])
   @@index([channel])
+  @@index([type])
+  @@index([readAt])
+}
+
+model ParentNotificationPreference {
+  id         String  @id @default(cuid())
+  userId     String  @unique
+  guardianId String  @unique
+  schoolId   String?
+
+  emailEnabled    Boolean @default(true)
+  smsEnabled      Boolean @default(true)
+  whatsappEnabled Boolean @default(false)
+  inAppEnabled    Boolean @default(true)
+
+  absentAlerts  Boolean @default(true)
+  lateAlerts    Boolean @default(true)
+  weeklySummary Boolean @default(true)
+  termlySummary Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  guardian ParentGuardian @relation(fields: [guardianId], references: [id], onDelete: Cascade)
+  school   School?        @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+
+  @@index([schoolId])
 }
 
 model AuditLog {

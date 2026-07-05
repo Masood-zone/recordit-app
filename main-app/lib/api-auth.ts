@@ -150,3 +150,75 @@ export async function requireTeacherApi(request: Request) {
     teacher: user.teacherProfile,
   }
 }
+
+export async function requireParentGuardianApi(request: Request) {
+  const auth = await requireApiRole(request, ["PARENT_GUARDIAN"])
+
+  if (auth.response) {
+    return {
+      response: auth.response,
+      user: null,
+      schoolId: null,
+      guardian: null,
+      school: null,
+    }
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: auth.user!.id },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      schoolId: true,
+      firstName: true,
+      lastName: true,
+      phone: true,
+      image: true,
+      school: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          address: true,
+          city: true,
+          region: true,
+          status: true,
+        },
+      },
+      guardianProfile: {
+        select: {
+          id: true,
+          address: true,
+          occupation: true,
+          relationship: true,
+          schoolId: true,
+        },
+      },
+    },
+  })
+
+  if (
+    !user?.guardianProfile ||
+    !user.schoolId ||
+    user.school?.status !== "ACTIVE"
+  ) {
+    return {
+      response: apiError("Active parent access is required", 403, "FORBIDDEN"),
+      user: null,
+      schoolId: null,
+      guardian: null,
+      school: null,
+    }
+  }
+
+  return {
+    response: null,
+    user,
+    schoolId: user.schoolId,
+    guardian: user.guardianProfile,
+    school: user.school,
+  }
+}
