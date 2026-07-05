@@ -99,3 +99,54 @@ export async function requireSchoolAdminApi(request: Request) {
     school: user.school,
   }
 }
+
+export async function requireTeacherApi(request: Request) {
+  const auth = await requireApiRole(request, ["TEACHER"])
+
+  if (auth.response) {
+    return { response: auth.response, user: null, schoolId: null, teacher: null }
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: auth.user!.id },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      schoolId: true,
+      school: {
+        select: {
+          id: true,
+          name: true,
+          status: true,
+        },
+      },
+      teacherProfile: {
+        select: {
+          id: true,
+          department: true,
+          staffNumber: true,
+          title: true,
+        },
+      },
+    },
+  })
+
+  if (!user?.schoolId || user.school?.status !== "ACTIVE" || !user.teacherProfile) {
+    return {
+      response: apiError("Active teacher access is required", 403, "FORBIDDEN"),
+      user: null,
+      schoolId: null,
+      teacher: null,
+    }
+  }
+
+  return {
+    response: null,
+    user,
+    schoolId: user.schoolId,
+    school: user.school,
+    teacher: user.teacherProfile,
+  }
+}

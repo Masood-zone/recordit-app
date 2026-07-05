@@ -1,11 +1,19 @@
 import { requireDashboardRole } from "@/lib/dashboard-auth"
+import { TeacherShell } from "@/components/teacher/teacher-shell"
 
 export default async function TeacherLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  await requireDashboardRole(["TEACHER"])
+  const user = await requireDashboardRole(["TEACHER"])
 
-  return children
+  return (
+    <TeacherShell
+      schoolName={user.schoolName || "RecordIT School"}
+      userName={user.name}
+    >
+      {children}
+    </TeacherShell>
+  )
 }
