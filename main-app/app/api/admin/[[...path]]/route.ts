@@ -948,29 +948,59 @@ export async function POST(request: Request, context: Context) {
   if (path[0] === "academic-years") {
     const errors = fieldErrors(input, ["name", "startsAt", "endsAt"])
     if (Object.keys(errors).length) return fail("Please complete the academic year form", errors)
-    const item = await prisma.academicYear.create({
-      data: {
-        endsAt: toDate(input.endsAt)!,
-        isActive: Boolean(input.isActive),
-        name: clean(input.name),
-        schoolId,
-        startsAt: toDate(input.startsAt)!,
-      },
+    const [existingYears, activeYears] = await Promise.all([
+      prisma.academicYear.count({ where: { schoolId } }),
+      prisma.academicYear.count({ where: { schoolId, isActive: true } }),
+    ])
+    const requestedActive = input.isActive === "on" || input.isActive === true
+    const shouldBeActive = existingYears === 0 || activeYears === 0 || requestedActive
+    const item = await prisma.$transaction(async (tx) => {
+      if (shouldBeActive) {
+        await tx.academicYear.updateMany({
+          where: { schoolId },
+          data: { isActive: false },
+        })
+      }
+
+      return tx.academicYear.create({
+        data: {
+          endsAt: toDate(input.endsAt)!,
+          isActive: shouldBeActive,
+          name: clean(input.name),
+          schoolId,
+          startsAt: toDate(input.startsAt)!,
+        },
+      })
     })
     return ok({ academicYear: item }, "Academic year created", 201)
   }
   if (path[0] === "academic-terms") {
     const errors = fieldErrors(input, ["academicYearId", "name", "startsAt", "endsAt"])
     if (Object.keys(errors).length) return fail("Please complete the term form", errors)
-    const item = await prisma.academicTerm.create({
-      data: {
-        academicYearId: clean(input.academicYearId),
-        endsAt: toDate(input.endsAt)!,
-        isActive: Boolean(input.isActive),
-        name: clean(input.name),
-        schoolId,
-        startsAt: toDate(input.startsAt)!,
-      },
+    const [existingTerms, activeTerms] = await Promise.all([
+      prisma.academicTerm.count({ where: { schoolId } }),
+      prisma.academicTerm.count({ where: { schoolId, isActive: true } }),
+    ])
+    const requestedActive = input.isActive === "on" || input.isActive === true
+    const shouldBeActive = existingTerms === 0 || activeTerms === 0 || requestedActive
+    const item = await prisma.$transaction(async (tx) => {
+      if (shouldBeActive) {
+        await tx.academicTerm.updateMany({
+          where: { schoolId },
+          data: { isActive: false },
+        })
+      }
+
+      return tx.academicTerm.create({
+        data: {
+          academicYearId: clean(input.academicYearId),
+          endsAt: toDate(input.endsAt)!,
+          isActive: shouldBeActive,
+          name: clean(input.name),
+          schoolId,
+          startsAt: toDate(input.startsAt)!,
+        },
+      })
     })
     return ok({ academicTerm: item }, "Academic term created", 201)
   }
@@ -1004,34 +1034,67 @@ export async function PATCH(request: Request, context: Context) {
   if (path[0] === "academic-years" && path[1]) {
     const existing = await prisma.academicYear.findFirst({
       where: { id: path[1], schoolId },
-      select: { id: true },
+      select: { id: true, isActive: true },
     })
     if (!existing) return apiError("Academic year not found", 404, "NOT_FOUND")
-    const item = await prisma.academicYear.update({
-      where: { id: path[1] },
-      data: {
-        ...(input.name ? { name: clean(input.name) } : {}),
-        ...(input.startsAt ? { startsAt: toDate(input.startsAt) } : {}),
-        ...(input.endsAt ? { endsAt: toDate(input.endsAt) } : {}),
-        ...(input.isActive !== undefined ? { isActive: Boolean(input.isActive) } : {}),
-      },
+    const activeCount = await prisma.academicYear.count({
+      where: { schoolId, isActive: true },
+    })
+    const requestedActive =
+      input.isActive === "on" ||
+      input.isActive === true ||
+      (input.isActive !== undefined && existing.isActive && activeCount <= 1)
+    const item = await prisma.$transaction(async (tx) => {
+      if (requestedActive) {
+        await tx.academicYear.updateMany({
+          where: { schoolId, NOT: { id: path[1] } },
+          data: { isActive: false },
+        })
+      }
+
+      return tx.academicYear.update({
+        where: { id: path[1] },
+        data: {
+          ...(input.name ? { name: clean(input.name) } : {}),
+          ...(input.startsAt ? { startsAt: toDate(input.startsAt) } : {}),
+          ...(input.endsAt ? { endsAt: toDate(input.endsAt) } : {}),
+          ...(input.isActive !== undefined ? { isActive: requestedActive } : {}),
+        },
+      })
     })
     return ok({ academicYear: item }, "Academic year updated")
   }
   if (path[0] === "academic-terms" && path[1]) {
     const existing = await prisma.academicTerm.findFirst({
       where: { id: path[1], schoolId },
-      select: { id: true },
+      select: { id: true, isActive: true },
     })
     if (!existing) return apiError("Academic term not found", 404, "NOT_FOUND")
-    const item = await prisma.academicTerm.update({
-      where: { id: path[1] },
-      data: {
-        ...(input.name ? { name: clean(input.name) } : {}),
-        ...(input.startsAt ? { startsAt: toDate(input.startsAt) } : {}),
-        ...(input.endsAt ? { endsAt: toDate(input.endsAt) } : {}),
-        ...(input.isActive !== undefined ? { isActive: Boolean(input.isActive) } : {}),
-      },
+    const activeCount = await prisma.academicTerm.count({
+      where: { schoolId, isActive: true },
+    })
+    const requestedActive =
+      input.isActive === "on" ||
+      input.isActive === true ||
+      (input.isActive !== undefined && existing.isActive && activeCount <= 1)
+    const item = await prisma.$transaction(async (tx) => {
+      if (requestedActive) {
+        await tx.academicTerm.updateMany({
+          where: { schoolId, NOT: { id: path[1] } },
+          data: { isActive: false },
+        })
+      }
+
+      return tx.academicTerm.update({
+        where: { id: path[1] },
+        data: {
+          ...(input.academicYearId ? { academicYearId: clean(input.academicYearId) } : {}),
+          ...(input.name ? { name: clean(input.name) } : {}),
+          ...(input.startsAt ? { startsAt: toDate(input.startsAt) } : {}),
+          ...(input.endsAt ? { endsAt: toDate(input.endsAt) } : {}),
+          ...(input.isActive !== undefined ? { isActive: requestedActive } : {}),
+        },
+      })
     })
     return ok({ academicTerm: item }, "Academic term updated")
   }
