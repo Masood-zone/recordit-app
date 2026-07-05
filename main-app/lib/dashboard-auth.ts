@@ -12,6 +12,7 @@ type DashboardUser = {
   role: DashboardRole
   status: string
   schoolId: string | null
+  schoolName: string | null
   schoolStatus: string | null
 }
 
@@ -37,6 +38,7 @@ export async function requireDashboardRole(
       schoolId: true,
       school: {
         select: {
+          name: true,
           status: true,
         },
       },
@@ -64,6 +66,7 @@ export async function requireDashboardRole(
     role,
     status: user.status,
     schoolId: user.schoolId,
+    schoolName: user.school?.name ?? null,
     schoolStatus: user.school?.status ?? null,
   }
 }

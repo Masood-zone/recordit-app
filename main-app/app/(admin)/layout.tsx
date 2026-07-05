@@ -1,11 +1,19 @@
 import { requireDashboardRole } from "@/lib/dashboard-auth"
+import { SchoolAdminShell } from "@/components/school-admin/school-admin-shell"
 
 export default async function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  await requireDashboardRole(["ADMIN", "SCHOOL_ADMIN"])
+  const user = await requireDashboardRole(["ADMIN", "SCHOOL_ADMIN"])
 
-  return children
+  return (
+    <SchoolAdminShell
+      schoolName={user.schoolName || "RecordIT School"}
+      userName={user.name}
+    >
+      {children}
+    </SchoolAdminShell>
+  )
 }

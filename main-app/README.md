@@ -1,92 +1,188 @@
-# RecordIT Fingerprint POC
+# RecordIT — Smart Biometric Attendance Management System
 
-## Requirements
+A secure, role-based school attendance platform built with Next.js that uses fingerprint biometrics for real-time student verification, attendance tracking, and institutional monitoring.
 
-- Windows
-- ZKTeco ZK9500 fingerprint reader
-- ZKFinger SDK driver installed
-- Visual Studio or .NET Framework MSBuild
-- Node.js
-- npm or pnpm
+## Tech Stack
 
-## Run Fingerprint Bridge
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 16, React 19, Tailwind CSS 4, shadcn/ui |
+| State / Data | Tanstack Query, Zustand, React Hook Form |
+| API | Next.js App Router API routes, Axios |
+| Auth | better-auth (email/password, session-based) |
+| Database | PostgreSQL via Prisma ORM |
+| File Uploads | Cloudinary |
+| Email | Nodemailer + React Email |
+| SMS | SMS service integration |
+| Biometrics | ZKTeco ZK9500 via local bridge (ZKFinger SDK) |
+| Spreadsheet Import | SheetJS (xlsx) |
 
-Simple launcher from the repository root:
+## Roles
 
-```bash
-run-bridge.cmd
+- **Super Admin** — Platform-wide school management, onboarding approvals, suspension/reactivation
+- **School Admin** — Full school operations: students, teachers, parents, classes, attendance, reports, settings
+- **Teacher** — Class attendance sessions, live marking, manual adjustments, reports
+- **Parent/Guardian** — View children's attendance, calendars, notifications, school contact
+
+## Project Structure
+
+```
+app/
+├── (auth)/              # Login, forgot/reset password
+├── (super-admin)/       # Super admin dashboard, school management, school detail views
+├── (admin)/             # School admin dashboard, students, teachers, parents, classes, attendance, reports, settings
+├── (teacher)/           # Teacher dashboard
+├── (parent)/            # Parent dashboard
+├── onboarding/          # Multi-step school registration (school profile → admin setup → submission status)
+├── api/                 # API routes (auth, super-admin, admin, uploads, onboarding)
+├── about-us/
+├── proof-of-concept/    # Fingerprint POC page
+├── page.tsx             # Landing page
+└── error.tsx / not-found.tsx / loading.tsx
+
+components/
+├── home/                # Landing page (hero, features, CTA, navbar, footer)
+├── onboarding/          # Onboarding step components
+├── super-admin/         # Super admin shell, dashboard, schools management, school detail
+├── school-admin/        # School admin shell, UI, admin pages
+├── dashboard/           # Shared dashboard home
+├── common/              # FileUpload, MaterialSymbol
+├── ui/                  # shadcn/ui components (button, card, input, sidebar, etc.)
+├── providers/           # QueryClientProvider wrapper
+└── app-state/           # App state screen
+
+lib/
+├── axios.ts             # Shared Axios instance with interceptors
+├── api-client-error.ts  # Typed error class for API responses
+├── auth.ts              # better-auth server config
+├── auth-client.ts       # better-auth client config
+├── prisma.ts            # Prisma client singleton
+├── api-auth.ts          # Server-side auth helpers for API routes
+├── dashboard-auth.ts    # Dashboard role-based auth guard
+├── role-dashboard.ts    # Role-to-dashboard route mapping
+├── admin-utils.ts       # Admin utility functions
+├── bridge-api.ts        # Fingerprint bridge API client
+├── cloudinary/          # Cloudinary upload service + utilities
+└── utils.ts             # General utilities (cn, etc.)
+
+services/
+├── super-admin/         # Super admin schools, dashboard API + React Query hooks
+├── admin/               # School admin API service
+├── onboarding/          # School onboarding service
+├── uploads/             # File upload service (Cloudinary)
+├── email/               # Email service (Nodemailer + React Email templates)
+├── sms/                 # SMS service
+└── notifications/       # Notification services (enrollment, payments, reminders)
+
+types/
+└── index.ts             # Shared types (ApiResponse envelope, etc.)
+
+prisma/
+├── schema.prisma        # Database schema (20+ models)
+└── seed.ts              # Super admin seed script
+
+hooks/                   # Custom React hooks
+assets/designs/          # UI design mockups (HTML + screenshots) per role
 ```
 
-To skip rebuilding and only launch the existing EXE:
+## Database Models
 
-```bash
-run-bridge.cmd -NoBuild
-```
+The Prisma schema defines the full data model:
 
-Manual Visual Studio flow:
+- **School**, **AcademicYear**, **AcademicTerm**, **SchoolSetting** — School structure and config
+- **User**, **Session**, **Account**, **Verification** — Auth (better-auth)
+- **Teacher**, **ParentGuardian**, **Student**, **StudentGuardian** — People and relationships
+- **Class**, **ClassTeacher** — Class assignments
+- **BiometricDevice**, **FingerprintTemplate**, **BiometricScanLog** — Fingerprint enrollment and verification
+- **AttendanceSession**, **AttendanceRecord** — Attendance tracking (fingerprint or manual)
+- **Report** — Daily/weekly/monthly/termly reports (PDF, CSV, Excel)
+- **Notification** — Email, SMS, WhatsApp, in-app notifications
+- **AuditLog** — System audit trail
 
-1. Open `../recordit-fingerprint-bridge/RecordIT.FingerprintBridge.sln` in Visual Studio.
-2. Set platform to `x86`.
-3. Run the WinForms app.
-4. Bridge should listen on `http://localhost:5050`.
+## Design Screens
 
-CLI build used for this POC:
+UI mockups are in `assets/designs/` organized by role:
 
-```bash
-C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe ..\recordit-fingerprint-bridge\RecordIT.FingerprintBridge.sln /p:Platform=x86 /p:Configuration=Debug
-```
+| Role | Screens |
+|---|---|
+| Landing Page | Home, features, CTA |
+| Auth | Login |
+| Onboarding | School profile, admin setup, submission status, status tracking |
+| Super Admin | Dashboard, school management, school detail (overview, attendance, reports, classes, users, students) |
+| School Admin | Dashboard, academic setup, class management, student registration, bulk import, fingerprint enrollment, student profile, attendance history, add teacher, add parent/guardian, school settings |
+| Teacher | Dashboard, my classes, class details, live attendance, manual adjustment, verification failed, session summary, teacher reports |
+| Parent | Dashboard, my children, attendance details, calendar, profile, contact school, notifications, notification preferences |
+| Reports & Settings | Attendance reports, daily/weekly/monthly/termly reports, analytics, student monitoring, device management, device logs, attendance/notification/system settings, roles & permissions, data privacy |
 
-## Run Next.js POC
+## Getting Started
 
-Simple launcher from the repository root:
+### Prerequisites
 
-```bash
-run-app.cmd
-```
+- Node.js 18+
+- PostgreSQL
+- pnpm
+- ZKTeco ZK9500 fingerprint reader (for biometric features)
+- ZKFinger SDK driver (Windows only)
 
-Or manually:
+### Install & Run
 
 ```bash
 pnpm install
+cp .env.example .env    # configure DATABASE_URL, CLOUDINARY_*, SMTP_*, etc.
 pnpm dev
 ```
 
-Open:
+Open [http://localhost:3000](http://localhost:3000).
 
-```txt
-http://localhost:3000
+### Database Setup
+
+```bash
+pnpm prisma migrate dev
+pnpm prisma generate
+pnpm seed:super-admin
 ```
 
-To launch both bridge and frontend from the repository root:
+### Build
+
+```bash
+pnpm build   # runs prisma generate → prisma migrate deploy → next build
+```
+
+### Fingerprint Bridge (Windows)
+
+The biometric reader connects via a local bridge server:
+
+```bash
+# From the repository root
+run-bridge.cmd          # builds and starts the bridge on http://localhost:5050
+run-bridge.cmd -NoBuild # skip rebuild, launch existing EXE
+```
+
+To launch both bridge and frontend:
 
 ```bash
 run-recordit-demo.cmd
 ```
 
-## Testing Flow
+## Fingerprint Testing Flow
 
-1. Start the fingerprint bridge.
-2. Open Next.js app.
-3. Click Check Bridge Health.
-4. Click Connect Sensor.
-5. Confirm serial number appears.
-6. Register a student record with student ID, name, and class.
-7. Select the student.
-8. Click Enroll Left Finger.
-9. Place the same left finger on the reader 3 times.
-10. Confirm left enrollment `SUCCESS`.
-11. Click Enroll Right Finger.
-12. Place the same right finger on the reader 3 times.
-13. Confirm right enrollment `SUCCESS`.
-14. Click Verify L or Verify R for the selected student.
-15. Place the requested finger on the reader.
-16. Confirm verification `SUCCESS`.
-17. Click Identify Any Finger.
-18. Place any enrolled finger on the reader.
-19. Confirm identification returns the student and finger side.
+1. Start the fingerprint bridge
+2. Open the Next.js app → Proof of Concept page
+3. Check Bridge Health → Connect Sensor → confirm serial number
+4. Register a student (ID, name, class)
+5. Select the student → Enroll Left Finger (place same finger 3x)
+6. Enroll Right Finger (place same finger 3x)
+7. Verify L / Verify R → place requested finger
+8. Identify Any Finger → place any enrolled finger
 
-## Notes
+## Scripts
 
-This POC stores templates only in memory.
-No database is used.
-No authentication is used.
+| Command | Description |
+|---|---|
+| `pnpm dev` | Start development server |
+| `pnpm build` | Prisma generate + migrate + Next.js build |
+| `pnpm start` | Start production server |
+| `pnpm lint` | ESLint |
+| `pnpm format` | Prettier |
+| `pnpm seed:super-admin` | Seed super admin user |
+| `pnpm typecheck` | TypeScript type checking |

@@ -1,10 +1,11 @@
 import { uploadImageBuffer } from "@/lib/cloudinary/cloudinary-service"
 
 const uploadFolders: Record<string, string> = {
-  organizationLogo: "amanah-welfare/organizations/logos",
-  organizationBanner: "amanah-welfare/organizations/banners",
-  userProfile: "amanah-welfare/users/profiles",
-  welfareProgramCover: "amanah-welfare/programs/covers",
+  organizationLogo: "recordit/schools/logos",
+  organizationBanner: "recordit/schools/banners",
+  studentPhoto: "recordit/students/photos",
+  userAvatar: "recordit/users/avatars",
+  userProfile: "recordit/users/profiles",
 }
 
 export async function POST(request: Request) {
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
     const upload = await uploadImageBuffer({
       buffer,
       filename: file.name,
-      folder: uploadFolders[purpose] || "amanah-welfare/uploads",
+      folder: uploadFolders[purpose] || "recordit/uploads",
     })
 
     return Response.json({

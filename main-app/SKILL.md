@@ -1,7 +1,7 @@
 ---
-name: amanah-api-patterns
+name: recordit-api-patterns
 description: >
-  Guide for calling and interacting with APIs in the Amanah Welfare System using Tanstack Query and Axios.
+  Guide for calling and interacting with APIs in the RecordIT Biometric Attendance System using Tanstack Query and Axios.
   Use when: (1) adding new API service functions, (2) creating React Query hooks for data fetching or mutations,
   (3) understanding the Axios setup and error handling, (4) debugging API-related issues, or (5) reviewing
   how existing services are structured.
@@ -9,15 +9,15 @@ description: >
 
 # API Layer Patterns — Tanstack Query + Axios
 
-This skill documents how the Amanah Welfare System handles client-side API communication.
+This skill documents how RecordIT handles client-side API communication.
 
 ## Architecture Overview
 
 ```
 Component → React Query Hook → Service Function → Axios Instance → API Route
-                                                          ↓
-                                                   Response Interceptor
-                                                   (401 → redirect /login)
+                                                           ↓
+                                                    Response Interceptor
+                                                    (401 → redirect /login)
 ```
 
 **Key files:**
@@ -84,7 +84,15 @@ All service functions must check `res.data.success` before accessing `res.data.d
 
 ## Service File Structure
 
-Each domain has a service file under `services/<role>/`. Example: `services/super-admin/organizations.ts`.
+Each domain has a service file under `services/<domain>/`. Examples:
+- `services/super-admin/schools.ts` — School management CRUD
+- `services/super-admin/dashboard.ts` — Super admin dashboard data
+- `services/admin/admin.ts` — School admin operations
+- `services/onboarding/school-onboarding.ts` — Multi-step school registration
+- `services/uploads/uploads.ts` — Cloudinary file uploads
+- `services/email/email-service.ts` — Email sending (Nodemailer + React Email)
+- `services/sms/sms-service.ts` — SMS sending
+- `services/notifications/notifications.ts` — In-app notifications
 
 Every service file exports:
 1. **Async service functions** — perform the Axios call
@@ -96,21 +104,21 @@ Every service file exports:
 import api from "@/lib/axios"
 import { toApiClientError } from "@/lib/api-client-error"
 import type { ApiResponse } from "@/types"
-import type { SuperAdminOrganizationsData } from "@/types/super-admin-organizations"
+import type { SuperAdminSchoolsData } from "@/types/super-admin-schools"
 
-export async function getSuperAdminOrganizations() {
+export async function getSuperAdminSchools() {
   try {
-    const res = await api.get<ApiResponse<SuperAdminOrganizationsData>>(
-      "/super-admin/organizations"
+    const res = await api.get<ApiResponse<SuperAdminSchoolsData>>(
+      "/super-admin/schools"
     )
 
     if (!res.data.success || !res.data.data) {
-      throw new Error(res.data.message || "Organizations could not be loaded")
+      throw new Error(res.data.message || "Schools could not be loaded")
     }
 
     return res.data.data
   } catch (error) {
-    throw toApiClientError(error, "Organizations could not be loaded")
+    throw toApiClientError(error, "Schools could not be loaded")
   }
 }
 ```
@@ -118,20 +126,23 @@ export async function getSuperAdminOrganizations() {
 ### Service Function Pattern (Write — POST/PUT/PATCH)
 
 ```ts
-export async function registerOrganization(input: RegisterOrganizationInput) {
+export async function approveSchool(
+  schoolId: string,
+  input: ApproveSchoolInput
+) {
   try {
-    const res = await api.post<ApiResponse<SuperAdminOrganizationDetailData>>(
-      "/super-admin/organizations",
+    const res = await api.post<ApiResponse<SchoolDetailData>>(
+      `/super-admin/schools/${schoolId}/approve`,
       input
     )
 
     if (!res.data.success || !res.data.data) {
-      throw new Error(res.data.message || "Organization registration failed")
+      throw new Error(res.data.message || "School approval failed")
     }
 
     return res.data.data
   } catch (error) {
-    throw toApiClientError(error, "Organization registration failed")
+    throw toApiClientError(error, "School approval failed")
   }
 }
 ```
@@ -139,23 +150,23 @@ export async function registerOrganization(input: RegisterOrganizationInput) {
 ### Service Function Pattern (Write — with path param)
 
 ```ts
-export async function suspendOrganization(
-  organizationId: string,
-  input: SuspendOrganizationInput
+export async function suspendSchool(
+  schoolId: string,
+  input: SuspendSchoolInput
 ) {
   try {
     const res = await api.patch<ApiResponse<unknown>>(
-      `/super-admin/organizations/${organizationId}/suspend`,
+      `/super-admin/schools/${schoolId}/suspend`,
       input
     )
 
     if (!res.data.success) {
-      throw new Error(res.data.message || "Organization suspension failed")
+      throw new Error(res.data.message || "School suspension failed")
     }
 
     return res.data
   } catch (error) {
-    throw toApiClientError(error, "Organization suspension failed")
+    throw toApiClientError(error, "School suspension failed")
   }
 }
 ```
@@ -169,24 +180,24 @@ export async function suspendOrganization(
 ```ts
 import { useQuery } from "@tanstack/react-query"
 
-export function useSuperAdminOrganizations() {
+export function useSuperAdminSchools() {
   return useQuery({
-    queryKey: ["super-admin", "organizations"],
-    queryFn: getSuperAdminOrganizations,
+    queryKey: ["super-admin", "schools"],
+    queryFn: getSuperAdminSchools,
   })
 }
 ```
 
-**Query key convention:** `["<role>", "<resource>"]` — e.g., `["organizer", "members"]`, `["super-admin", "dashboard"]`
+**Query key convention:** `["<role>", "<resource>"]` — e.g. `["super-admin", "schools"]`, `["admin", "students"]`
 
 For single-item queries, append the ID:
 
 ```ts
-export function useSuperAdminOrganization(organizationId: string) {
+export function useSuperAdminSchool(schoolId: string) {
   return useQuery({
-    queryKey: ["super-admin", "organizations", organizationId],
-    queryFn: () => getSuperAdminOrganization(organizationId),
-    enabled: Boolean(organizationId),  // don't fetch until ID is available
+    queryKey: ["super-admin", "schools", schoolId],
+    queryFn: () => getSuperAdminSchool(schoolId),
+    enabled: Boolean(schoolId),
   })
 }
 ```
@@ -196,39 +207,23 @@ export function useSuperAdminOrganization(organizationId: string) {
 ```ts
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-export function useRegisterOrganization() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: registerOrganization,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["super-admin", "organizations"] })
-      queryClient.invalidateQueries({ queryKey: ["super-admin", "applications"] })
-      queryClient.invalidateQueries({ queryKey: ["super-admin", "dashboard"] })
-    },
-  })
-}
-```
-
-**Mutation with parameters:**
-
-```ts
-export function useSuspendOrganization() {
+export function useApproveSchool() {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: ({
-      organizationId,
+      schoolId,
       input,
     }: {
-      organizationId: string
-      input: SuspendOrganizationInput
-    }) => suspendOrganization(organizationId, input),
+      schoolId: string
+      input: ApproveSchoolInput
+    }) => approveSchool(schoolId, input),
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["super-admin", "organizations"] })
+      queryClient.invalidateQueries({ queryKey: ["super-admin", "schools"] })
       queryClient.invalidateQueries({
-        queryKey: ["super-admin", "organizations", variables.organizationId],
+        queryKey: ["super-admin", "schools", variables.schoolId],
       })
+      queryClient.invalidateQueries({ queryKey: ["super-admin", "dashboard"] })
     },
   })
 }
@@ -237,14 +232,14 @@ export function useSuspendOrganization() {
 **Immediate cache update (optimistic):**
 
 ```ts
-export function useUpdateSuperAdminSettings() {
+export function useUpdateSchoolSettings() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: updateSuperAdminSettings,
+    mutationFn: updateSchoolSettings,
     onSuccess: (settings) => {
-      queryClient.setQueryData(["super-admin", "settings"], settings)
-      queryClient.invalidateQueries({ queryKey: ["super-admin", "settings"] })
+      queryClient.setQueryData(["admin", "settings"], settings)
+      queryClient.invalidateQueries({ queryKey: ["admin", "settings"] })
     },
   })
 }
@@ -257,36 +252,35 @@ export function useUpdateSuperAdminSettings() {
 ```tsx
 "use client"
 
-import { useSuperAdminOrganizations, useRegisterOrganization } from "@/services/super-admin/organizations"
+import { useSuperAdminSchools, useApproveSchool } from "@/services/super-admin/schools"
 
-export function OrganizationsContent() {
-  const { data, error, isLoading } = useSuperAdminOrganizations()
-  const registerMutation = useRegisterOrganization()
+export function SchoolsManagement() {
+  const { data, error, isLoading } = useSuperAdminSchools()
+  const approveMutation = useApproveSchool()
 
-  // Loading state
   if (isLoading) return <div className="animate-pulse ..." />
 
-  // Error state
   if (error) {
     return <div className="text-destructive">{error.message}</div>
   }
 
-  // Use data
-  const organizations = data?.organizations ?? []
+  const schools = data?.schools ?? []
 
-  // Trigger mutation
-  async function handleSubmit() {
+  async function handleApprove(schoolId: string) {
     try {
-      await registerMutation.mutateAsync(formData)
-      toast.success("Organization registered.")
+      await approveMutation.mutateAsync({ schoolId, input: { approvedBy: "super-admin" } })
+      toast.success("School approved.")
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed.")
     }
   }
 
   return (
-    <Button disabled={registerMutation.isPending} onClick={handleSubmit}>
-      {registerMutation.isPending ? "Registering..." : "Register"}
+    <Button
+      disabled={approveMutation.isPending}
+      onClick={() => handleApprove(schoolId)}
+    >
+      {approveMutation.isPending ? "Approving..." : "Approve"}
     </Button>
   )
 }
@@ -328,6 +322,26 @@ export async function uploadFileToCloudinary({ file, purpose }: UploadFileInput)
 }
 ```
 
+Cloudinary utilities are in `lib/cloudinary/`:
+- `cloudinary-service.ts` — Server-side upload and management
+- `cloudinary-utils.ts` — URL helpers, transformation utils
+
+---
+
+## API Routes
+
+| Route | Purpose |
+|---|---|
+| `POST /api/auth/[...all]` | better-auth catch-all (login, register, session) |
+| `GET /api/super-admin/dashboard` | Super admin dashboard stats |
+| `GET /api/super-admin/schools` | List all schools |
+| `POST /api/super-admin/schools/[schoolId]/approve` | Approve school |
+| `PATCH /api/super-admin/schools/[schoolId]/suspend` | Suspend school |
+| `POST /api/super-admin/schools/[schoolId]/reactivate` | Reactivate school |
+| `POST /api/onboarding/school` | School onboarding submission |
+| `POST /api/uploads` | File upload to Cloudinary |
+| `/api/admin/[...path]` | School admin catch-all proxy |
+
 ---
 
 ## Adding a New API Endpoint — Step by Step
@@ -338,7 +352,7 @@ export async function uploadFileToCloudinary({ file, purpose }: UploadFileInput)
    export interface CreateMyResourceInput { /* ... */ }
    ```
 
-2. **Create service file** at `services/<role>/<domain>.ts`:
+2. **Create service file** at `services/<domain>/<resource>.ts`:
    - Import `api` from `@/lib/axios`, `toApiClientError` from `@/lib/api-client-error`, `ApiResponse` from `@/types`
    - Write async function following the read/write pattern above
    - Write `useQuery` or `useMutation` hook
@@ -357,4 +371,4 @@ export async function uploadFileToCloudinary({ file, purpose }: UploadFileInput)
 - **Don't create new Axios instances** — use the shared `api` from `@/lib/axios`
 - **Don't forget `enabled` on conditional queries** — e.g., `enabled: Boolean(id)` prevents fetching before the ID is available
 - **Don't mutate cache directly without invalidation** — use `setQueryData` for immediate UI updates, then `invalidateQueries` to refetch fresh data
-- **Query keys must be consistent** — if a mutation affects multiple resources, invalidate all relevant keys (e.g., `["super-admin", "organizations"]` AND `["super-admin", "dashboard"]`)
+- **Query keys must be consistent** — if a mutation affects multiple resources, invalidate all relevant keys (e.g., `["super-admin", "schools"]` AND `["super-admin", "dashboard"]`)
