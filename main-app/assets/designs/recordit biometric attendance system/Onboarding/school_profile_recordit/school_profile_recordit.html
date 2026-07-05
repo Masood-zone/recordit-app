@@ -1,0 +1,292 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Institution Onboarding | RecordIT</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..900&amp;family=Manrope:wght@100..900&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#e7f2ff",
+                        "secondary-container": "#446ce4",
+                        "primary": "#00113a",
+                        "on-primary-fixed": "#00174a",
+                        "secondary": "#2552ca",
+                        "surface-variant": "#d4e4f6",
+                        "surface-tint": "#435b9f",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#e2efff",
+                        "on-primary-container": "#758dd5",
+                        "on-primary-fixed-variant": "#2a4386",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#002d33",
+                        "on-tertiary-container": "#009eb0",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "surface": "#f7f9ff",
+                        "background": "#f7f9ff",
+                        "on-surface": "#0d1d2a",
+                        "on-secondary-fixed-variant": "#003baf",
+                        "on-background": "#0d1d2a",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "on-surface-variant": "#444650",
+                        "surface-container-low": "#ecf4ff",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#9cf0ff",
+                        "tertiary": "#00171b",
+                        "secondary-fixed": "#dce1ff",
+                        "outline-variant": "#c5c6d2",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "outline": "#757682",
+                        "inverse-surface": "#223240",
+                        "surface-container-high": "#d9eafc",
+                        "surface-dim": "#cbdcee",
+                        "on-tertiary-fixed": "#001f24",
+                        "on-secondary-container": "#fffbff",
+                        "surface-bright": "#f7f9ff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#00daf3",
+                        "surface-container-highest": "#d4e4f6",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "inverse-primary": "#b3c5ff",
+                        "primary-container": "#002366",
+                        "on-secondary-fixed": "#00164e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "desktop-max-width": "1280px",
+                        "base": "8px",
+                        "gutter": "16px",
+                        "container-padding": "24px",
+                        "tablet-breakpoint": "768px",
+                        "mobile-breakpoint": "375px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Manrope"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "button-text": ["Manrope"],
+                        "body-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .raised-shadow:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+        input:focus {
+            outline: none;
+            border-bottom-color: #2552ca !important;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full z-50 flex items-center justify-between px-gutter py-base max-w-desktop-max-width mx-auto bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none">
+<div class="flex items-center gap-base">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">RecordIT</span>
+</div>
+<div class="flex items-center gap-gutter">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors active:scale-95" title="Help">help</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors active:scale-95" title="Account">account_circle</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow flex flex-col items-center py-container-padding px-gutter w-full">
+<!-- Horizontal Stepper -->
+<div class="w-full max-w-3xl mb-12">
+<div class="flex items-center justify-between relative">
+<!-- Progress Line -->
+<div class="absolute top-1/2 left-0 w-full h-0.5 bg-outline-variant -translate-y-1/2 z-0"></div>
+<div class="absolute top-1/2 left-0 w-1/3 h-0.5 bg-secondary -translate-y-1/2 z-0 transition-all duration-500"></div>
+<!-- Step 1 -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center font-bold shadow-md">1</div>
+<span class="font-button-text text-button-text text-secondary font-semibold">School Profile</span>
+</div>
+<!-- Step 2 -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-bold border border-outline-variant">2</div>
+<span class="font-button-text text-button-text text-on-surface-variant">Admin Account</span>
+</div>
+<!-- Step 3 -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-bold border border-outline-variant">3</div>
+<span class="font-button-text text-button-text text-on-surface-variant">Approval Status</span>
+</div>
+</div>
+</div>
+<!-- Onboarding Card -->
+<div class="w-full max-w-4xl bg-surface-container-lowest rounded-xl border border-outline-variant p-container-padding soft-shadow raised-shadow transition-all">
+<div class="flex flex-col md:flex-row gap-gutter mb-8 items-start">
+<div class="w-16 h-16 bg-secondary-container rounded-lg flex items-center justify-center text-on-secondary-container shrink-0">
+<span class="material-symbols-outlined text-4xl">account_balance</span>
+</div>
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary mb-2">Institution Details</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Please provide the official credentials for your educational institution to begin the secure onboarding process.</p>
+</div>
+</div>
+<form class="space-y-10">
+<!-- Section 1: Core Identification -->
+<section>
+<div class="flex items-center gap-2 mb-6 border-l-4 border-secondary pl-4">
+<h2 class="font-headline-md text-headline-md text-on-surface">General Information</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant px-1">SCHOOL NAME</label>
+<input class="bg-slate-50 border-0 border-b-2 border-outline-variant p-3 font-body-md text-body-md rounded-t-lg transition-all focus:ring-0" placeholder="e.g. St. Lawrence Academy" type="text">
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant px-1">SCHOOL CODE</label>
+<input class="bg-slate-50 border-0 border-b-2 border-outline-variant p-3 font-body-md text-body-md rounded-t-lg transition-all focus:ring-0" placeholder="e.g. SLA-2024-XJ" type="text">
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant px-1">SCHOOL EMAIL</label>
+<input class="bg-slate-50 border-0 border-b-2 border-outline-variant p-3 font-body-md text-body-md rounded-t-lg transition-all focus:ring-0" placeholder="administration@school.edu" type="email">
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant px-1">SCHOOL PHONE</label>
+<input class="bg-slate-50 border-0 border-b-2 border-outline-variant p-3 font-body-md text-body-md rounded-t-lg transition-all focus:ring-0" placeholder="+1 (555) 000-0000" type="tel">
+</div>
+</div>
+</section>
+<!-- Section 2: Geographic Data -->
+<section>
+<div class="flex items-center gap-2 mb-6 border-l-4 border-secondary pl-4">
+<h2 class="font-headline-md text-headline-md text-on-surface">Location Details</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-gutter">
+<div class="md:col-span-3 flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant px-1">STREET ADDRESS</label>
+<input class="bg-slate-50 border-0 border-b-2 border-outline-variant p-3 font-body-md text-body-md rounded-t-lg transition-all focus:ring-0" placeholder="123 Academic Way" type="text">
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant px-1">CITY</label>
+<input class="bg-slate-50 border-0 border-b-2 border-outline-variant p-3 font-body-md text-body-md rounded-t-lg transition-all focus:ring-0" placeholder="Cambridge" type="text">
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant px-1">REGION / STATE</label>
+<input class="bg-slate-50 border-0 border-b-2 border-outline-variant p-3 font-body-md text-body-md rounded-t-lg transition-all focus:ring-0" placeholder="Massachusetts" type="text">
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant px-1">COUNTRY</label>
+<select class="bg-slate-50 border-0 border-b-2 border-outline-variant p-3 font-body-md text-body-md rounded-t-lg transition-all focus:ring-0 appearance-none">
+<option>United States</option>
+<option>Canada</option>
+<option>United Kingdom</option>
+<option>Australia</option>
+</select>
+</div>
+</div>
+</section>
+<!-- Section 3: Representative -->
+<section class="bg-surface-container-low p-gutter rounded-xl border border-outline-variant">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-secondary">verified_user</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Contact Representative</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant px-1">FULL NAME</label>
+<input class="bg-white border-0 border-b-2 border-outline-variant p-3 font-body-md text-body-md rounded-t-lg transition-all focus:ring-0" placeholder="Dr. Sarah Jenkins" type="text">
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant px-1">ROLE / POSITION</label>
+<input class="bg-white border-0 border-b-2 border-outline-variant p-3 font-body-md text-body-md rounded-t-lg transition-all focus:ring-0" placeholder="Principal / Registrar" type="text">
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant px-1">DIRECT PHONE</label>
+<input class="bg-white border-0 border-b-2 border-outline-variant p-3 font-body-md text-body-md rounded-t-lg transition-all focus:ring-0" placeholder="+1 (555) 123-4567" type="tel">
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant px-1">OFFICIAL EMAIL</label>
+<input class="bg-white border-0 border-b-2 border-outline-variant p-3 font-body-md text-body-md rounded-t-lg transition-all focus:ring-0" placeholder="s.jenkins@school.edu" type="email">
+</div>
+</div>
+</section>
+<!-- Action Button -->
+<div class="pt-8 flex flex-col md:flex-row justify-between items-center gap-gutter border-t border-outline-variant">
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm">
+                        Ensure all data matches your official registration documents for quick approval.
+                    </p>
+<button class="bg-secondary text-white px-8 py-4 rounded-full font-button-text text-button-text flex items-center gap-2 hover:bg-primary transition-all active:scale-95 shadow-lg group" type="submit">
+                        Next: Admin Setup
+                        <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+<!-- Security Badge -->
+<div class="mt-8 flex items-center gap-2 text-on-surface-variant opacity-70">
+<span class="material-symbols-outlined text-sm">lock</span>
+<span class="font-label-sm text-label-sm">End-to-End Institutional Encryption Enabled</span>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-container-padding px-gutter flex flex-col md:flex-row justify-between items-center gap-base mt-auto bg-surface-container-low dark:bg-surface-container-lowest border-t border-outline-variant dark:border-outline">
+<div class="flex items-center gap-gutter">
+<span class="font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim">RecordIT</span>
+<span class="font-body-md text-body-md text-on-surface-variant dark:text-outline">© 2024 RecordIT. Institutional Security Guaranteed.</span>
+</div>
+<div class="flex flex-wrap justify-center gap-gutter">
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-outline hover:text-secondary dark:hover:text-secondary-fixed transition-colors" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-outline hover:text-secondary dark:hover:text-secondary-fixed transition-colors" href="#">Terms of Service</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-outline hover:text-secondary dark:hover:text-secondary-fixed transition-colors" href="#">Support</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-outline hover:text-secondary dark:hover:text-secondary-fixed transition-colors" href="#">Security Standards</a>
+</div>
+</footer>
+<script>
+        // Simple micro-interaction for form completion
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('change', () => {
+                if (input.value.trim() !== "") {
+                    input.classList.add('border-secondary');
+                } else {
+                    input.classList.remove('border-secondary');
+                }
+            });
+        });
+
+        // Form submission prevent default for demo
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Moving to Step 2: Admin Account Setup');
+        });
+    </script>
+</body></html>

@@ -1,508 +1,343 @@
-"use client"
+import Link from "next/link"
 
-import { useEffect } from "react"
-
+import { MaterialSymbol } from "@/components/common/MaterialSymbol"
 import { Button } from "@/components/ui/button"
-import { useFingerprintPocStore } from "@/hooks/use-recordit-store"
-import type { FingerName, StudentRecord } from "@/lib/bridge-api"
-import { cn } from "@/lib/utils"
 
-function statusClass(status: string) {
-  if (status === "SUCCESS")
-    return "border-emerald-600 bg-emerald-50 text-emerald-800"
-  if (status === "FAILED") return "border-red-600 bg-red-50 text-red-800"
-  if (status === "WAITING_FOR_FINGER" || status === "CAPTURING") {
-    return "border-amber-600 bg-amber-50 text-amber-900"
-  }
-  return "border-border bg-muted/30 text-muted-foreground"
-}
+const heroImage =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuD7Xvg7F7boaT6lNlY8N8ep4-M7e49opxUTx4bf5zKecHOfxPxF2zRtHnFJkmbkZY1V1vqgN4HUiykCqYhC06uak-iaORT02JMOx3NC8HLk-FNT8hNGsYYtijkqw423CjceaAVvZwFN3V5XTv0daVQ-qDdNzqEFHN_OOHQu19aEmKM4zLVoNVOuZ3J6q6Kuha2PbRtkT3H4o71kYcecujquckxJGHRwI-zeq18Y6C1tgE5MJf6-0zfmBw"
 
-function preview(value: string | null) {
-  if (!value) return "-"
-  return `${value.slice(0, 40)}${value.length > 40 ? "..." : ""}`
-}
+const avatarImage =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuDVbRQxOIVDh7-JMA5F34TlOIa2uPip3ZKgXs7CFc93BmVO5lE9OWVsJuzCT3vvex38zJ9OqF5iTppvym6WvXPpYliL0Cx6IfJN4cR1ffLy1lnRGc1bWsk1CoNzL9jxFTyaYgloyqGLqjC7HjnCoM6LQeXyZKAiTey727d_5wGiUfcjbGSaWn9UVkF9c7eJt2rKgjw-i-QijF7aZ-xAj-e1pZeAio8DRbpySk18XGvtQzaOpDYPcuZ8CA"
 
-function Card({
-  title,
-  children,
-}: {
-  title: string
-  children: React.ReactNode
-}) {
+const navItems = ["Home", "Solutions", "Pricing", "About"]
+
+export default function LandingPage() {
   return (
-    <section className="min-w-0 overflow-hidden border bg-background p-4">
-      <h2 className="mb-3 text-sm font-semibold">{title}</h2>
-      {children}
-    </section>
-  )
-}
-
-function Row({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="grid min-h-8 min-w-0 grid-cols-[minmax(7rem,0.45fr)_minmax(0,1fr)] items-center gap-3 border-b py-1 text-sm last:border-b-0">
-      <span className="min-w-0 text-muted-foreground">{label}</span>
-      <span className="min-w-0 overflow-hidden text-right font-medium break-words">
-        {value}
-      </span>
-    </div>
-  )
-}
-
-function StatusBadge({ status }: { status: string }) {
-  return (
-    <span
-      className={cn(
-        "inline-flex max-w-full border px-2 py-1 text-xs font-medium break-all",
-        statusClass(status)
-      )}
-    >
-      {status}
-    </span>
-  )
-}
-
-function TextInput({
-  label,
-  value,
-  onChange,
-  placeholder,
-}: {
-  label: string
-  value: string
-  onChange: (value: string) => void
-  placeholder: string
-}) {
-  return (
-    <label className="grid min-w-0 gap-1 text-sm">
-      <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      <input
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
-        className="h-9 min-w-0 border bg-background px-2 text-sm outline-none focus:border-ring focus:ring-1 focus:ring-ring/40"
-      />
-    </label>
-  )
-}
-
-function FingerStatus({
-  student,
-  finger,
-}: {
-  student: StudentRecord
-  finger: FingerName
-}) {
-  const summary = finger === "left" ? student.leftFinger : student.rightFinger
-
-  return (
-    <div className="grid min-w-0 gap-1 text-xs">
-      <StatusBadge status={summary.status} />
-      <span className="text-muted-foreground">
-        FPID {summary.fpId ?? "-"} · T10 {summary.template10Length}
-      </span>
-    </div>
-  )
-}
-
-export default function Page() {
-  const store = useFingerprintPocStore()
-  const {
-    bridgeOnline,
-    lastCheckedAt,
-    loading,
-    error,
-    health,
-    device,
-    students,
-    selectedStudentId,
-    studentForm,
-    enrollment,
-    capture,
-    verify,
-    identify,
-    frontendLogs,
-    bridgeLogs,
-    setStudentForm,
-    selectStudent,
-    checkHealth,
-    refreshDeviceStatus,
-    loadStudents,
-    registerStudent,
-    connectDevice,
-    disconnectDevice,
-    startEnrollment,
-    startCapture,
-    startVerify,
-    startIdentify,
-    loadBridgeLogs,
-    clearError,
-  } = store
-
-  const selectedStudent =
-    students.find((student) => student.studentId === selectedStudentId) ??
-    students[0]
-
-  useEffect(() => {
-    checkHealth()
-    refreshDeviceStatus()
-    loadStudents()
-  }, [checkHealth, loadStudents, refreshDeviceStatus])
-
-  return (
-    <main className="min-h-svh overflow-x-hidden bg-background text-foreground">
-      <div className="mx-auto grid w-full max-w-6xl min-w-0 gap-4 px-4 py-4 md:px-6 md:py-6">
-        <header className="min-w-0 border-b pb-4">
-          <h1 className="text-2xl font-semibold break-words md:text-4xl">
-            RecordIT Student Fingerprint Registration
-          </h1>
-          <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
-            Register student records in memory, enroll left and right fingers,
-            then verify or identify them through the C# bridge.
-          </p>
-        </header>
-
-        {error ? (
-          <div className="flex min-w-0 items-center justify-between gap-3 border border-red-600 bg-red-50 px-3 py-2 text-sm text-red-800">
-            <span className="min-w-0 break-words">{error}</span>
-            <Button size="sm" variant="ghost" onClick={clearError}>
-              Clear
-            </Button>
+    <main className="min-h-svh bg-[#f7f9ff] text-[#0d1d2a]">
+      <header className="sticky top-0 z-50 h-16 w-full border-b border-[#c5c6d2] bg-[#f7f9ff] shadow-sm">
+        <nav className="mx-auto flex h-full max-w-[1280px] items-center justify-between gap-4 px-4 sm:px-6">
+          <div className="flex min-w-0 items-center gap-8">
+            <Link
+              href="/"
+              className="text-2xl font-bold tracking-normal text-[#00113a]"
+            >
+              RecordIT
+            </Link>
+            <div className="hidden gap-6 md:flex">
+              {navItems.map((item) => (
+                <Link
+                  key={item}
+                  href={item === "Home" ? "/" : "#features"}
+                  className={
+                    item === "Home"
+                      ? "border-b-2 border-[#2552ca] text-base font-semibold text-[#2552ca]"
+                      : "text-base text-[#444650] transition-colors hover:text-[#2552ca]"
+                  }
+                >
+                  {item}
+                </Link>
+              ))}
+            </div>
           </div>
-        ) : null}
 
-        <div className="grid min-w-0 gap-4 lg:grid-cols-2">
-          <Card title="Bridge Status">
-            <div className="grid min-w-0 gap-1">
-              <Row label="Online" value={bridgeOnline ? "Online" : "Offline"} />
-              <Row label="Last checked" value={lastCheckedAt ?? "-"} />
-              <Row label="Service" value={health?.service ?? "-"} />
-              <Row label="Version" value={health?.version ?? "-"} />
-              <Row label="Message" value={health?.message ?? "-"} />
-            </div>
-            <div className="mt-3 flex min-w-0 flex-wrap gap-2">
-              <Button onClick={checkHealth} disabled={loading}>
-                Check Bridge Health
-              </Button>
-              <Button
-                variant="outline"
-                onClick={loadBridgeLogs}
-                disabled={loading}
-              >
-                Load Logs
-              </Button>
-            </div>
-          </Card>
-
-          <Card title="Device Status">
-            <div className="grid min-w-0 gap-1">
-              <Row
-                label="Connected"
-                value={device.connected ? "Connected" : "Disconnected"}
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="hidden h-9 items-center gap-2 rounded-full bg-[#e2efff] px-4 md:flex">
+              <MaterialSymbol
+                icon="search"
+                className="text-base text-[#757682]"
               />
-              <Row label="Sensor count" value={device.sensorCount} />
-              <Row label="Sensor index" value={device.sensorIndex ?? "-"} />
-              <Row label="Serial number" value={device.serialNumber ?? "-"} />
-              <Row label="Engine version" value={device.engineVersion ?? "-"} />
-              <Row
-                label="Anti-fake"
-                value={device.fakeFunOn ? "Enabled" : "Off"}
+              <input
+                aria-label="Search resources"
+                className="w-48 border-none bg-transparent font-mono text-xs text-[#0d1d2a] outline-none placeholder:text-[#757682]"
+                placeholder="Search resources..."
               />
-              <Row label="Message" value={device.message ?? "-"} />
             </div>
-            <div className="mt-3 flex min-w-0 flex-wrap gap-2">
-              <Button
-                onClick={connectDevice}
-                disabled={loading || device.connected}
-              >
-                Connect Sensor
-              </Button>
-              <Button
-                variant="outline"
-                onClick={disconnectDevice}
-                disabled={loading || !device.connected}
-              >
-                Disconnect Sensor
-              </Button>
-              <Button
-                variant="outline"
-                onClick={refreshDeviceStatus}
-                disabled={loading}
-              >
-                Refresh Device Status
-              </Button>
+            <button
+              aria-label="Notifications"
+              className="grid size-10 place-items-center text-[#2552ca] transition-transform active:scale-95"
+            >
+              <MaterialSymbol icon="notifications" />
+            </button>
+            <button
+              aria-label="Help"
+              className="hidden size-10 place-items-center text-[#2552ca] transition-transform active:scale-95 sm:grid"
+            >
+              <MaterialSymbol icon="help" />
+            </button>
+            <div className="size-8 overflow-hidden rounded-full bg-[#d4e4f6]">
+              <img
+                src={avatarImage}
+                alt="School administrator"
+                className="size-full object-cover"
+              />
             </div>
-          </Card>
-        </div>
-
-        <Card title="Student Registration">
-          <div className="grid min-w-0 gap-3 md:grid-cols-3">
-            <TextInput
-              label="Student ID"
-              value={studentForm.studentId}
-              onChange={(studentId) => setStudentForm({ studentId })}
-              placeholder="REC-STU-001"
-            />
-            <TextInput
-              label="Name"
-              value={studentForm.name}
-              onChange={(name) => setStudentForm({ name })}
-              placeholder="Ama Mensah"
-            />
-            <TextInput
-              label="Class"
-              value={studentForm.className}
-              onChange={(className) => setStudentForm({ className })}
-              placeholder="Basic 4"
-            />
           </div>
-          <div className="mt-3 flex min-w-0 flex-wrap gap-2">
-            <Button onClick={registerStudent} disabled={loading}>
-              Register Student
-            </Button>
-            <Button variant="outline" onClick={loadStudents} disabled={loading}>
-              Refresh Students
-            </Button>
-          </div>
-        </Card>
+        </nav>
+      </header>
 
-        <Card title="Student Records">
-          <div className="max-w-full overflow-auto">
-            <table className="w-full min-w-[760px] border-collapse text-sm">
-              <thead>
-                <tr className="border-b text-left text-xs text-muted-foreground">
-                  <th className="p-2 font-medium">Student ID</th>
-                  <th className="p-2 font-medium">Name</th>
-                  <th className="p-2 font-medium">Class</th>
-                  <th className="p-2 font-medium">Left finger</th>
-                  <th className="p-2 font-medium">Right finger</th>
-                  <th className="p-2 font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {students.map((student) => (
-                  <tr
-                    key={student.studentId}
-                    className={cn(
-                      "border-b align-top",
-                      selectedStudentId === student.studentId && "bg-muted/40"
-                    )}
-                  >
-                    <td className="p-2 font-medium break-all">
-                      {student.studentId}
-                    </td>
-                    <td className="p-2 break-words">{student.name}</td>
-                    <td className="p-2 break-words">{student.className}</td>
-                    <td className="p-2">
-                      <FingerStatus student={student} finger="left" />
-                    </td>
-                    <td className="p-2">
-                      <FingerStatus student={student} finger="right" />
-                    </td>
-                    <td className="p-2">
-                      <div className="flex flex-wrap gap-1">
-                        <Button
-                          size="xs"
-                          variant="outline"
-                          onClick={() => selectStudent(student.studentId)}
-                        >
-                          Select
-                        </Button>
-                        <Button
-                          size="xs"
-                          onClick={() => startVerify(student.studentId, "left")}
-                          disabled={
-                            loading ||
-                            !device.connected ||
-                            student.leftFinger.status !== "SUCCESS"
-                          }
-                        >
-                          Verify L
-                        </Button>
-                        <Button
-                          size="xs"
-                          onClick={() =>
-                            startVerify(student.studentId, "right")
-                          }
-                          disabled={
-                            loading ||
-                            !device.connected ||
-                            student.rightFinger.status !== "SUCCESS"
-                          }
-                        >
-                          Verify R
-                        </Button>
+      <section className="overflow-hidden bg-[#f7f9ff] py-16 md:py-28">
+        <div className="mx-auto max-w-[1280px] px-4 sm:px-6">
+          <div className="grid items-center gap-12 md:grid-cols-12">
+            <div className="md:col-span-7">
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#446ce4]/20 bg-[#dce1ff] px-3 py-1">
+                <span className="recordit-scan-pulse size-2 rounded-full bg-[#00daf3]" />
+                <span className="font-mono text-xs font-bold tracking-[0.05em] text-[#2552ca] uppercase">
+                  New: Biometric AI 2.0 Available
+                </span>
+              </div>
+              <h1 className="mb-4 text-3xl leading-10 font-bold tracking-normal text-[#00113a] md:text-[32px]">
+                RecordIT
+              </h1>
+              <h2 className="mb-6 text-2xl leading-8 font-semibold tracking-normal text-[#2552ca]">
+                Smart Attendance. Trusted Education.
+              </h2>
+              <p className="mb-10 max-w-xl text-lg leading-7 text-[#444650]">
+                A high-security biometric school attendance system designed for
+                administrators, teachers, and parents. Real-time tracking with
+                institutional grade reliability.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Button
+                  asChild
+                  className="h-14 rounded-xl bg-[#2552ca] px-8 text-sm font-semibold text-white shadow-[0_8px_24px_rgb(0_35_102/0.12)] hover:bg-[#003baf]"
+                >
+                  <Link href="/login">
+                    Get Started
+                    <MaterialSymbol icon="arrow_forward" />
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-14 rounded-xl border-2 border-[#c5c6d2] bg-transparent px-8 text-sm font-semibold text-[#00113a] hover:bg-[#d4e4f6]"
+                >
+                  <Link href="/login">Login</Link>
+                </Button>
+              </div>
+            </div>
+
+            <div className="relative md:col-span-5">
+              <div className="relative aspect-square w-full overflow-hidden rounded-[1.5rem] border border-[#c5c6d2]/30 bg-[#d9eafc] shadow-2xl">
+                <img
+                  src={heroImage}
+                  alt="Student touching a biometric scanner"
+                  className="size-full object-cover"
+                />
+                <div className="absolute right-4 bottom-4 left-4 rounded-xl border border-white/40 bg-white/80 p-4 shadow-lg backdrop-blur-xl sm:right-6 sm:bottom-6 sm:left-6">
+                  <div className="mb-2 flex items-center justify-between gap-3">
+                    <span className="font-mono text-xs font-bold text-[#2552ca]">
+                      LIVE STATUS
+                    </span>
+                    <span className="rounded-full bg-[#009eb0] px-2 py-0.5 text-[10px] text-white">
+                      ACTIVE
+                    </span>
+                  </div>
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="grid size-10 shrink-0 place-items-center rounded-full bg-[#446ce4] text-white">
+                      <MaterialSymbol icon="fingerprint" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-bold text-[#00113a]">
+                        Biometric Syncing...
                       </div>
-                    </td>
-                  </tr>
-                ))}
-                {students.length === 0 ? (
-                  <tr>
-                    <td
-                      className="p-3 text-center text-muted-foreground"
-                      colSpan={6}
-                    >
-                      No students registered.
-                    </td>
-                  </tr>
-                ) : null}
-              </tbody>
-            </table>
+                      <div className="truncate font-mono text-xs text-[#444650]">
+                        Scanning Institution: Central Academy
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </Card>
-
-        <div className="grid min-w-0 gap-4 lg:grid-cols-2">
-          <Card title="Left / Right Enrollment">
-            <div className="grid min-w-0 gap-1">
-              <Row
-                label="Selected"
-                value={
-                  selectedStudent
-                    ? `${selectedStudent.studentId} · ${selectedStudent.name}`
-                    : "-"
-                }
-              />
-              <Row
-                label="Enrollment"
-                value={<StatusBadge status={enrollment.status} />}
-              />
-              <Row label="Finger" value={enrollment.finger} />
-              <Row label="Enroll index" value={enrollment.enrollIndex} />
-              <Row label="Last quality" value={enrollment.lastQuality ?? "-"} />
-              <Row label="FPID" value={enrollment.fpId || "-"} />
-              <Row
-                label="Template 10 length"
-                value={enrollment.template10Length}
-              />
-              <Row
-                label="Template preview"
-                value={preview(enrollment.template10)}
-              />
-              <Row label="Instruction" value={enrollment.message ?? "-"} />
-            </div>
-            <div className="mt-3 flex min-w-0 flex-wrap gap-2">
-              <Button
-                onClick={() => startEnrollment("left")}
-                disabled={loading || !device.connected || !selectedStudent}
-              >
-                Enroll Left Finger
-              </Button>
-              <Button
-                onClick={() => startEnrollment("right")}
-                disabled={loading || !device.connected || !selectedStudent}
-              >
-                Enroll Right Finger
-              </Button>
-            </div>
-          </Card>
-
-          <Card title="Capture / Identify">
-            <div className="grid min-w-0 gap-1">
-              <Row
-                label="Capture"
-                value={<StatusBadge status={capture.status} />}
-              />
-              <Row label="Capture quality" value={capture.lastQuality ?? "-"} />
-              <Row label="Capture length" value={capture.templateLength} />
-              <Row label="Capture preview" value={preview(capture.template)} />
-              <Row
-                label="Identify"
-                value={<StatusBadge status={identify.status} />}
-              />
-              <Row
-                label="Matched"
-                value={identify.matched ? "Matched" : "Not matched"}
-              />
-              <Row label="Student" value={identify.studentId ?? "-"} />
-              <Row label="Finger" value={identify.finger ?? "-"} />
-              <Row label="Score" value={identify.score ?? "-"} />
-            </div>
-            <div className="mt-3 flex min-w-0 flex-wrap gap-2">
-              <Button
-                variant="outline"
-                onClick={startCapture}
-                disabled={loading || !device.connected}
-              >
-                Start Capture
-              </Button>
-              <Button
-                onClick={startIdentify}
-                disabled={loading || !device.connected}
-              >
-                Identify Any Finger
-              </Button>
-            </div>
-          </Card>
-
-          <Card title="Verification Result">
-            <div className="grid min-w-0 gap-1">
-              <Row
-                label="Status"
-                value={<StatusBadge status={verify.status} />}
-              />
-              <Row
-                label="Matched"
-                value={verify.matched ? "Matched" : "Not matched"}
-              />
-              <Row label="Student ID" value={verify.studentId ?? "-"} />
-              <Row label="Student name" value={verify.studentName ?? "-"} />
-              <Row label="Class" value={verify.className ?? "-"} />
-              <Row label="Finger" value={verify.finger ?? "-"} />
-              <Row label="Message" value={verify.message ?? "-"} />
-            </div>
-          </Card>
-
-          <Card title="Identification Result">
-            <div className="grid min-w-0 gap-1">
-              <Row
-                label="Status"
-                value={<StatusBadge status={identify.status} />}
-              />
-              <Row
-                label="Matched"
-                value={identify.matched ? "Matched" : "Not matched"}
-              />
-              <Row label="FPID" value={identify.fpId ?? "-"} />
-              <Row label="Student ID" value={identify.studentId ?? "-"} />
-              <Row label="Student name" value={identify.studentName ?? "-"} />
-              <Row label="Class" value={identify.className ?? "-"} />
-              <Row label="Finger" value={identify.finger ?? "-"} />
-              <Row label="Processed" value={identify.processedNumber ?? "-"} />
-              <Row label="Message" value={identify.message ?? "-"} />
-            </div>
-          </Card>
         </div>
+      </section>
 
-        <Card title="Logs">
-          <div className="grid min-w-0 gap-4 lg:grid-cols-2">
-            <div className="min-w-0">
-              <h3 className="mb-2 text-xs font-medium text-muted-foreground">
-                Frontend logs
-              </h3>
-              <div className="max-h-56 max-w-full overflow-auto border p-2 font-mono text-xs break-all">
-                {frontendLogs.length === 0
-                  ? "No frontend logs."
-                  : frontendLogs.map((log) => <div key={log}>{log}</div>)}
+      <section id="features" className="bg-white py-20 md:py-24">
+        <div className="mx-auto max-w-[1280px] px-4 sm:px-6">
+          <div className="mb-16 text-center">
+            <h3 className="mb-4 text-2xl leading-8 font-semibold tracking-normal text-[#00113a]">
+              The Future of Institutional Security
+            </h3>
+            <div className="mx-auto h-1.5 w-20 rounded-full bg-[#2552ca]" />
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="group relative overflow-hidden rounded-xl border border-[#c5c6d2] bg-[#ecf4ff] p-8 transition-shadow duration-300 hover:shadow-lg md:col-span-2">
+              <div className="relative z-10">
+                <div className="mb-6 grid size-14 place-items-center rounded-xl bg-[#446ce4] text-white shadow-md">
+                  <MaterialSymbol icon="fingerprint" className="text-3xl" />
+                </div>
+                <h4 className="mb-3 text-2xl leading-8 font-semibold tracking-normal text-[#00113a]">
+                  Biometric Attendance
+                </h4>
+                <p className="mb-6 max-w-md text-base leading-6 text-[#444650]">
+                  Eliminate proxy attendance with military-grade biometric
+                  scanning. Fast, accurate, and impossible to fake.
+                </p>
+                <div className="flex flex-wrap gap-4">
+                  <span className="rounded-full bg-[#002d33]/10 px-3 py-1 font-mono text-xs text-[#009eb0]">
+                    99.9% Accuracy
+                  </span>
+                  <span className="rounded-full bg-[#dce1ff] px-3 py-1 font-mono text-xs text-[#003baf]">
+                    0.2s Scan Speed
+                  </span>
+                </div>
+              </div>
+              <MaterialSymbol
+                icon="fingerprint"
+                className="absolute right-0 bottom-0 text-[200px] leading-none text-[#00113a]/10 transition-opacity group-hover:text-[#00113a]/20"
+              />
+            </div>
+
+            <div className="flex flex-col justify-between rounded-xl bg-[#00113a] p-8 text-white shadow-xl transition-transform hover:-translate-y-1">
+              <div>
+                <div className="mb-6 grid size-12 place-items-center rounded-xl bg-[#758dd5] text-[#002366]">
+                  <MaterialSymbol icon="school" filled />
+                </div>
+                <h4 className="mb-3 text-2xl leading-8 font-semibold tracking-normal">
+                  Multi-School Management
+                </h4>
+                <p className="text-base leading-6 text-[#dbe1ff] opacity-90">
+                  Unified dashboard for educational groups and districts to
+                  oversee multiple institutions seamlessly.
+                </p>
+              </div>
+              <Link
+                href="#"
+                className="mt-6 flex items-center gap-2 text-sm font-semibold text-[#dce1ff] hover:underline"
+              >
+                Configure District
+                <MaterialSymbol icon="open_in_new" />
+              </Link>
+            </div>
+
+            <div className="group flex flex-col rounded-xl border border-[#c5c6d2] bg-[#f7f9ff] p-8 transition-shadow hover:shadow-lg">
+              <div className="mb-6 grid size-12 place-items-center rounded-xl bg-[#9cf0ff] text-[#001f24] shadow-sm">
+                <MaterialSymbol icon="family_restroom" />
+              </div>
+              <h4 className="mb-3 text-2xl leading-8 font-semibold tracking-normal text-[#00113a]">
+                Parent Monitoring
+              </h4>
+              <p className="mb-6 text-base leading-6 text-[#444650]">
+                Real-time SMS and App notifications for parents the moment a
+                student scans in or out.
+              </p>
+              <div className="mt-auto flex items-center justify-between border-t border-[#c5c6d2] pt-6">
+                <span className="font-mono text-xs text-[#757682]">
+                  Push Notifications
+                </span>
+                <MaterialSymbol
+                  icon="send"
+                  className="text-[#2552ca] transition-transform group-hover:translate-x-1"
+                />
               </div>
             </div>
-            <div className="min-w-0">
-              <h3 className="mb-2 text-xs font-medium text-muted-foreground">
-                Bridge logs
-              </h3>
-              <div className="max-h-56 max-w-full overflow-auto border p-2 font-mono text-xs break-all">
-                {bridgeLogs.length === 0
-                  ? "No bridge logs loaded."
-                  : bridgeLogs.map((log) => <div key={log}>{log}</div>)}
+
+            <div className="rounded-xl border border-[#c5c6d2] bg-linear-to-br from-white to-[#e2efff] p-8 transition-shadow hover:shadow-lg md:col-span-2">
+              <div className="flex flex-col gap-8 md:flex-row">
+                <div className="flex-1">
+                  <div className="mb-6 grid size-12 place-items-center rounded-xl bg-[#003baf] text-white shadow-sm">
+                    <MaterialSymbol icon="analytics" />
+                  </div>
+                  <h4 className="mb-3 text-2xl leading-8 font-semibold tracking-normal text-[#00113a]">
+                    Attendance Reports
+                  </h4>
+                  <p className="text-base leading-6 text-[#444650]">
+                    Generate automated weekly, monthly, and yearly reports.
+                    Identify trends in absenteeism and punctuality with advanced
+                    AI heatmaps.
+                  </p>
+                </div>
+                <div className="flex-1 rounded-xl border border-[#c5c6d2]/30 bg-white p-4 shadow-sm">
+                  <div className="space-y-4">
+                    {["w-3/4", "w-1/2", "w-5/6"].map((width) => (
+                      <div
+                        key={width}
+                        className="h-4 w-full overflow-hidden rounded-full bg-[#e2efff]"
+                      >
+                        <div className={`h-full bg-[#2552ca] ${width}`} />
+                      </div>
+                    ))}
+                    <div className="flex justify-between pt-2 font-mono text-xs text-[#757682]">
+                      <span>Jan</span>
+                      <span>Mar</span>
+                      <span>Jun</span>
+                      <span>Sep</span>
+                      <span>Dec</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </Card>
+        </div>
+      </section>
 
-        <Card title="Debug Zustand State">
-          <pre className="max-h-96 max-w-full overflow-auto border bg-muted/30 p-3 text-xs break-all">
-            {JSON.stringify(store, null, 2)}
-          </pre>
-        </Card>
-      </div>
+      <section className="bg-white py-20">
+        <div className="mx-auto max-w-[1280px] px-4 sm:px-6">
+          <div className="relative overflow-hidden rounded-[2rem] bg-[#2552ca] p-10 text-center shadow-2xl md:p-20">
+            <div className="relative z-10 mx-auto max-w-2xl">
+              <h2 className="mb-6 text-3xl leading-10 font-bold tracking-normal text-white md:text-[32px]">
+                Ready to secure your institution?
+              </h2>
+              <p className="mb-10 text-lg leading-7 text-[#dce1ff] opacity-90">
+                Join over 500+ schools worldwide using RecordIT for seamless and
+                secure biometric attendance.
+              </p>
+              <div className="flex flex-col justify-center gap-4 sm:flex-row">
+                <Button
+                  asChild
+                  className="h-16 rounded-xl bg-white px-10 text-base font-bold text-[#2552ca] hover:bg-[#f7f9ff]"
+                >
+                  <Link href="/login">Start Your Trial</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-16 rounded-xl border-2 border-[#dce1ff] bg-transparent px-10 text-base font-bold text-white hover:bg-white/10 hover:text-white"
+                >
+                  <Link href="/login">Book a Demo</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="w-full border-t border-[#c5c6d2] bg-[#cbdcee] py-12">
+        <div className="mx-auto flex max-w-[1280px] flex-col items-center justify-between gap-8 px-4 sm:px-6 md:flex-row">
+          <div className="flex flex-col items-center gap-4 md:items-start">
+            <span className="text-2xl font-bold text-[#0d1d2a]">RecordIT</span>
+            <p className="max-w-xs text-center font-mono text-xs tracking-widest text-[#444650] uppercase md:text-left">
+              © 2024 RecordIT Biometric Systems. All Rights Reserved.
+            </p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-8">
+            {["Privacy Policy", "Terms of Service", "Security Audit"].map(
+              (item) => (
+                <Link
+                  key={item}
+                  href="#"
+                  className="font-mono text-xs font-bold tracking-wider text-[#444650] uppercase transition-colors hover:text-[#2552ca]"
+                >
+                  {item}
+                </Link>
+              )
+            )}
+          </div>
+          <div className="flex gap-4">
+            {["share", "mail"].map((icon) => (
+              <button
+                key={icon}
+                aria-label={icon}
+                className="grid size-10 place-items-center rounded-full bg-[#e2efff] text-[#2552ca] transition-all hover:bg-[#2552ca] hover:text-white"
+              >
+                <MaterialSymbol icon={icon} />
+              </button>
+            ))}
+          </div>
+        </div>
+      </footer>
     </main>
   )
 }

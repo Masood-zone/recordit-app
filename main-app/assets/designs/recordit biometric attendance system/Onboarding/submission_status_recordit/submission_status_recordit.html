@@ -1,0 +1,255 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Application Status | RecordIT Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-on-surface": "#e7f2ff",
+                    "secondary-container": "#446ce4",
+                    "primary": "#00113a",
+                    "on-primary-fixed": "#00174a",
+                    "secondary": "#2552ca",
+                    "surface-variant": "#d4e4f6",
+                    "surface-tint": "#435b9f",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container": "#e2efff",
+                    "on-primary-container": "#758dd5",
+                    "on-primary-fixed-variant": "#2a4386",
+                    "on-error-container": "#93000a",
+                    "on-secondary": "#ffffff",
+                    "tertiary-container": "#002d33",
+                    "on-tertiary-container": "#009eb0",
+                    "error-container": "#ffdad6",
+                    "on-error": "#ffffff",
+                    "surface": "#f7f9ff",
+                    "background": "#f7f9ff",
+                    "on-surface": "#0d1d2a",
+                    "on-secondary-fixed-variant": "#003baf",
+                    "on-background": "#0d1d2a",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "on-surface-variant": "#444650",
+                    "surface-container-low": "#ecf4ff",
+                    "primary-fixed": "#dbe1ff",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#9cf0ff",
+                    "tertiary": "#00171b",
+                    "secondary-fixed": "#dce1ff",
+                    "outline-variant": "#c5c6d2",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#b6c4ff",
+                    "outline": "#757682",
+                    "inverse-surface": "#223240",
+                    "surface-container-high": "#d9eafc",
+                    "surface-dim": "#cbdcee",
+                    "on-tertiary-fixed": "#001f24",
+                    "on-secondary-container": "#fffbff",
+                    "surface-bright": "#f7f9ff",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed-dim": "#00daf3",
+                    "surface-container-highest": "#d4e4f6",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "inverse-primary": "#b3c5ff",
+                    "primary-container": "#002366",
+                    "on-secondary-fixed": "#00164e"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "desktop-max-width": "1280px",
+                    "base": "8px",
+                    "gutter": "16px",
+                    "container-padding": "24px",
+                    "tablet-breakpoint": "768px",
+                    "mobile-breakpoint": "375px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Manrope"],
+                    "label-sm": ["JetBrains Mono"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "body-lg": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "button-text": ["Manrope"],
+                    "body-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .biometric-glow {
+            box-shadow: 0 0 20px rgba(0, 218, 243, 0.3);
+        }
+        .glass-overlay {
+            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.8);
+        }
+        @keyframes pulse-cyan {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pulse-indicator {
+            animation: pulse-cyan 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full z-50 flex items-center justify-between px-gutter py-base max-w-desktop-max-width mx-auto bg-surface dark:bg-surface-dim shadow-sm dark:shadow-none border-b border-outline-variant dark:border-outline">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">RecordIT</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors active:scale-95" title="Help">help</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors active:scale-95" title="Account">account_circle</button>
+</div>
+</header>
+<main class="flex-grow flex flex-col items-center py-12 px-gutter">
+<!-- Stepper -->
+<div class="w-full max-w-3xl mb-12 flex items-center justify-between relative">
+<!-- Connector Line -->
+<div class="absolute top-1/2 left-0 w-full h-[2px] bg-outline-variant -translate-y-1/2 z-0"></div>
+<div class="absolute top-1/2 left-0 w-1/2 h-[2px] bg-secondary -translate-y-1/2 z-0"></div>
+<!-- Step 1 -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary uppercase">School Info</span>
+</div>
+<!-- Step 2 -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary uppercase">Admin Profile</span>
+</div>
+<!-- Step 3 -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center ring-4 ring-primary-fixed shadow-lg">
+<span class="font-label-sm text-label-sm">03</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold uppercase">Approval Status</span>
+</div>
+</div>
+<!-- Success Content Container -->
+<div class="w-full max-w-2xl">
+<!-- Application Received Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-10 shadow-[0px_4px_12px_rgba(0,35,102,0.05)] text-center mb-8">
+<div class="mb-6 inline-flex items-center justify-center w-20 h-20 rounded-full bg-surface-container pulse-indicator">
+<span class="material-symbols-outlined text-[48px] text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-primary mb-4">Application Received</h1>
+<p class="text-on-surface-variant font-body-lg mb-8 max-w-md mx-auto">
+                    Your school profile and administrator account have been submitted successfully. Our team is now verifying your credentials.
+                </p>
+<!-- Status Badge -->
+<div class="inline-flex items-center gap-3 px-6 py-3 bg-tertiary-container/10 border border-tertiary-container/20 rounded-full">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-pulse"></span>
+<span class="font-label-sm text-on-tertiary-container font-bold tracking-widest uppercase">Under Review</span>
+</div>
+</div>
+<!-- Bento Grid Info Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- What to Expect -->
+<div class="bg-surface-container-low rounded-xl p-6 border border-outline-variant hover:shadow-[0px_8px_24px_rgba(0,35,102,0.12)] transition-shadow">
+<div class="flex items-center gap-3 mb-4 text-primary">
+<span class="material-symbols-outlined">schedule</span>
+<h3 class="font-headline-md text-headline-md text-sm">What to Expect</h3>
+</div>
+<p class="text-on-surface-variant font-body-md">
+                        Our compliance team typically completes verification within <span class="font-bold text-primary">24 hours</span>. You will receive an email confirmation once your dashboard is ready.
+                    </p>
+</div>
+<!-- Need Help -->
+<div class="bg-surface-container-low rounded-xl p-6 border border-outline-variant hover:shadow-[0px_8px_24px_rgba(0,35,102,0.12)] transition-shadow flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-3 mb-4 text-primary">
+<span class="material-symbols-outlined">support_agent</span>
+<h3 class="font-headline-md text-headline-md text-sm">Need Help?</h3>
+</div>
+<p class="text-on-surface-variant font-body-md mb-4">
+                            Have questions about the onboarding process or technical requirements?
+                        </p>
+</div>
+<button class="w-full py-3 px-4 bg-transparent border border-outline text-primary font-button-text rounded-lg hover:bg-surface-container transition-colors active:scale-95">
+                        Contact Support
+                    </button>
+</div>
+</div>
+<!-- Additional Detail/Graphic -->
+<div class="mt-8 p-6 bg-primary-container rounded-xl flex items-center gap-6 overflow-hidden relative">
+<div class="relative z-10">
+<h4 class="text-white font-headline-md text-lg mb-2">Academic Integrity First</h4>
+<p class="text-primary-fixed-dim font-body-md text-sm">
+                        RecordIT uses institutional-grade encryption to protect student biometric data and attendance records.
+                    </p>
+</div>
+<div class="hidden md:block opacity-20 transform translate-x-4">
+<span class="material-symbols-outlined text-[120px] text-white">security</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-container-padding px-gutter flex flex-col md:flex-row justify-between items-center gap-base mt-auto bg-surface-container-low dark:bg-surface-container-lowest border-t border-outline-variant dark:border-outline">
+<div class="flex flex-col gap-1 items-center md:items-start">
+<span class="font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim">RecordIT</span>
+<p class="font-body-md text-body-md text-on-surface-variant dark:text-outline">© 2024 RecordIT. Institutional Security Guaranteed.</p>
+</div>
+<div class="flex gap-gutter flex-wrap justify-center">
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors" href="#">Terms of Service</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors" href="#">Support</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors" href="#">Security Standards</a>
+</div>
+</footer>
+<script>
+        // Micro-interaction for buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'scale(0.98)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'scale(1)';
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'scale(1)';
+            });
+        });
+
+        // Atmospheric hover effect on the success card
+        const card = document.querySelector('.bg-surface-container-lowest');
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        });
+    </script>
+</body></html>

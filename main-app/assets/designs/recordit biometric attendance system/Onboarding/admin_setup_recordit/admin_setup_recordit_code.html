@@ -1,0 +1,305 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Admin Account Setup | RecordIT</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-on-surface": "#e7f2ff",
+                    "secondary-container": "#446ce4",
+                    "primary": "#00113a",
+                    "on-primary-fixed": "#00174a",
+                    "secondary": "#2552ca",
+                    "surface-variant": "#d4e4f6",
+                    "surface-tint": "#435b9f",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container": "#e2efff",
+                    "on-primary-container": "#758dd5",
+                    "on-primary-fixed-variant": "#2a4386",
+                    "on-error-container": "#93000a",
+                    "on-secondary": "#ffffff",
+                    "tertiary-container": "#002d33",
+                    "on-tertiary-container": "#009eb0",
+                    "error-container": "#ffdad6",
+                    "on-error": "#ffffff",
+                    "surface": "#f7f9ff",
+                    "background": "#f7f9ff",
+                    "on-surface": "#0d1d2a",
+                    "on-secondary-fixed-variant": "#003baf",
+                    "on-background": "#0d1d2a",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "on-surface-variant": "#444650",
+                    "surface-container-low": "#ecf4ff",
+                    "primary-fixed": "#dbe1ff",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#9cf0ff",
+                    "tertiary": "#00171b",
+                    "secondary-fixed": "#dce1ff",
+                    "outline-variant": "#c5c6d2",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#b6c4ff",
+                    "outline": "#757682",
+                    "inverse-surface": "#223240",
+                    "surface-container-high": "#d9eafc",
+                    "surface-dim": "#cbdcee",
+                    "on-tertiary-fixed": "#001f24",
+                    "on-secondary-container": "#fffbff",
+                    "surface-bright": "#f7f9ff",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed-dim": "#00daf3",
+                    "surface-container-highest": "#d4e4f6",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "inverse-primary": "#b3c5ff",
+                    "primary-container": "#002366",
+                    "on-secondary-fixed": "#00164e"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "desktop-max-width": "1280px",
+                    "base": "8px",
+                    "gutter": "16px",
+                    "container-padding": "24px",
+                    "tablet-breakpoint": "768px",
+                    "mobile-breakpoint": "375px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Manrope"],
+                    "label-sm": ["JetBrains Mono"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "body-lg": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "button-text": ["Manrope"],
+                    "body-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #f7f9ff;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(37, 82, 202, 0.03) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 158, 176, 0.03) 0px, transparent 50%);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .soft-elevation {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .soft-elevation:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+        .glass-overlay {
+            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.8);
+        }
+        .step-active::after {
+            content: '';
+            position: absolute;
+            bottom: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 4px;
+            background-color: #2552ca;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-body-md text-on-surface">
+<!-- TopAppBar -->
+<header class="sticky top-0 w-full z-50 flex items-center justify-between px-gutter py-base max-w-desktop-max-width mx-auto bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-3xl" style="font-variation-settings: 'FILL' 1;">security</span>
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">RecordIT</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors active:scale-95 transition-transform text-on-surface-variant">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors active:scale-95 transition-transform text-on-surface-variant">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<main class="flex-grow flex flex-col items-center justify-start py-12 px-gutter">
+<!-- Stepper Navigation -->
+<nav class="w-full max-w-3xl mb-12">
+<div class="flex justify-between items-center relative">
+<!-- Connector Line -->
+<div class="absolute top-1/2 left-0 w-full h-[2px] bg-outline-variant -z-10 -translate-y-1/2"></div>
+<!-- Step 1: Complete -->
+<div class="flex flex-col items-center gap-2 bg-surface px-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">check</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-bold">Step 1: Complete</span>
+</div>
+<!-- Step 2: Active -->
+<div class="flex flex-col items-center gap-2 bg-surface px-4 relative">
+<div class="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center ring-4 ring-secondary-container ring-opacity-20">
+<span class="font-label-sm text-label-sm">2</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-extrabold uppercase tracking-wider">Step 2: Admin Account</span>
+</div>
+<!-- Step 3: Upcoming -->
+<div class="flex flex-col items-center gap-2 bg-surface px-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border-2 border-outline-variant text-outline flex items-center justify-center">
+<span class="font-label-sm text-label-sm">3</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Step 3: Approval Status</span>
+</div>
+</div>
+</nav>
+<!-- Main Content Card -->
+<div class="w-full max-w-xl bg-surface-container-lowest rounded-xl border border-outline-variant soft-elevation p-container-padding animate-in fade-in slide-in-from-bottom-4 duration-700">
+<div class="mb-8 text-center">
+<h1 class="font-headline-lg text-headline-lg text-primary mb-2">Administrator Account Setup</h1>
+<p class="font-body-md text-on-surface-variant">Create the primary administrative profile for your institution.</p>
+</div>
+<form class="space-y-6">
+<!-- Full Name -->
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">person</span>
+                        FULL NAME
+                    </label>
+<input class="w-full bg-[#F1F5F9] border-0 border-b-2 border-outline-variant focus:border-secondary focus:ring-0 transition-colors p-3 rounded-t-lg font-body-md" placeholder="e.g. Dr. Julian Sterling" required="" type="text">
+</div>
+<!-- Admin Email -->
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">mail</span>
+                        ADMIN EMAIL (USED FOR LOGIN)
+                    </label>
+<input class="w-full bg-[#F1F5F9] border-0 border-b-2 border-outline-variant focus:border-secondary focus:ring-0 transition-colors p-3 rounded-t-lg font-body-md" placeholder="admin@institution.edu" required="" type="email">
+</div>
+<!-- Password Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">lock</span>
+                            SECURITY PASSWORD
+                        </label>
+<input class="w-full bg-[#F1F5F9] border-0 border-b-2 border-outline-variant focus:border-secondary focus:ring-0 transition-colors p-3 rounded-t-lg font-body-md" placeholder="••••••••" required="" type="password">
+</div>
+<div class="space-y-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+                            CONFIRM PASSWORD
+                        </label>
+<input class="w-full bg-[#F1F5F9] border-0 border-b-2 border-outline-variant focus:border-secondary focus:ring-0 transition-colors p-3 rounded-t-lg font-body-md" placeholder="••••••••" required="" type="password">
+</div>
+</div>
+<!-- Notice -->
+<div class="bg-surface-container rounded-lg p-4 flex gap-4 items-start border-l-4 border-secondary">
+<span class="material-symbols-outlined text-secondary mt-0.5">info</span>
+<p class="font-body-md text-on-surface-variant text-sm">
+                        These credentials will be used to manage your institution's RecordIT dashboard. Please ensure they are stored securely according to your school's IT policy.
+                    </p>
+</div>
+<!-- Submit Button -->
+<button class="w-full bg-secondary hover:bg-primary text-white font-button-text text-button-text py-4 rounded-xl soft-elevation transition-all active:scale-95 flex items-center justify-center gap-2 group" type="submit">
+                    Submit for Approval
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</form>
+</div>
+<!-- Supportive Visual Element -->
+<div class="mt-12 w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-6 opacity-60">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">verified</span>
+</div>
+<div>
+<h4 class="font-label-sm text-xs font-bold text-primary">Identity Verification</h4>
+<p class="text-xs">Secure SSO Integration</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">encrypted</span>
+</div>
+<div>
+<h4 class="font-label-sm text-xs font-bold text-primary">End-to-End Encryption</h4>
+<p class="text-xs">Institutional Grade Privacy</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">gavel</span>
+</div>
+<div>
+<h4 class="font-label-sm text-xs font-bold text-primary">Compliance Ready</h4>
+<p class="text-xs">FERPA &amp; GDPR Compliant</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-container-padding px-gutter flex flex-col md:flex-row justify-between items-center gap-base mt-auto bg-surface-container-low dark:bg-surface-container-lowest border-t border-outline-variant dark:border-outline">
+<div class="flex flex-col items-center md:items-start gap-1">
+<span class="font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim">RecordIT</span>
+<span class="font-body-md text-body-md text-on-surface-variant dark:text-outline">© 2024 RecordIT. Institutional Security Guaranteed.</span>
+</div>
+<div class="flex gap-gutter">
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors font-body-md text-body-md" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors font-body-md text-body-md" href="#">Terms of Service</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors font-body-md text-body-md" href="#">Support</a>
+</div>
+</footer>
+<script>
+        // Simple micro-interaction for the Submit Button
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('button[type="submit"]');
+            btn.innerHTML = `<span class="material-symbols-outlined animate-spin">refresh</span> Processing...`;
+            btn.classList.add('opacity-80', 'cursor-not-allowed');
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                alert('Account setup submitted for verification. You will be redirected to the status dashboard.');
+                // In a real app, this would redirect
+                btn.innerHTML = `Submit for Approval <span class="material-symbols-outlined">arrow_forward</span>`;
+                btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                btn.disabled = false;
+            }, 1500);
+        });
+
+        // Atmospheric focus effect for inputs
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.classList.add('scale-[1.01]');
+                input.parentElement.style.transition = 'transform 0.2s ease';
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.classList.remove('scale-[1.01]');
+            });
+        });
+    </script>
+</body></html>

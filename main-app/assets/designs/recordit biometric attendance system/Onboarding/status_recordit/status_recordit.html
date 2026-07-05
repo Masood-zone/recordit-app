@@ -1,0 +1,358 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Approval Pending | RecordIT</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .pulse-cyan {
+            box-shadow: 0 0 0 0 rgba(0, 218, 243, 0.4);
+            animation: pulse-cyan 2s infinite;
+        }
+        @keyframes pulse-cyan {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 218, 243, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 218, 243, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 218, 243, 0); }
+        }
+    </style>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed-variant": "#2a4386",
+                      "surface-container-lowest": "#ffffff",
+                      "outline": "#757682",
+                      "on-tertiary-fixed": "#001f24",
+                      "inverse-primary": "#b3c5ff",
+                      "secondary-container": "#446ce4",
+                      "on-secondary-fixed-variant": "#003baf",
+                      "surface-container": "#e2efff",
+                      "tertiary": "#00171b",
+                      "on-error": "#ffffff",
+                      "on-tertiary-container": "#009eb0",
+                      "tertiary-fixed": "#9cf0ff",
+                      "tertiary-container": "#002d33",
+                      "on-secondary-fixed": "#00164e",
+                      "secondary": "#2552ca",
+                      "surface-variant": "#d4e4f6",
+                      "on-tertiary-fixed-variant": "#004f58",
+                      "error-container": "#ffdad6",
+                      "surface-bright": "#f7f9ff",
+                      "primary-container": "#002366",
+                      "secondary-fixed-dim": "#b6c4ff",
+                      "on-tertiary": "#ffffff",
+                      "outline-variant": "#c5c6d2",
+                      "on-surface-variant": "#444650",
+                      "primary-fixed-dim": "#b3c5ff",
+                      "primary": "#00113a",
+                      "secondary-fixed": "#dce1ff",
+                      "on-primary-container": "#758dd5",
+                      "tertiary-fixed-dim": "#00daf3",
+                      "surface-dim": "#cbdcee",
+                      "on-secondary": "#ffffff",
+                      "surface-container-high": "#d9eafc",
+                      "on-error-container": "#93000a",
+                      "on-background": "#0d1d2a",
+                      "inverse-on-surface": "#e7f2ff",
+                      "surface": "#f7f9ff",
+                      "on-primary": "#ffffff",
+                      "on-secondary-container": "#fffbff",
+                      "surface-container-low": "#ecf4ff",
+                      "on-surface": "#0d1d2a",
+                      "surface-tint": "#435b9f",
+                      "on-primary-fixed": "#00174a",
+                      "surface-container-highest": "#d4e4f6",
+                      "inverse-surface": "#223240",
+                      "error": "#ba1a1a",
+                      "primary-fixed": "#dbe1ff",
+                      "background": "#f7f9ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-padding": "24px",
+                      "mobile-breakpoint": "375px",
+                      "base": "8px",
+                      "gutter": "16px",
+                      "tablet-breakpoint": "768px",
+                      "desktop-max-width": "1280px"
+              },
+              "fontFamily": {
+                      "body-md": ["Manrope"],
+                      "button-text": ["Manrope"],
+                      "headline-lg": ["Manrope"],
+                      "body-lg": ["Manrope"],
+                      "headline-lg-mobile": ["Manrope"],
+                      "label-sm": ["JetBrains Mono"],
+                      "headline-md": ["Manrope"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<!-- SideNavBar Anchor -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant flex flex-col h-full py-base px-gutter z-50">
+<div class="mb-10 flex items-center gap-3 px-2">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-2xl">school</span>
+</div>
+<div>
+<h1 class="text-headline-md font-headline-md font-extrabold text-primary leading-tight">RecordIT</h1>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Institutional Security</p>
+</div>
+</div>
+<nav class="flex-grow space-y-1">
+<!-- Dashboard Active -->
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-all duration-200 active:translate-x-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-button-text text-button-text">Dashboard</span>
+</a>
+<!-- Disabled Navigation Items -->
+<div class="pt-4 pb-2 px-4">
+<p class="text-[10px] font-bold text-outline uppercase tracking-wider">Locked Modules</p>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 text-outline opacity-50 cursor-not-allowed">
+<span class="material-symbols-outlined">school</span>
+<span class="font-button-text text-button-text">Institutions</span>
+<span class="material-symbols-outlined ml-auto text-xs">lock</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 text-outline opacity-50 cursor-not-allowed">
+<span class="material-symbols-outlined">fact_check</span>
+<span class="font-button-text text-button-text">Attendance</span>
+<span class="material-symbols-outlined ml-auto text-xs">lock</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 text-outline opacity-50 cursor-not-allowed">
+<span class="material-symbols-outlined">fingerprint</span>
+<span class="font-button-text text-button-text">Biometrics</span>
+<span class="material-symbols-outlined ml-auto text-xs">lock</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 text-outline opacity-50 cursor-not-allowed">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-button-text text-button-text">Reports</span>
+<span class="material-symbols-outlined ml-auto text-xs">lock</span>
+</div>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-button-text text-button-text">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-outline-variant space-y-1">
+<button class="w-full flex items-center justify-center gap-2 bg-outline text-white py-3 rounded-lg font-button-text text-button-text opacity-50 cursor-not-allowed mb-4">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+                Register New Device
+            </button>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-variant transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="font-button-text text-button-text">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-variant transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-button-text text-button-text">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen relative overflow-hidden flex flex-col">
+<!-- Header -->
+<header class="w-full h-16 bg-surface-bright flex justify-between items-center px-container-padding border-b border-outline-variant shadow-sm z-40">
+<div class="flex items-center gap-2">
+<span class="text-on-surface-variant font-medium">Dashboard</span>
+<span class="material-symbols-outlined text-outline text-sm">chevron_right</span>
+<span class="text-secondary font-semibold">Approval Status</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-secondary transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+<button class="text-on-surface-variant hover:text-secondary transition-colors"><span class="material-symbols-outlined">help</span></button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional high-resolution headshot of a male school administrator in a clean white office setting. He is wearing a dark navy blazer and a crisp light blue shirt, smiling confidently at the camera. The background is softly blurred, showing a modern academic office with shelves of books and natural light. Professional corporate photography style with soft ambient lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAg2ZMSkUdLs5Mi5jgjG7x2vv9F9xd7bI1q-JOWCSteVv0OsxpTil11a89eiuT4CZ4tY11p44BkZa6c-JPOmFic38ducZBtv-zeUAeTgX37odG4ErKXC_0CTds57E1ORhdu0fQmTDfyvwJM_w72Dc3-_IyV2IBBFgcfe0W4UtOk_H5Wv28Isr23iAkBuGXfepuBkMMcL2tqzhUtfkwq_uO-lteDMRNL60Fp6O-tl1jppMuUUxDoqb4D1Q">
+</div>
+</div>
+</header>
+<!-- Dynamic Content -->
+<div class="flex-grow p-10 max-w-desktop-max-width mx-auto w-full">
+<div class="grid grid-cols-12 gap-8">
+<!-- Main Message Section -->
+<div class="col-span-12 lg:col-span-8 space-y-8">
+<div class="bg-white rounded-xl p-10 shadow-sm border border-outline-variant relative overflow-hidden">
+<!-- Background Pattern Accent -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary-container opacity-10 rounded-bl-full -mr-10 -mt-10"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-14 h-14 bg-secondary-fixed rounded-full flex items-center justify-center pulse-cyan">
+<span class="material-symbols-outlined text-secondary text-3xl" style="font-variation-settings: 'FILL' 1;">pending_actions</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-primary">Approval Pending</h2>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed mb-8">
+                                Your school profile has been submitted successfully and is awaiting approval from the RecordIT team.
+                            </p>
+<!-- Progress Stepper -->
+<div class="flex flex-col md:flex-row items-center justify-between w-full relative pt-4 pb-12">
+<!-- Track Line -->
+<div class="absolute top-1/2 left-0 w-full h-[2px] bg-outline-variant -translate-y-10 hidden md:block"></div>
+<div class="absolute top-1/2 left-0 w-1/2 h-[2px] bg-secondary -translate-y-10 hidden md:block"></div>
+<!-- Step 1 -->
+<div class="flex flex-col items-center z-10 w-full md:w-1/3">
+<div class="w-12 h-12 rounded-full bg-secondary text-white flex items-center justify-center mb-4 border-4 border-white shadow-md">
+<span class="material-symbols-outlined text-xl">check</span>
+</div>
+<p class="font-bold text-secondary text-center">Application Submitted</p>
+<p class="text-xs text-outline font-label-sm">DONE</p>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center z-10 w-full md:w-1/3 mt-8 md:mt-0">
+<div class="w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center mb-4 border-4 border-white shadow-md relative">
+<div class="absolute inset-0 rounded-full shimmer opacity-50"></div>
+<span class="material-symbols-outlined text-xl">visibility</span>
+</div>
+<p class="font-bold text-primary text-center">Under Review</p>
+<p class="text-xs text-secondary font-label-sm animate-pulse">ACTIVE</p>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center z-10 w-full md:w-1/3 mt-8 md:mt-0">
+<div class="w-12 h-12 rounded-full bg-surface-variant text-outline flex items-center justify-center mb-4 border-4 border-white shadow-sm">
+<span class="material-symbols-outlined text-xl">verified</span>
+</div>
+<p class="font-bold text-outline text-center">Approval Pending</p>
+<p class="text-xs text-outline font-label-sm">WAITING</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Informational Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-surface-container-low rounded-xl p-8 border border-outline-variant flex flex-col gap-4">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-4xl">tips_and_updates</span>
+<h3 class="font-bold text-lg text-primary">What's Next?</h3>
+<p class="text-on-surface-variant font-body-md">
+                                Once your school is approved, you will be able to add users, register students, enroll fingerprints, and start attendance sessions.
+                            </p>
+</div>
+<div class="bg-surface-container-high rounded-xl p-8 border border-outline-variant flex flex-col gap-4">
+<span class="material-symbols-outlined text-secondary text-4xl">security_update_good</span>
+<h3 class="font-bold text-lg text-primary">Compliance Review</h3>
+<p class="text-on-surface-variant font-body-md">
+                                Our team is currently verifying your institutional documentation to ensure the highest security standards for biometric data.
+                            </p>
+</div>
+</div>
+</div>
+<!-- Locked Modules / Sidebar Action -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<div class="bg-white rounded-xl p-6 shadow-sm border border-outline-variant">
+<h4 class="font-bold text-primary mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">lock_person</span>
+                            Module Restrictions
+                        </h4>
+<div class="space-y-4">
+<!-- Locked List Item -->
+<div class="flex items-start gap-3 p-4 rounded-lg bg-surface-bright border border-dashed border-outline-variant opacity-60">
+<div class="w-8 h-8 rounded-lg bg-outline-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant">person_add</span>
+</div>
+<div>
+<p class="font-bold text-sm text-on-surface">Student Registration</p>
+<p class="text-xs text-on-surface-variant">Enroll biometric profiles</p>
+</div>
+<span class="material-symbols-outlined ml-auto text-outline text-sm">lock</span>
+</div>
+<div class="flex items-start gap-3 p-4 rounded-lg bg-surface-bright border border-dashed border-outline-variant opacity-60">
+<div class="w-8 h-8 rounded-lg bg-outline-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant">fact_check</span>
+</div>
+<div>
+<p class="font-bold text-sm text-on-surface">Live Attendance</p>
+<p class="text-xs text-on-surface-variant">Start biometric scan sessions</p>
+</div>
+<span class="material-symbols-outlined ml-auto text-outline text-sm">lock</span>
+</div>
+<div class="flex items-start gap-3 p-4 rounded-lg bg-surface-bright border border-dashed border-outline-variant opacity-60">
+<div class="w-8 h-8 rounded-lg bg-outline-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant">group</span>
+</div>
+<div>
+<p class="font-bold text-sm text-on-surface">User Management</p>
+<p class="text-xs text-on-surface-variant">Assign teacher privileges</p>
+</div>
+<span class="material-symbols-outlined ml-auto text-outline text-sm">lock</span>
+</div>
+</div>
+</div>
+<!-- Help Card -->
+<div class="bg-primary text-on-primary rounded-xl p-8 relative overflow-hidden">
+<div class="absolute bottom-0 right-0 w-24 h-24 opacity-20">
+<span class="material-symbols-outlined text-9xl">support_agent</span>
+</div>
+<h4 class="font-bold text-lg mb-2">Need Help?</h4>
+<p class="text-on-primary-container text-sm mb-6 leading-relaxed">
+                            If you have questions about the approval process or need to expedite your request, please contact our support team.
+                        </p>
+<button class="w-full bg-secondary text-white py-3 rounded-lg font-button-text hover:bg-secondary-container transition-all">
+                            Open Support Ticket
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="w-full py-8 mt-auto bg-surface-dim border-t border-outline-variant">
+<div class="flex flex-col md:flex-row justify-between items-center px-container-padding max-w-desktop-max-width mx-auto">
+<div class="flex items-center gap-2 mb-4 md:mb-0">
+<span class="font-bold text-on-surface">RecordIT</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant ml-2">© 2024 RecordIT Biometric Systems. All Rights Reserved.</span>
+</div>
+<div class="flex gap-6">
+<a class="text-label-sm font-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Privacy Policy</a>
+<a class="text-label-sm font-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Terms of Service</a>
+<a class="text-label-sm font-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Security Audit</a>
+</div>
+</div>
+</footer>
+</main>
+<script>
+        // Micro-interaction for dashboard pulsing effect
+        document.addEventListener('DOMContentLoaded', () => {
+            const steps = document.querySelectorAll('.step-active');
+            steps.forEach(step => {
+                step.classList.add('animate-pulse');
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Login | RecordIT Biometric Systems</title>
+<!-- Google Fonts: Manrope for UI, JetBrains Mono for Labels -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#2a4386",
+                    "surface-container-lowest": "#ffffff",
+                    "outline": "#757682",
+                    "on-tertiary-fixed": "#001f24",
+                    "inverse-primary": "#b3c5ff",
+                    "secondary-container": "#446ce4",
+                    "on-secondary-fixed-variant": "#003baf",
+                    "surface-container": "#e2efff",
+                    "tertiary": "#00171b",
+                    "on-error": "#ffffff",
+                    "on-tertiary-container": "#009eb0",
+                    "tertiary-fixed": "#9cf0ff",
+                    "tertiary-container": "#002d33",
+                    "on-secondary-fixed": "#00164e",
+                    "secondary": "#2552ca",
+                    "surface-variant": "#d4e4f6",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "error-container": "#ffdad6",
+                    "surface-bright": "#f7f9ff",
+                    "primary-container": "#002366",
+                    "secondary-fixed-dim": "#b6c4ff",
+                    "on-tertiary": "#ffffff",
+                    "outline-variant": "#c5c6d2",
+                    "on-surface-variant": "#444650",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "primary": "#00113a",
+                    "secondary-fixed": "#dce1ff",
+                    "on-primary-container": "#758dd5",
+                    "tertiary-fixed-dim": "#00daf3",
+                    "surface-dim": "#cbdcee",
+                    "on-secondary": "#ffffff",
+                    "surface-container-high": "#d9eafc",
+                    "on-error-container": "#93000a",
+                    "on-background": "#0d1d2a",
+                    "inverse-on-surface": "#e7f2ff",
+                    "surface": "#f7f9ff",
+                    "on-primary": "#ffffff",
+                    "on-secondary-container": "#fffbff",
+                    "surface-container-low": "#ecf4ff",
+                    "on-surface": "#0d1d2a",
+                    "surface-tint": "#435b9f",
+                    "on-primary-fixed": "#00174a",
+                    "surface-container-highest": "#d4e4f6",
+                    "inverse-surface": "#223240",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#dbe1ff",
+                    "background": "#f7f9ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-padding": "24px",
+                    "mobile-breakpoint": "375px",
+                    "base": "8px",
+                    "gutter": "16px",
+                    "tablet-breakpoint": "768px",
+                    "desktop-max-width": "1280px"
+            },
+            "fontFamily": {
+                    "body-md": ["Manrope"],
+                    "button-text": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "body-lg": ["Manrope"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "label-sm": ["JetBrains Mono"],
+                    "headline-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .soft-shadow-hover:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+        /* Custom animated gradient for subtle background energy */
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animate-subtle-bg {
+            background: linear-gradient(-45deg, #f7f9ff, #ecf4ff, #d9eafc, #f7f9ff);
+            background-size: 400% 400%;
+            animation: gradientFlow 15s ease infinite;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col animate-subtle-bg">
+<!-- Main Content Canvas -->
+<main class="flex-grow flex items-center justify-center px-container-padding">
+<div class="w-full max-w-[440px]">
+<!-- Login Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl soft-shadow p-8 md:p-10 transition-all duration-300 soft-shadow-hover">
+<!-- Logo & Header -->
+<div class="flex flex-col items-center mb-10">
+<div class="w-16 h-16 bg-primary rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-on-primary text-4xl" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+</div>
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">RecordIT</h1>
+<p class="font-body-md text-on-surface-variant mt-1">Institutional Security Login</p>
+</div>
+<!-- Login Form -->
+<form class="space-y-6" id="loginForm">
+<!-- Email Input -->
+<div class="group">
+<label class="block font-label-sm text-label-sm text-outline mb-2 uppercase tracking-widest" for="email">Institution Email</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-secondary transition-colors">mail</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface-container-low border-b-2 border-outline-variant focus:border-secondary focus:ring-0 text-on-surface font-body-md transition-all outline-none" id="email" name="email" placeholder="name@school.edu" required="" type="email">
+</div>
+</div>
+<!-- Password Input -->
+<div class="group">
+<label class="block font-label-sm text-label-sm text-outline mb-2 uppercase tracking-widest" for="password">Security Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-secondary transition-colors">lock</span>
+<input class="w-full pl-10 pr-12 py-3 bg-surface-container-low border-b-2 border-outline-variant focus:border-secondary focus:ring-0 text-on-surface font-body-md transition-all outline-none" id="password" name="password" placeholder="••••••••" required="" type="password">
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-secondary transition-colors" onclick="togglePassword()" type="button">
+<span class="material-symbols-outlined" id="passwordIcon">visibility</span>
+</button>
+</div>
+</div>
+<!-- Role Selection Hint -->
+
+<!-- Actions -->
+<div class="pt-2">
+<button class="w-full bg-secondary text-on-secondary font-button-text text-button-text py-4 rounded-xl shadow-lg shadow-secondary/20 hover:bg-on-secondary-fixed-variant active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 group" type="submit">
+<span class="">Login to Dashboard</span>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+<div class="flex justify-center">
+<a class="font-button-text text-button-text text-secondary hover:text-on-secondary-fixed-variant transition-colors underline-offset-4 hover:underline" href="#">
+                            Forgot password?
+                        </a>
+</div>
+</form>
+</div>
+<!-- Supporting Footer Links -->
+<div class="mt-8 flex flex-col items-center gap-4">
+<div class="flex gap-6 text-on-surface-variant font-label-sm text-label-sm">
+<a class="hover:text-secondary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-secondary transition-colors" href="#">Security Audit</a>
+<a class="hover:text-secondary transition-colors" href="#">Help Center</a>
+</div>
+<p class="text-outline font-label-sm text-label-sm">© 2024 RecordIT Biometric Systems. All Rights Reserved.</p>
+</div>
+</div>
+</main>
+<!-- Interactive Script -->
+<script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const passwordIcon = document.getElementById('passwordIcon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.innerText = 'visibility_off';
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.innerText = 'visibility';
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalContent = btn.innerHTML;
+            
+            // Interaction: Loading state
+            btn.disabled = true;
+            btn.innerHTML = `
+                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Authenticating...</span>
+            `;
+
+            // Artificial delay to simulate secure check
+            setTimeout(() => {
+                alert('Success! Redirecting to Institutional Dashboard...');
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }, 1500);
+        });
+    </script>
+</body></html>
