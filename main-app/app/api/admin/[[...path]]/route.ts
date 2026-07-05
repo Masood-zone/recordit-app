@@ -398,9 +398,21 @@ async function createTeacher(auth: Authed, input: Record<string, unknown>) {
   const schoolId = auth.schoolId!
   const password = clean(input.password) || temporaryPassword()
   const email = normalizeEmail(input.email)
+  const staffNumber = optionalClean(input.staffNumber)
 
   const exists = await prisma.user.findUnique({ where: { email }, select: { id: true } })
   if (exists) return apiError("A user with this email already exists", 409, "CONFLICT")
+
+  if (staffNumber) {
+    const existingStaff = await prisma.teacher.findFirst({
+      where: { schoolId, staffNumber },
+      select: { id: true },
+    })
+
+    if (existingStaff) {
+      return apiError("A teacher with this staff number already exists", 409, "CONFLICT")
+    }
+  }
 
   const result = await prisma.$transaction(async (tx) => {
     const user = await tx.user.create({
@@ -431,7 +443,7 @@ async function createTeacher(auth: Authed, input: Record<string, unknown>) {
     const teacher = await tx.teacher.create({
       data: {
         department: optionalClean(input.department),
-        staffNumber: optionalClean(input.staffNumber),
+        staffNumber,
         title: optionalClean(input.title),
         schoolId,
         userId: user.id,
@@ -477,13 +489,25 @@ async function updateTeacher(auth: Authed, teacherId: string, input: Record<stri
   const schoolId = auth.schoolId!
   const teacher = await prisma.teacher.findFirst({ where: { id: teacherId, schoolId }, select: { id: true, userId: true } })
   if (!teacher) return apiError("Teacher not found", 404, "NOT_FOUND")
+  const staffNumber = optionalClean(input.staffNumber)
+
+  if (staffNumber) {
+    const existingStaff = await prisma.teacher.findFirst({
+      where: { schoolId, staffNumber, NOT: { id: teacherId } },
+      select: { id: true },
+    })
+
+    if (existingStaff) {
+      return apiError("A teacher with this staff number already exists", 409, "CONFLICT")
+    }
+  }
 
   await prisma.$transaction(async (tx) => {
     await tx.teacher.update({
       where: { id: teacherId },
       data: {
         department: optionalClean(input.department),
-        staffNumber: optionalClean(input.staffNumber),
+        staffNumber,
         title: optionalClean(input.title),
       },
     })

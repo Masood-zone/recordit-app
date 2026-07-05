@@ -59,6 +59,14 @@ function submitData(event: FormEvent<HTMLFormElement>) {
   return { data, form }
 }
 
+function pendingText(pending: boolean, idle: string, loading = "Saving...") {
+  return pending ? loading : idle
+}
+
+function errorMessage(error: unknown, fallback = "Request failed") {
+  return error instanceof Error ? error.message : fallback
+}
+
 function useOptions() {
   const { data } = useAdminOptions()
   return {
@@ -174,12 +182,18 @@ export function AcademicSetupPage() {
   const classes = list(data?.classes)
   const createYear = useAdminPost("/admin/academic-years")
   const createTerm = useAdminPost("/admin/academic-terms")
+  const savingYear = createYear.isPending
+  const savingTerm = createTerm.isPending
 
   async function onSubmit(path: "year" | "term", event: FormEvent<HTMLFormElement>) {
     const { data: form, form: element } = submitData(event)
-    await (path === "year" ? createYear : createTerm).mutateAsync(form)
-    toast.success(path === "year" ? "Academic year saved" : "Academic term saved")
-    element.reset()
+    try {
+      await (path === "year" ? createYear : createTerm).mutateAsync(form)
+      toast.success(path === "year" ? "Academic year saved" : "Academic term saved")
+      element.reset()
+    } catch (error) {
+      toast.error(errorMessage(error, "Academic setup could not be saved"))
+    }
   }
 
   return (
@@ -193,7 +207,9 @@ export function AcademicSetupPage() {
             <InputField name="startsAt" label="Start Date" type="date" />
             <InputField name="endsAt" label="End Date" type="date" />
           </div>
-          <Button className="mt-4">Add Academic Year</Button>
+          <Button className="mt-4" disabled={savingYear}>
+            {pendingText(savingYear, "Add Academic Year")}
+          </Button>
           <div className="mt-6 divide-y divide-outline-variant">
             {years.length ? years.map((year) => (
               <div key={text(year.id)} className="flex items-center justify-between py-3">
@@ -211,7 +227,9 @@ export function AcademicSetupPage() {
             <InputField name="startsAt" label="Start Date" type="date" />
             <InputField name="endsAt" label="End Date" type="date" />
           </div>
-          <Button className="mt-4">Add Term</Button>
+          <Button className="mt-4" disabled={savingTerm}>
+            {pendingText(savingTerm, "Add Term")}
+          </Button>
           <div className="mt-6 divide-y divide-outline-variant">
             {terms.length ? terms.map((term) => (
               <div key={text(term.id)} className="flex items-center justify-between py-3">
@@ -270,12 +288,17 @@ export function ClassFormPage() {
   const create = useAdminPost("/admin/classes")
   const update = useAdminPatch(`/admin/classes/${params.classId}`)
   const isEdit = Boolean(params.classId)
+  const saving = isEdit ? update.isPending : create.isPending
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     const { data } = submitData(event)
-    await (isEdit ? update : create).mutateAsync(data)
-    toast.success(isEdit ? "Class updated" : "Class created")
-    router.push("/admin/classes")
+    try {
+      await (isEdit ? update : create).mutateAsync(data)
+      toast.success(isEdit ? "Class updated" : "Class created")
+      router.push("/admin/classes")
+    } catch (error) {
+      toast.error(errorMessage(error, "Class could not be saved"))
+    }
   }
 
   return (
@@ -288,7 +311,14 @@ export function ClassFormPage() {
         <SelectField name="academicYearId" label="Academic Year"><option value="">Select year</option>{years.map((year) => <option key={text(year.id)} value={text(year.id)}>{text(year.name)}</option>)}</SelectField>
         <SelectField name="assignedTeacherId" label="Assigned Teacher"><option value="">Unassigned</option>{teachers.map((teacher) => <option key={text(teacher.id)} value={text(teacher.id)}>{text(obj(teacher.user).name)}</option>)}</SelectField>
         <InputField name="description" label="Description" placeholder="Optional class notes" className="md:col-span-2" />
-        <div className="flex gap-3 md:col-span-2"><Button>Save Class</Button><Button asChild variant="outline"><Link href="/admin/classes">Cancel</Link></Button></div>
+        <div className="flex gap-3 md:col-span-2">
+          <Button disabled={saving}>
+            {pendingText(saving, "Save Class")}
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/admin/classes">Cancel</Link>
+          </Button>
+        </div>
       </form>
     </div>
   )
@@ -335,22 +365,32 @@ export function StudentRegisterPage() {
   const { classes, guardians } = useOptions()
   const create = useAdminPost("/admin/students")
   const [photoUrl, setPhotoUrl] = useState("")
+  const [photoUploading, setPhotoUploading] = useState(false)
 
   async function uploadPhoto(file: File) {
+    setPhotoUploading(true)
     const formData = new FormData()
     formData.append("file", file)
     formData.append("purpose", "studentPhoto")
-    const res = await fetch("/api/uploads", { method: "POST", body: formData })
-    const payload = await res.json()
-    if (payload.success) setPhotoUrl(payload.data.secure_url)
-    else toast.error(payload.message || "Photo upload failed")
+    try {
+      const res = await fetch("/api/uploads", { method: "POST", body: formData })
+      const payload = await res.json()
+      if (payload.success) setPhotoUrl(payload.data.secure_url)
+      else toast.error(payload.message || "Photo upload failed")
+    } finally {
+      setPhotoUploading(false)
+    }
   }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     const { data } = submitData(event)
-    await create.mutateAsync({ ...data, photoUrl })
-    toast.success("Student registered")
-    router.push("/admin/students")
+    try {
+      await create.mutateAsync({ ...data, photoUrl })
+      toast.success("Student registered")
+      router.push("/admin/students")
+    } catch (error) {
+      toast.error(errorMessage(error, "Student could not be registered"))
+    }
   }
 
   return (
@@ -363,8 +403,8 @@ export function StudentRegisterPage() {
         <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
           <div>
             <label className="flex h-56 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-outline-variant bg-surface-container-low text-center text-on-surface-variant">
-              {photoUrl ? <img src={photoUrl} alt="" className="size-full rounded-2xl object-cover" /> : <><MaterialSymbol icon="add_a_photo" className="mb-2 text-[42px]" /><span>Upload Student Portrait</span></>}
-              <input className="hidden" type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0])} />
+              {photoUrl ? <img src={photoUrl} alt="" className="size-full rounded-2xl object-cover" /> : <><MaterialSymbol icon={photoUploading ? "progress_activity" : "add_a_photo"} className={`mb-2 text-[42px] ${photoUploading ? "animate-spin" : ""}`} /><span>{photoUploading ? "Uploading..." : "Upload Student Portrait"}</span></>}
+              <input className="hidden" type="file" accept="image/*" disabled={photoUploading} onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0])} />
             </label>
             <p className="mt-3 text-center text-xs italic text-on-surface-variant">Formal portrait required for institutional security identification cards.</p>
           </div>
@@ -381,7 +421,14 @@ export function StudentRegisterPage() {
             <div className="rounded-xl border border-secondary-container/20 bg-surface-container-low p-4 md:col-span-2"><p className="font-bold text-primary">Identity Verification</p><p className="text-sm text-on-surface-variant">Ensure all data matches the student&apos;s legal documents. Biometric enrollment will be handled later.</p></div>
           </div>
         </div>
-        <div className="mt-8 flex justify-between"><Button asChild variant="ghost"><Link href="/admin/students">Cancel Registration</Link></Button><Button>Save Student</Button></div>
+        <div className="mt-8 flex justify-between">
+          <Button asChild variant="ghost">
+            <Link href="/admin/students">Cancel Registration</Link>
+          </Button>
+          <Button disabled={create.isPending || photoUploading}>
+            {pendingText(create.isPending, "Save Student")}
+          </Button>
+        </div>
       </form>
     </div>
   )
@@ -391,12 +438,20 @@ export function BulkImportPage() {
   const importer = useBulkImportStudents()
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<R[]>([])
+  const [bulkAction, setBulkAction] = useState<"validate" | "import" | null>(null)
 
   async function validate(commit: boolean) {
     if (!file) return toast.error("Choose a CSV or XLSX file first")
-    const result = await importer.mutateAsync({ file, commit })
-    setPreview(list(result.preview))
-    toast.success(commit ? "Students imported" : "Records validated")
+    setBulkAction(commit ? "import" : "validate")
+    try {
+      const result = await importer.mutateAsync({ file, commit })
+      setPreview(list(result.preview))
+      toast.success(commit ? "Students imported" : "Records validated")
+    } catch (error) {
+      toast.error(errorMessage(error, "Student import failed"))
+    } finally {
+      setBulkAction(null)
+    }
   }
 
   return (
@@ -416,7 +471,14 @@ export function BulkImportPage() {
           <p className="mt-2 text-white/80">Headers: StudentID, FirstName, LastName, Gender, Grade.</p>
         </div>
       </section>
-      <div className="mb-6 flex justify-end gap-3"><Button variant="outline" onClick={() => validate(false)}>Validate Records</Button><Button onClick={() => validate(true)} disabled={!preview.length || preview.some((r) => list(r.issues).length)}>Import Students</Button></div>
+      <div className="mb-6 flex justify-end gap-3">
+        <Button variant="outline" onClick={() => validate(false)} disabled={importer.isPending}>
+          {bulkAction === "validate" ? "Validating..." : "Validate Records"}
+        </Button>
+        <Button onClick={() => validate(true)} disabled={importer.isPending || !preview.length || preview.some((r) => list(r.issues).length)}>
+          {bulkAction === "import" ? "Importing..." : "Import Students"}
+        </Button>
+      </div>
       <TableShell title={<h2 className="text-xl font-bold">Data Preview & Validation</h2>}>
         <table className="w-full min-w-[900px] text-left">
           <thead className="bg-surface-container"><tr>{["Status", "Student ID", "First Name", "Last Name", "Grade/Section", "Issue"].map((h) => <th key={h} className="p-4">{h}</th>)}</tr></thead>
@@ -477,10 +539,21 @@ function PersonForm({ role }: { role: "teacher" | "parent" }) {
   const create = useAdminPost(role === "teacher" ? "/admin/teachers" : "/admin/parents")
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     const { data } = submitData(event)
-    const result = await create.mutateAsync(data)
-    const password = text(result.temporaryPassword)
-    toast.success(`${role === "teacher" ? "Teacher" : "Parent/guardian"} added${password ? ` / temp password: ${password}` : ""}`)
-    router.push(role === "teacher" ? "/admin/users" : "/admin/users")
+    try {
+      const result = await create.mutateAsync(data)
+      const password = text(result.temporaryPassword)
+      toast.success(`${role === "teacher" ? "Teacher" : "Parent/guardian"} added${password ? ` / temp password: ${password}` : ""}`)
+      router.push("/admin/users")
+    } catch (error) {
+      toast.error(
+        errorMessage(
+          error,
+          role === "teacher"
+            ? "Teacher could not be added"
+            : "Parent/guardian could not be added"
+        )
+      )
+    }
   }
   return (
     <div>
@@ -489,7 +562,17 @@ function PersonForm({ role }: { role: "teacher" | "parent" }) {
         <InputField name="firstName" label="First Name" /><InputField name="lastName" label="Last Name" /><InputField name="email" label="Email" type="email" /><InputField name="phone" label="Phone" />
         {role === "teacher" ? <><InputField name="staffNumber" label="Staff Number" /><InputField name="department" label="Department" /><InputField name="title" label="Title" /><SelectField name="assignedClassId" label="Assigned Class"><option value="">No class</option>{classes.map((item) => <option key={text(item.id)} value={text(item.id)}>{text(item.name)}</option>)}</SelectField></> : <><InputField name="relationship" label="Relationship" /><InputField name="occupation" label="Occupation" /><InputField name="address" label="Address" /><SelectField name="linkedStudentId" label="Linked Student"><option value="">No student</option>{students.map((item) => <option key={text(item.id)} value={text(item.id)}>{text(item.firstName)} {text(item.lastName)}</option>)}</SelectField></>}
         <SelectField name="status" label="Account Status"><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option><option value="SUSPENDED">Suspended</option></SelectField>
-        <div className="flex gap-3 md:col-span-2"><Button>{role === "teacher" ? "Save Teacher" : "Save Parent/Guardian"}</Button><Button type="reset" variant="outline">Cancel</Button></div>
+        <div className="flex gap-3 md:col-span-2">
+          <Button disabled={create.isPending}>
+            {pendingText(
+              create.isPending,
+              role === "teacher" ? "Save Teacher" : "Save Parent/Guardian"
+            )}
+          </Button>
+          <Button type="reset" variant="outline" disabled={create.isPending}>
+            Cancel
+          </Button>
+        </div>
       </form>
     </div>
   )
@@ -504,7 +587,7 @@ export function TeacherProfilePage() {
   const reset = useAdminPatch(`/admin/users/${text(user.id)}/reset-password`)
   return (
     <div>
-      <PageHeader title="Teacher Profile" breadcrumb="Teachers / Profile Details" actions={<><Button><MaterialSymbol icon="edit" />Edit Teacher</Button><Button variant="outline" onClick={async () => { const result = await reset.mutateAsync({}); toast.success(`Temporary password: ${text(result.temporaryPassword)}`) }}><MaterialSymbol icon="settings_backup_restore" />Reset Password</Button></>} />
+      <PageHeader title="Teacher Profile" breadcrumb="Teachers / Profile Details" actions={<><Button><MaterialSymbol icon="edit" />Edit Teacher</Button><Button variant="outline" disabled={reset.isPending || !user.id} onClick={async () => { try { const result = await reset.mutateAsync({}); toast.success(`Temporary password: ${text(result.temporaryPassword)}`) } catch (error) { toast.error(errorMessage(error, "Password reset failed")) } }}><MaterialSymbol icon={reset.isPending ? "progress_activity" : "settings_backup_restore"} className={reset.isPending ? "animate-spin" : ""} />{reset.isPending ? "Resetting..." : "Reset Password"}</Button></>} />
       <section className="grid gap-6 xl:grid-cols-[380px_1fr]">
         <div className="space-y-6"><div className="rounded-xl border border-outline-variant bg-white p-8 text-center shadow-card"><div className="mx-auto mb-6 grid size-44 place-items-center rounded-full bg-surface-container"><MaterialSymbol icon="person" className="text-[54px]" /></div><h2 className="text-xl font-bold">{text(user.name)}</h2><p className="mt-2 rounded-full bg-cyan-100 px-3 py-1 text-xs font-bold text-cyan-800">{text(teacher.title, "Faculty")}</p><div className="mt-6 space-y-3 text-left"><Info label="Staff Number" value={text(teacher.staffNumber, "-")} /><Info label="Department" value={text(teacher.department, "-")} /><Info label="Status" value={text(user.status)} /></div></div></div>
         <div className="space-y-6"><div className="rounded-xl border border-outline-variant bg-white p-6 shadow-card"><h2 className="mb-4 text-xl font-bold">Contact Information</h2><div className="grid gap-5 md:grid-cols-2"><Info label="Email Address" value={text(user.email)} /><Info label="Phone Number" value={text(user.phone, "-")} /></div></div><div className="grid gap-4 md:grid-cols-2"><StatCard tone="dark" icon="badge" label="Attendance Sessions" value={list(teacher.attendanceSessions).length} /><StatCard tone="blue" icon="school" label="Assigned Classes" value={classes.length} /></div><TableShell title={<h2 className="text-xl font-bold">Assigned Classes</h2>}><div className="divide-y divide-outline-variant">{classes.map((item) => { const klass = obj(item.class); return <div key={text(klass.id)} className="flex items-center justify-between p-5"><div><p className="font-bold">{text(klass.name)}</p><p className="text-sm text-on-surface-variant">{text(klass.code)} / {text(klass.level)}</p></div><p className="font-bold">{text(obj(klass._count).students, "0")} Students</p></div>})}</div></TableShell></div>
@@ -546,7 +629,7 @@ function UserRow({ resetPath, user }: { resetPath: string; user: R }) {
   const reset = useAdminPatch(resetPath)
   const status = useAdminPatch(`/admin/users/${text(user.id)}`)
   const profileHref = text(user.role) === "TEACHER" && obj(user.teacherProfile).id ? `/admin/teachers/${text(obj(user.teacherProfile).id)}` : text(user.role) === "PARENT_GUARDIAN" && obj(user.guardianProfile).id ? `/admin/parents/${text(obj(user.guardianProfile).id)}` : "/admin/users"
-  return <tr><td className="p-4"><p className="font-bold">{text(user.name)}</p><p className="text-sm text-on-surface-variant">{text(user.email)}</p></td><td className="p-4">{text(user.phone, "-")}</td><td className="p-4">{text(user.role)}</td><td className="p-4"><StatusBadge status={text(user.status)} /></td><td className="p-4">{date(user.createdAt)}</td><td className="p-4"><div className="flex gap-2"><Button asChild size="icon-sm" variant="ghost"><Link href={profileHref}><MaterialSymbol icon="visibility" /></Link></Button><Button size="icon-sm" variant="ghost" onClick={() => status.mutate({ status: text(user.status) === "SUSPENDED" ? "ACTIVE" : "SUSPENDED" })}><MaterialSymbol icon="block" /></Button><Button size="icon-sm" variant="ghost" onClick={async () => { const result = await reset.mutateAsync({}); toast.success(`Temporary password: ${text(result.temporaryPassword)}`) }}><MaterialSymbol icon="settings_backup_restore" /></Button></div></td></tr>
+  return <tr><td className="p-4"><p className="font-bold">{text(user.name)}</p><p className="text-sm text-on-surface-variant">{text(user.email)}</p></td><td className="p-4">{text(user.phone, "-")}</td><td className="p-4">{text(user.role)}</td><td className="p-4"><StatusBadge status={text(user.status)} /></td><td className="p-4">{date(user.createdAt)}</td><td className="p-4"><div className="flex gap-2"><Button asChild size="icon-sm" variant="ghost"><Link href={profileHref}><MaterialSymbol icon="visibility" /></Link></Button><Button size="icon-sm" variant="ghost" disabled={status.isPending} onClick={() => status.mutate({ status: text(user.status) === "SUSPENDED" ? "ACTIVE" : "SUSPENDED" }, { onError: (error) => toast.error(errorMessage(error, "User status update failed")) })}><MaterialSymbol icon={status.isPending ? "progress_activity" : "block"} className={status.isPending ? "animate-spin" : ""} /></Button><Button size="icon-sm" variant="ghost" disabled={reset.isPending} onClick={async () => { try { const result = await reset.mutateAsync({}); toast.success(`Temporary password: ${text(result.temporaryPassword)}`) } catch (error) { toast.error(errorMessage(error, "Password reset failed")) } }}><MaterialSymbol icon={reset.isPending ? "progress_activity" : "settings_backup_restore"} className={reset.isPending ? "animate-spin" : ""} /></Button></div></td></tr>
 }
 
 export function SettingsPage() {
@@ -556,11 +639,15 @@ export function SettingsPage() {
   const update = useAdminPatch("/admin/settings")
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     const { data } = submitData(event)
-    await update.mutateAsync({
-      school: { name: data.name, email: data.email, phone: data.phone, address: data.address, city: data.city, region: data.region },
-      settings: { attendanceStart: data.attendanceStart, attendanceEnd: data.attendanceEnd, notifyParents: data.notifyParents },
-    })
-    toast.success("Settings updated")
+    try {
+      await update.mutateAsync({
+        school: { name: data.name, email: data.email, phone: data.phone, address: data.address, city: data.city, region: data.region },
+        settings: { attendanceStart: data.attendanceStart, attendanceEnd: data.attendanceEnd, notifyParents: data.notifyParents },
+      })
+      toast.success("Settings updated")
+    } catch (error) {
+      toast.error(errorMessage(error, "Settings could not be saved"))
+    }
   }
   return (
     <div>
@@ -568,7 +655,11 @@ export function SettingsPage() {
       <form onSubmit={onSubmit} className="grid gap-6 xl:grid-cols-2">
         <section className="rounded-xl border border-outline-variant bg-white p-6 shadow-card"><h2 className="mb-4 text-xl font-bold">School Profile</h2><div className="grid gap-4 md:grid-cols-2"><InputField name="name" label="School Name" defaultValue={text(school.name)} /><InputField name="email" label="School Email" defaultValue={text(school.email)} /><InputField name="phone" label="Phone" defaultValue={text(school.phone)} /><InputField name="address" label="Address" defaultValue={text(school.address)} /><InputField name="city" label="City" defaultValue={text(school.city)} /><InputField name="region" label="Region" defaultValue={text(school.region)} /></div></section>
         <section className="rounded-xl border border-outline-variant bg-white p-6 shadow-card"><h2 className="mb-4 text-xl font-bold">Attendance & Notifications</h2><div className="grid gap-4 md:grid-cols-2"><InputField name="attendanceStart" label="Attendance Start" type="time" defaultValue={text(settings.attendanceStart)} /><InputField name="attendanceEnd" label="Attendance End" type="time" defaultValue={text(settings.attendanceEnd)} /><SelectField name="notifyParents" label="Parent Notifications" defaultValue={text(settings.notifyParents, "enabled")}><option value="enabled">Enabled</option><option value="disabled">Disabled</option></SelectField></div></section>
-        <div className="xl:col-span-2"><Button>Save Settings</Button></div>
+        <div className="xl:col-span-2">
+          <Button disabled={update.isPending}>
+            {pendingText(update.isPending, "Save Settings")}
+          </Button>
+        </div>
       </form>
     </div>
   )

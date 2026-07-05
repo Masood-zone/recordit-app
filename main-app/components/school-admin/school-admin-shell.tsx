@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
+import { useState } from "react"
 
 import { MaterialSymbol } from "@/components/common/MaterialSymbol"
 import {
@@ -50,10 +51,17 @@ export function SchoolAdminShell({
 }) {
   const pathname = usePathname()
   const router = useRouter()
+  const [signingOut, setSigningOut] = useState(false)
 
   async function signOut() {
-    await authClient.signOut()
-    router.push("/login")
+    if (signingOut) return
+    setSigningOut(true)
+    try {
+      await authClient.signOut()
+      router.push("/login")
+    } finally {
+      setSigningOut(false)
+    }
   }
 
   return (
@@ -116,9 +124,16 @@ export function SchoolAdminShell({
               </SidebarMenuItem>
             ))}
             <SidebarMenuItem>
-              <SidebarMenuButton onClick={signOut} className="text-red-200 hover:text-white">
-                <MaterialSymbol icon="logout" />
-                <span>Logout</span>
+              <SidebarMenuButton
+                onClick={signOut}
+                disabled={signingOut}
+                className="text-red-200 hover:text-white"
+              >
+                <MaterialSymbol
+                  icon={signingOut ? "progress_activity" : "logout"}
+                  className={signingOut ? "animate-spin" : ""}
+                />
+                <span>{signingOut ? "Logging out..." : "Logout"}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
