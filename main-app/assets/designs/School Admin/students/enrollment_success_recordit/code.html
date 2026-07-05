@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Enrollment Successful - RecordIT</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "on-surface": "#0d1d2a",
+                        "on-secondary-fixed-variant": "#003baf",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed": "#dce1ff",
+                        "primary": "#00113a",
+                        "tertiary": "#00171b",
+                        "secondary-container": "#446ce4",
+                        "on-secondary": "#ffffff",
+                        "outline": "#757682",
+                        "on-primary-fixed": "#00174a",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary-fixed-variant": "#2a4386",
+                        "on-primary-container": "#758dd5",
+                        "inverse-on-surface": "#e7f2ff",
+                        "background": "#f7f9ff",
+                        "on-tertiary-container": "#009eb0",
+                        "on-secondary-fixed": "#00164e",
+                        "inverse-surface": "#223240",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#435b9f",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "tertiary-container": "#002d33",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#001f24",
+                        "outline-variant": "#c5c6d2",
+                        "primary-container": "#002366",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#d9eafc",
+                        "surface-container": "#e2efff",
+                        "surface-variant": "#d4e4f6",
+                        "surface-bright": "#f7f9ff",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "inverse-primary": "#b3c5ff",
+                        "secondary": "#2552ca",
+                        "on-primary": "#ffffff",
+                        "on-background": "#0d1d2a",
+                        "surface-dim": "#cbdcee",
+                        "surface-container-highest": "#d4e4f6",
+                        "on-surface-variant": "#444650",
+                        "surface-container-low": "#ecf4ff",
+                        "surface": "#f7f9ff",
+                        "on-secondary-container": "#fffbff",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#00daf3",
+                        "tertiary-fixed": "#9cf0ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "tablet-breakpoint": "768px",
+                        "mobile-breakpoint": "375px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "desktop-max-width": "1280px",
+                        "container-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "button-text": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "label-sm": ["JetBrains Mono"],
+                        "body-md": ["Manrope"],
+                        "body-lg": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .success-glow {
+            box-shadow: 0 0 40px rgba(0, 174, 239, 0.15);
+        }
+        .checkmark-animate {
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-40 flex items-center justify-between px-gutter w-full h-16 bg-surface/80 dark:bg-surface-container-highest/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">RecordIT</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-secondary-container/10 transition-colors cursor-pointer active:scale-95 duration-150">
+<span class="material-symbols-outlined text-secondary">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-secondary-container/10 transition-colors cursor-pointer active:scale-95 duration-150">
+<span class="material-symbols-outlined text-secondary">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center ml-2 border border-outline-variant">
+<span class="text-on-primary-fixed font-bold text-[10px]">AD</span>
+</div>
+</div>
+</header>
+<div class="flex flex-1 relative">
+<!-- Side Navigation Bar (Hidden on Mobile) -->
+<aside class="hidden md:flex flex-col w-64 bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant/20 h-[calc(100vh-64px)] sticky top-16 overflow-y-auto">
+<div class="py-6 px-4">
+<div class="flex items-center gap-3 mb-8 px-2">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white">school</span>
+</div>
+<div>
+<h3 class="font-button-text text-button-text text-primary leading-tight">Central High</h3>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Administrator</p>
+</div>
+</div>
+<nav class="space-y-1">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 hover:bg-surface-container-high dark:hover:bg-surface-variant rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-button-text text-button-text">Dashboard</span>
+</a>
+<!-- Academic Setup -->
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 hover:bg-surface-container-high dark:hover:bg-surface-variant rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-button-text text-button-text">Academic Setup</span>
+</a>
+<!-- Students - ACTIVE (Contextual for Enrollment) -->
+<a class="flex items-center gap-3 bg-secondary-container text-on-secondary-container rounded-lg px-4 py-3 mx-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-button-text text-button-text">Students</span>
+</a>
+<!-- Teachers -->
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 hover:bg-surface-container-high dark:hover:bg-surface-variant rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">badge</span>
+<span class="font-button-text text-button-text">Teachers</span>
+</a>
+<!-- Attendance -->
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 hover:bg-surface-container-high dark:hover:bg-surface-variant rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">fingerprint</span>
+<span class="font-button-text text-button-text">Attendance</span>
+</a>
+<!-- Reports -->
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 hover:bg-surface-container-high dark:hover:bg-surface-variant rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-button-text text-button-text">Reports</span>
+</a>
+</nav>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col items-center justify-center px-gutter py-12 relative overflow-hidden">
+<!-- Atmospheric Background Element -->
+<div class="absolute top-0 right-0 w-96 h-96 bg-secondary/5 rounded-full blur-[120px] -z-10"></div>
+<div class="absolute bottom-0 left-0 w-64 h-64 bg-tertiary-fixed-dim/10 rounded-full blur-[100px] -z-10"></div>
+<div class="w-full max-w-lg">
+<!-- Success Status Card -->
+<div class="glass-panel border border-outline-variant/30 rounded-xl overflow-hidden success-glow transform transition-all duration-500 scale-100">
+<div class="p-8 md:p-12 text-center">
+<!-- Success Icon / Checkmark -->
+<div class="mb-8 relative inline-flex">
+<div class="absolute inset-0 bg-[#00AEEF]/20 rounded-full blur-xl scale-125 animate-pulse"></div>
+<div class="relative w-24 h-24 rounded-full bg-surface border-4 border-[#00AEEF] flex items-center justify-center">
+<svg class="w-16 h-16 text-[#00AEEF]" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path class="checkmark-animate" d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" style="stroke-dasharray: 50; stroke-dashoffset: 50;"></path>
+</svg>
+</div>
+</div>
+<!-- Title and Message -->
+<h1 class="font-headline-lg text-headline-lg text-primary mb-2">Enrollment Successful</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10">Fingerprint enrolled successfully.</p>
+<!-- Details Section (Bento Style) -->
+<div class="bg-surface-container-low/50 rounded-xl p-6 text-left space-y-4 border border-outline-variant/20 mb-10">
+<div class="flex justify-between items-center pb-3 border-b border-outline-variant/10">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Student Name</span>
+<span class="font-headline-md text-[18px] text-on-surface font-bold">Benjamin J. Sterling</span>
+</div>
+<div class="flex justify-between items-center py-1">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Student ID</span>
+<span class="font-body-md text-on-surface font-semibold">CHS-2024-9421</span>
+</div>
+<div class="flex justify-between items-center py-1">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Fingerprint Status</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00AEEF]/10 text-[#00AEEF] font-semibold text-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-[#00AEEF]"></span>
+                                    Enrolled
+                                </span>
+</div>
+<div class="flex justify-between items-center py-1">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Enrollment Time</span>
+<span class="font-body-md text-on-surface">Oct 24, 2024, 10:45 AM</span>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col gap-3">
+<button class="w-full h-12 bg-primary text-on-primary font-button-text text-button-text rounded-lg hover:bg-secondary transition-all shadow-sm active:scale-[0.98]">
+                                Start Attendance
+                            </button>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+<button class="h-12 border border-outline-variant bg-surface text-on-surface-variant font-button-text text-button-text rounded-lg hover:bg-surface-container-high transition-all active:scale-[0.98]">
+                                    Register Another
+                                </button>
+<button class="h-12 border border-outline-variant bg-surface text-on-surface-variant font-button-text text-button-text rounded-lg hover:bg-surface-container-high transition-all active:scale-[0.98]">
+                                    View Profile
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Info Section -->
+<div class="mt-8 flex flex-col md:flex-row items-center justify-between text-on-surface-variant opacity-60">
+<div class="flex items-center gap-2 mb-4 md:mb-0">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<span class="text-label-sm font-label-sm">System Secure &amp; Verified</span>
+</div>
+<div class="text-label-sm font-label-sm">
+                        Device ID: BIO-X-442-LA
+                    </div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full py-6 mt-auto bg-surface dark:bg-surface-dim border-t border-outline-variant/10">
+<div class="flex flex-col md:flex-row justify-between items-center px-gutter max-w-desktop-max-width mx-auto">
+<span class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline mb-4 md:mb-0">
+                © 2024 RecordIT Biometric Systems. All Rights Reserved.
+            </span>
+<div class="flex gap-6">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary underline transition-all opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary underline transition-all opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary underline transition-all opacity-80 hover:opacity-100" href="#">Security Whitepaper</a>
+</div>
+</div>
+</footer>
+<!-- Micro-interaction Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const card = document.querySelector('.glass-panel');
+            // Subtle initial entry animation
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+
+            // Add hover tilt effect
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 50;
+                const rotateY = (centerX - x) / 50;
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+            });
+        });
+    </script>
+</body></html>

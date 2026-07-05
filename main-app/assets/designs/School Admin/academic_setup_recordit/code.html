@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Academic Setup | RecordIT Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-primary-fixed": "#00174a",
+                "primary-fixed": "#dbe1ff",
+                "on-tertiary": "#ffffff",
+                "on-primary-fixed-variant": "#2a4386",
+                "on-primary-container": "#758dd5",
+                "inverse-surface": "#223240",
+                "tertiary-container": "#002d33",
+                "tertiary": "#00171b",
+                "on-background": "#0d1d2a",
+                "surface-container-low": "#ecf4ff",
+                "secondary": "#2552ca",
+                "on-secondary": "#ffffff",
+                "inverse-on-surface": "#e7f2ff",
+                "surface-container": "#e2efff",
+                "inverse-primary": "#b3c5ff",
+                "on-error-container": "#93000a",
+                "secondary-container": "#446ce4",
+                "on-secondary-fixed-variant": "#003baf",
+                "surface-container-lowest": "#ffffff",
+                "on-secondary-fixed": "#00164e",
+                "on-error": "#ffffff",
+                "surface-tint": "#435b9f",
+                "outline": "#757682",
+                "surface-dim": "#cbdcee",
+                "secondary-fixed": "#dce1ff",
+                "on-tertiary-container": "#009eb0",
+                "tertiary-fixed-dim": "#00daf3",
+                "error-container": "#ffdad6",
+                "tertiary-fixed": "#9cf0ff",
+                "surface": "#f7f9ff",
+                "on-tertiary-fixed-variant": "#004f58",
+                "error": "#ba1a1a",
+                "secondary-fixed-dim": "#b6c4ff",
+                "surface-container-highest": "#d4e4f6",
+                "primary-container": "#002366",
+                "surface-bright": "#f7f9ff",
+                "primary-fixed-dim": "#b3c5ff",
+                "on-secondary-container": "#fffbff",
+                "on-primary": "#ffffff",
+                "surface-container-high": "#d9eafc",
+                "on-tertiary-fixed": "#001f24",
+                "background": "#f7f9ff",
+                "surface-variant": "#d4e4f6",
+                "primary": "#00113a",
+                "on-surface-variant": "#444650",
+                "outline-variant": "#c5c6d2",
+                "on-surface": "#0d1d2a"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "base": "8px",
+                "tablet-breakpoint": "768px",
+                "mobile-breakpoint": "375px",
+                "gutter": "16px",
+                "desktop-max-width": "1280px",
+                "container-padding": "24px"
+            },
+            "fontFamily": {
+                "body-lg": ["Manrope"],
+                "headline-lg-mobile": ["Manrope"],
+                "button-text": ["Manrope"],
+                "label-sm": ["JetBrains Mono"],
+                "headline-md": ["Manrope"],
+                "headline-lg": ["Manrope"],
+                "body-md": ["Manrope"]
+            },
+            "fontSize": {
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid #E2E8F0;
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .soft-shadow-hover:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbdcee; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface overflow-hidden">
+<!-- SideNavBar Shell -->
+<nav class="fixed left-0 top-0 h-full flex flex-col p-4 bg-primary dark:bg-primary border-r border-outline-variant w-64 z-50">
+<div class="mb-10 px-4">
+<h1 class="font-headline-md text-headline-md font-bold text-on-primary dark:text-on-primary tracking-tight">RecordIT</h1>
+<p class="text-secondary-fixed-dim text-xs opacity-70 uppercase tracking-widest mt-1">Admin Terminal</p>
+</div>
+<div class="flex-1 space-y-2 overflow-y-auto no-scrollbar">
+<!-- Navigation Items Mapping -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg font-body-md text-body-md active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-semibold font-body-md text-body-md active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">school</span>
+                Academic Setup
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg font-body-md text-body-md active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">group</span>
+                Students
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg font-body-md text-body-md active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">person</span>
+                Teachers
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg font-body-md text-body-md active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">family_restroom</span>
+                Parents/Guardians
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg font-body-md text-body-md active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">class</span>
+                Classes
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg font-body-md text-body-md active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+                Attendance
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg font-body-md text-body-md active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">assessment</span>
+                Reports
+            </a>
+</div>
+<div class="mt-auto pt-4 border-t border-white/10 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-error-container hover:bg-error/10 transition-colors rounded-lg font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">logout</span>
+                Logout
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-64 flex flex-col h-screen">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center h-16 px-8 bg-surface/80 backdrop-blur-md border-b border-outline-variant sticky top-0 z-40">
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-secondary">search</span>
+<input class="bg-surface-container border-none rounded-full pl-10 pr-4 py-1.5 w-72 text-sm focus:ring-2 focus:ring-secondary transition-all" placeholder="Search academic records..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:text-secondary hover:bg-secondary/10 rounded-full transition-colors">
+<span class="material-symbols-outlined">fingerprint</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-secondary hover:bg-secondary/10 rounded-full transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="h-8 w-px bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-3 pl-2">
+<div class="text-right">
+<p class="text-sm font-bold text-on-surface leading-none">Admin User</p>
+<p class="text-xs text-on-surface-variant">Principal Office</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center overflow-hidden border-2 border-secondary-container">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a school administrator in modern business attire, set against a clean, soft-focus academic background with blue and white tones. The lighting is bright and authoritative, reflecting a sense of security and reliability in an educational technology context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaltG8wx9Sh3UPhzlD0WTNWiwWM9vxo16JUIIcdR5k9xe-1641ojNEPRAZj4jxPmdp0el_tzKzYiXJBZTfkGoi2MhXPecdMvfOTER5qH-PekCsJ2KvfPqD-7I9hhnUzizJExuHxd8ucjkJDbDESJOutz1tiMBawgwUE_5a88bi1pKe2D3y_ff03RwfzooiirilKv3EPlwcjQbHEaGNBGXxAq2gS1BnVitofoGb-MvAgwIL9ItwNXJ1Ew"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="p-8 overflow-y-auto">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Academic Setup</h2>
+<p class="text-on-surface-variant mt-1 font-body-md">Configure educational structures, terms, and classroom divisions.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-6 py-2.5 bg-secondary text-on-secondary rounded-lg font-button-text soft-shadow transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                        Add Academic Year
+                    </button>
+<button class="flex items-center gap-2 px-6 py-2.5 border-2 border-outline-variant text-primary font-button-text rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">create_new_folder</span>
+                        Create Class
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout for Sections -->
+<div class="grid grid-cols-12 gap-6 items-start">
+<!-- Left: Academic Years (4 columns) -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<section class="glass-card rounded-xl p-6 soft-shadow">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-md text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">event_available</span>
+                                Academic Years
+                            </h3>
+</div>
+<div class="space-y-3">
+<!-- Active Year -->
+<div class="group p-4 bg-secondary-container/10 border-2 border-secondary-container rounded-xl flex items-center justify-between cursor-pointer transition-all hover:bg-secondary-container/20">
+<div>
+<p class="font-bold text-on-secondary-fixed-variant">Academic Year 2023-24</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-block w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span>
+<span class="text-xs font-semibold text-on-tertiary-container uppercase tracking-wider">Active</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-secondary-fixed-variant">check_circle</span>
+</div>
+<!-- Archived Year -->
+<div class="group p-4 bg-surface-container-low border border-outline-variant rounded-xl flex items-center justify-between cursor-pointer transition-all hover:border-secondary">
+<div>
+<p class="font-semibold text-on-surface">Academic Year 2022-23</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="inline-block w-2 h-2 rounded-full bg-outline"></span>
+<span class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Archived</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline opacity-0 group-hover:opacity-100 transition-opacity">archive</span>
+</div>
+<!-- Empty Slot Placeholder -->
+<div class="p-4 border-2 border-dashed border-outline-variant rounded-xl flex items-center justify-center text-on-surface-variant hover:text-secondary hover:border-secondary cursor-pointer transition-all">
+<span class="text-sm font-semibold">+ Define New Year</span>
+</div>
+</div>
+</section>
+<!-- Academic Terms Section -->
+<section class="glass-card rounded-xl p-6 soft-shadow">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-md text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">date_range</span>
+                                Academic Terms
+                            </h3>
+<span class="text-xs font-bold text-secondary-container bg-secondary-fixed px-2 py-1 rounded">2023-24</span>
+</div>
+<div class="grid grid-cols-1 gap-3">
+<div class="flex items-center gap-4 p-3 bg-background rounded-lg border border-outline-variant hover:border-secondary transition-colors cursor-pointer group">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-on-primary">1</div>
+<div class="flex-1">
+<p class="font-bold text-primary">Term 1</p>
+<p class="text-xs text-on-surface-variant">Sept 2023 - Dec 2023</p>
+</div>
+<span class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-all">edit</span>
+</div>
+<div class="flex items-center gap-4 p-3 bg-background rounded-lg border border-outline-variant hover:border-secondary transition-colors cursor-pointer group">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-on-primary">2</div>
+<div class="flex-1">
+<p class="font-bold text-primary">Term 2</p>
+<p class="text-xs text-on-surface-variant">Jan 2024 - Mar 2024</p>
+</div>
+<span class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-all">edit</span>
+</div>
+<div class="flex items-center gap-4 p-3 bg-background rounded-lg border border-outline-variant hover:border-secondary transition-colors cursor-pointer group">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-on-primary">3</div>
+<div class="flex-1">
+<p class="font-bold text-primary">Term 3</p>
+<p class="text-xs text-on-surface-variant">Apr 2024 - Jun 2024</p>
+</div>
+<span class="material-symbols-outlined text-secondary opacity-0 group-hover:opacity-100 transition-all">edit</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Right: Classes (8 columns) -->
+<div class="col-span-12 lg:col-span-8">
+<section class="glass-card rounded-xl soft-shadow overflow-hidden">
+<div class="p-6 border-b border-outline-variant flex items-center justify-between bg-surface-container-low">
+<div class="flex items-center gap-4">
+<h3 class="font-headline-md text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">groups</span>
+                                    Classes Overview
+                                </h3>
+<div class="flex items-center bg-surface-container rounded-lg p-1">
+<button class="px-3 py-1 text-xs font-bold bg-white text-secondary rounded shadow-sm">All</button>
+<button class="px-3 py-1 text-xs font-semibold text-on-surface-variant hover:text-primary transition-colors">Primary</button>
+<button class="px-3 py-1 text-xs font-semibold text-on-surface-variant hover:text-primary transition-colors">Secondary</button>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg bg-white border border-outline-variant hover:bg-primary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-primary">filter_list</span>
+</button>
+<button class="p-2 rounded-lg bg-white border border-outline-variant hover:bg-primary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-primary">download</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-lowest">
+<th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant">Class Name</th>
+<th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant">Code</th>
+<th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant">Level</th>
+<th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant">Lead Teacher</th>
+<th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant">Students</th>
+<th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-primary-fixed-dim transition-colors">
+<td class="px-6 py-4 font-bold text-primary">Advanced Mathematics</td>
+<td class="px-6 py-4 font-label-sm text-label-sm text-secondary">MATH-G10-A</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-surface-container-high text-on-surface rounded text-xs font-semibold border border-outline-variant">Grade 10</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-secondary-fixed flex items-center justify-center text-[10px] font-bold">DR</div>
+<span class="text-sm font-medium">Dr. Roberts</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex -space-x-2">
+<div class="w-7 h-7 rounded-full border-2 border-white bg-primary-fixed flex items-center justify-center text-[8px] font-bold">JS</div>
+<div class="w-7 h-7 rounded-full border-2 border-white bg-secondary-fixed flex items-center justify-center text-[8px] font-bold">AK</div>
+<div class="w-7 h-7 rounded-full border-2 border-white bg-tertiary-fixed flex items-center justify-center text-[8px] font-bold">+21</div>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-primary-fixed-dim transition-colors">
+<td class="px-6 py-4 font-bold text-primary">Applied Physics</td>
+<td class="px-6 py-4 font-label-sm text-label-sm text-secondary">PHYS-G11-B</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-surface-container-high text-on-surface rounded text-xs font-semibold border border-outline-variant">Grade 11</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-secondary-fixed flex items-center justify-center text-[10px] font-bold">SM</div>
+<span class="text-sm font-medium">Sarah Miller</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex -space-x-2">
+<div class="w-7 h-7 rounded-full border-2 border-white bg-primary-fixed flex items-center justify-center text-[8px] font-bold">TH</div>
+<div class="w-7 h-7 rounded-full border-2 border-white bg-secondary-fixed flex items-center justify-center text-[8px] font-bold">ML</div>
+<div class="w-7 h-7 rounded-full border-2 border-white bg-tertiary-fixed flex items-center justify-center text-[8px] font-bold">+16</div>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 (Blue tint row) -->
+<tr class="bg-primary/5 hover:bg-primary-fixed-dim transition-colors">
+<td class="px-6 py-4 font-bold text-primary">English Literature</td>
+<td class="px-6 py-4 font-label-sm text-label-sm text-secondary">ENGL-G09-C</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-surface-container-high text-on-surface rounded text-xs font-semibold border border-outline-variant">Grade 09</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-secondary-fixed flex items-center justify-center text-[10px] font-bold">JW</div>
+<span class="text-sm font-medium">James White</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex -space-x-2">
+<div class="w-7 h-7 rounded-full border-2 border-white bg-primary-fixed flex items-center justify-center text-[8px] font-bold">RB</div>
+<div class="w-7 h-7 rounded-full border-2 border-white bg-secondary-fixed flex items-center justify-center text-[8px] font-bold">PF</div>
+<div class="w-7 h-7 rounded-full border-2 border-white bg-tertiary-fixed flex items-center justify-center text-[8px] font-bold">+25</div>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-primary-fixed-dim transition-colors">
+<td class="px-6 py-4 font-bold text-primary">World History</td>
+<td class="px-6 py-4 font-label-sm text-label-sm text-secondary">HIST-G12-A</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-surface-container-high text-on-surface rounded text-xs font-semibold border border-outline-variant">Grade 12</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-secondary-fixed flex items-center justify-center text-[10px] font-bold">EP</div>
+<span class="text-sm font-medium">Elena Petrova</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex -space-x-2">
+<div class="w-7 h-7 rounded-full border-2 border-white bg-primary-fixed flex items-center justify-center text-[8px] font-bold">CL</div>
+<div class="w-7 h-7 rounded-full border-2 border-white bg-secondary-fixed flex items-center justify-center text-[8px] font-bold">DS</div>
+<div class="w-7 h-7 rounded-full border-2 border-white bg-tertiary-fixed flex items-center justify-center text-[8px] font-bold">+19</div>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 5 (Blue tint row) -->
+<tr class="bg-primary/5 hover:bg-primary-fixed-dim transition-colors">
+<td class="px-6 py-4 font-bold text-primary">Art &amp; Design</td>
+<td class="px-6 py-4 font-label-sm text-label-sm text-secondary">ARTS-G08-F</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-surface-container-high text-on-surface rounded text-xs font-semibold border border-outline-variant">Grade 08</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-secondary-fixed flex items-center justify-center text-[10px] font-bold">KB</div>
+<span class="text-sm font-medium">Kevin Banks</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex -space-x-2">
+<div class="w-7 h-7 rounded-full border-2 border-white bg-primary-fixed flex items-center justify-center text-[8px] font-bold">ZT</div>
+<div class="w-7 h-7 rounded-full border-2 border-white bg-secondary-fixed flex items-center justify-center text-[8px] font-bold">QR</div>
+<div class="w-7 h-7 rounded-full border-2 border-white bg-tertiary-fixed flex items-center justify-center text-[8px] font-bold">+14</div>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-6 bg-surface-container-low border-t border-outline-variant flex justify-between items-center">
+<span class="text-sm text-on-surface-variant">Showing 5 of 42 active classes</span>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 rounded-lg border border-outline-variant bg-white text-sm font-bold disabled:opacity-50" disabled="">Previous</button>
+<button class="px-3 py-1.5 rounded-lg border border-outline-variant bg-white text-sm font-bold hover:bg-secondary hover:text-white transition-all">Next</button>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Footer Meta -->
+<div class="mt-12 flex justify-between items-center text-xs text-on-surface-variant/50 border-t border-outline-variant pt-6">
+<p>© 2024 RecordIT Academic Terminal. All security protocols active.</p>
+<div class="flex gap-6">
+<a class="hover:text-secondary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-secondary transition-colors" href="#">Audit Logs</a>
+<a class="hover:text-secondary transition-colors" href="#">System Health: 99.9%</a>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Biometric Status (Atmospheric interaction) -->
+<div class="fixed bottom-8 right-8 z-50">
+<div class="glass-card soft-shadow rounded-full px-4 py-2 flex items-center gap-3 border-secondary/20">
+<div class="relative w-3 h-3">
+<span class="absolute inset-0 bg-on-tertiary-container rounded-full animate-ping opacity-75"></span>
+<span class="relative block w-3 h-3 bg-on-tertiary-container rounded-full"></span>
+</div>
+<span class="text-xs font-bold text-primary tracking-wide">Terminal Online</span>
+</div>
+</div>
+<script>
+        // Simple Micro-interaction for rows
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', () => {
+                // Flash effect
+                row.classList.add('bg-secondary/10');
+                setTimeout(() => {
+                    row.classList.remove('bg-secondary/10');
+                }, 300);
+            });
+        });
+    </script>
+</body></html>

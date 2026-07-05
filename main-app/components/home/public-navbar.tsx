@@ -1,7 +1,9 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { useState } from "react"
+import { toast } from "sonner"
 
 import { MaterialSymbol } from "@/components/common/MaterialSymbol"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -14,7 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useSession } from "@/lib/auth-client"
+import { signOut, useSession } from "@/lib/auth-client"
 import { getDashboardHref, getDashboardLabel } from "@/lib/role-dashboard"
 import { cn } from "@/lib/utils"
 import { publicNavItems } from "./constants"
@@ -40,10 +42,30 @@ function getInitials(name?: string | null, email?: string | null) {
 
 export function PublicNavbar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const [isSigningOut, setIsSigningOut] = useState(false)
   const { data: session } = useSession()
   const user = session?.user as SessionUser | undefined
   const dashboardHref = getDashboardHref(user?.role)
   const dashboardLabel = getDashboardLabel(user?.role)
+
+  async function handleSignOut() {
+    try {
+      setIsSigningOut(true)
+      const response = await signOut()
+
+      if (response?.error) {
+        throw new Error(response.error.message || "Logout failed")
+      }
+
+      toast.success("Logged out successfully.")
+      router.push("/login")
+      router.refresh()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Logout failed")
+      setIsSigningOut(false)
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 h-16 w-full border-b border-[#c5c6d2] bg-[#f7f9ff] shadow-sm">
@@ -144,6 +166,24 @@ export function PublicNavbar() {
                       <MaterialSymbol icon="home" className="text-base" />
                       Home
                     </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    variant="destructive"
+                    disabled={isSigningOut}
+                    onSelect={(event) => {
+                      event.preventDefault()
+                      void handleSignOut()
+                    }}
+                  >
+                    <MaterialSymbol
+                      icon={isSigningOut ? "progress_activity" : "logout"}
+                      className={cn(
+                        "text-base",
+                        isSigningOut && "animate-spin"
+                      )}
+                    />
+                    {isSigningOut ? "Logging out..." : "Logout"}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

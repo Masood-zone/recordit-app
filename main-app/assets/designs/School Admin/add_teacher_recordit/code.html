@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RecordIT - Add Teacher</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#00174a",
+                        "primary-fixed": "#dbe1ff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#2a4386",
+                        "on-primary-container": "#758dd5",
+                        "inverse-surface": "#223240",
+                        "tertiary-container": "#002d33",
+                        "tertiary": "#00171b",
+                        "on-background": "#0d1d2a",
+                        "surface-container-low": "#ecf4ff",
+                        "secondary": "#2552ca",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#e7f2ff",
+                        "surface-container": "#e2efff",
+                        "inverse-primary": "#b3c5ff",
+                        "on-error-container": "#93000a",
+                        "secondary-container": "#446ce4",
+                        "on-secondary-fixed-variant": "#003baf",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#00164e",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#435b9f",
+                        "outline": "#757682",
+                        "surface-dim": "#cbdcee",
+                        "secondary-fixed": "#dce1ff",
+                        "on-tertiary-container": "#009eb0",
+                        "tertiary-fixed-dim": "#00daf3",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#9cf0ff",
+                        "surface": "#f7f9ff",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "surface-container-highest": "#d4e4f6",
+                        "primary-container": "#002366",
+                        "surface-bright": "#f7f9ff",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#d9eafc",
+                        "on-tertiary-fixed": "#001f24",
+                        "background": "#f7f9ff",
+                        "surface-variant": "#d4e4f6",
+                        "primary": "#00113a",
+                        "on-surface-variant": "#444650",
+                        "outline-variant": "#c5c6d2",
+                        "on-surface": "#0d1d2a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "body-md": ["Manrope"],
+                        "label-sm": ["JetBrains Mono"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-overlay {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .soft-shadow:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-bottom-color: #2552ca !important;
+        }
+        .sidebar-active {
+            background-color: #446ce4;
+            color: #fffbff;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-primary p-4 flex flex-col z-50 border-r border-outline-variant shadow-sm">
+<div class="mb-8 px-4">
+<h1 class="font-headline-md text-headline-md font-bold text-on-primary">RecordIT</h1>
+<p class="text-on-primary-container text-xs opacity-80 uppercase tracking-widest">Admin Terminal</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-body-md">Academic Setup</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-md">Students</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-semibold active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-body-md">Teachers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">family_restroom</span>
+<span class="font-body-md">Parents/Guardians</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">class</span>
+<span class="font-body-md">Classes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md">Attendance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-body-md">Reports</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">phonelink_setup</span>
+<span class="font-body-md">Device Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center h-16 px-8 bg-surface/80 backdrop-blur-md border-b border-outline-variant sticky top-0 z-40">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md text-primary font-bold">Add New Teacher</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined">search</span>
+<input class="bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-sm w-64 focus:ring-2 focus:ring-secondary transition-all" placeholder="Search records..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-on-surface-variant hover:text-secondary transition-colors material-symbols-outlined">fingerprint</button>
+<button class="p-2 text-on-surface-variant hover:text-secondary transition-colors material-symbols-outlined">help_outline</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional portrait of a school administrator in a bright, modern office setting. The lighting is soft and high-key, reflecting a corporate and secure environment. The administrator is wearing formal attire, and the background shows a clean, minimalist educational facility with blue accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBA_KJrggsEKlfr943DAIFSMuB6X9EIKq0Vdx0AbRGsPkpvcbdP8h1c4dcY06Kb8qSrkQ1heH5_4c_r0b_brGWa4UELUTEjPJPr6_Jlx_UWoSxn8XlPsXtfn76ulrwPcdzeVt0p_teG8ndX38uwND3vbuv4sQ42hAjYhHP67YaMqsPtjIcT0k0Jn9I9HKCnmTnacSzybNviGwm01T3OMg3foCQE2Ap2DdkhfjcwSvI7hVNZqF6pKVFBWg"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Form Content -->
+<div class="flex-1 p-8 max-w-5xl mx-auto w-full">
+<div class="mb-8">
+<nav aria-label="Breadcrumb" class="flex mb-4">
+<ol class="inline-flex items-center space-x-1 md:space-x-3 text-sm font-medium text-on-surface-variant">
+<li class="inline-flex items-center">
+<a class="hover:text-secondary" href="#">Dashboard</a>
+</li>
+<li>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-sm mx-1">chevron_right</span>
+<a class="hover:text-secondary" href="#">Teachers</a>
+</div>
+</li>
+<li aria-current="page">
+<div class="flex items-center">
+<span class="material-symbols-outlined text-sm mx-1">chevron_right</span>
+<span class="text-primary font-bold">Add Teacher</span>
+</div>
+</li>
+</ol>
+</nav>
+</div>
+<!-- Bento Form Layout -->
+<form class="grid grid-cols-12 gap-6" onsubmit="event.preventDefault();">
+<!-- Personal Information Card -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest p-8 rounded-xl border border-outline-variant soft-shadow">
+<h2 class="font-headline-md text-headline-md text-primary mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined">badge</span>
+                        Personal Information
+                    </h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-1">
+<label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">First Name</label>
+<input class="bg-surface-container border-0 border-b-2 border-outline-variant px-4 py-3 rounded-t-lg transition-all focus:bg-surface-container-high" placeholder="e.g. Jonathan" type="text"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Last Name</label>
+<input class="bg-surface-container border-0 border-b-2 border-outline-variant px-4 py-3 rounded-t-lg transition-all focus:bg-surface-container-high" placeholder="e.g. Edwards" type="text"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Other Name (Optional)</label>
+<input class="bg-surface-container border-0 border-b-2 border-outline-variant px-4 py-3 rounded-t-lg transition-all focus:bg-surface-container-high" placeholder="e.g. Michael" type="text"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Staff Number</label>
+<input class="bg-surface-container border-0 border-b-2 border-outline-variant px-4 py-3 rounded-t-lg transition-all focus:bg-surface-container-high" placeholder="STF-2024-001" type="text"/>
+</div>
+<div class="flex flex-col gap-1 md:col-span-2">
+<label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Official Email Address</label>
+<input class="bg-surface-container border-0 border-b-2 border-outline-variant px-4 py-3 rounded-t-lg transition-all focus:bg-surface-container-high" placeholder="j.edwards@institution.edu" type="email"/>
+</div>
+<div class="flex flex-col gap-1 md:col-span-2">
+<label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Phone Number</label>
+<input class="bg-surface-container border-0 border-b-2 border-outline-variant px-4 py-3 rounded-t-lg transition-all focus:bg-surface-container-high" placeholder="+1 (555) 000-0000" type="tel"/>
+</div>
+</div>
+</div>
+<!-- Employment Details Card -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant soft-shadow">
+<h2 class="font-headline-md text-headline-md text-primary mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-2xl">work</span>
+                            Deployment
+                        </h2>
+<div class="space-y-4">
+<div class="flex flex-col gap-1">
+<label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Title</label>
+<select class="bg-surface-container border-0 border-b-2 border-outline-variant px-4 py-3 rounded-t-lg transition-all focus:bg-surface-container-high">
+<option>Select Title</option>
+<option>Dr.</option>
+<option>Prof.</option>
+<option>Mr.</option>
+<option>Mrs.</option>
+<option>Ms.</option>
+</select>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Department</label>
+<select class="bg-surface-container border-0 border-b-2 border-outline-variant px-4 py-3 rounded-t-lg transition-all focus:bg-surface-container-high">
+<option>Select Department</option>
+<option>Mathematics</option>
+<option>Science</option>
+<option>Humanities</option>
+<option>Arts &amp; Design</option>
+<option>Physical Education</option>
+</select>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Assigned Class</label>
+<select class="bg-surface-container border-0 border-b-2 border-outline-variant px-4 py-3 rounded-t-lg transition-all focus:bg-surface-container-high">
+<option>Not Assigned</option>
+<option>Grade 9-A</option>
+<option>Grade 10-B</option>
+<option>Senior Year Alpha</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Account Status Card -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant soft-shadow">
+<h2 class="font-headline-md text-headline-md text-primary mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-2xl">security</span>
+                            System Status
+                        </h2>
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between p-3 bg-tertiary-container/10 rounded-lg">
+<div class="flex flex-col">
+<span class="font-bold text-on-surface">Account Status</span>
+<span class="text-xs text-on-surface-variant">Active teachers can log in</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+</label>
+</div>
+<div class="p-3 bg-secondary-container/5 border border-secondary/20 rounded-lg">
+<p class="text-xs text-on-secondary-fixed-variant leading-relaxed">
+<span class="font-bold">Note:</span> Biometric enrollment will be required upon the first login attempt by the teacher.
+                                </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="col-span-12 flex flex-col md:flex-row items-center justify-between gap-4 mt-4 mb-12">
+<button class="order-3 md:order-1 px-8 py-3 text-on-surface-variant hover:text-error transition-colors font-button-text" type="button">
+                        Cancel Registration
+                    </button>
+<div class="order-1 md:order-2 flex flex-col md:flex-row gap-4 w-full md:w-auto">
+<button class="px-8 py-3 border-2 border-outline text-on-surface font-button-text rounded-lg hover:bg-surface-container-high transition-all active:scale-95" type="button">
+                            Save and Add Another
+                        </button>
+<button class="px-10 py-3 bg-secondary text-on-secondary font-button-text rounded-lg shadow-lg hover:bg-primary-container transition-all active:scale-95 flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined text-lg">save</span>
+                            Save Teacher
+                        </button>
+</div>
+</div>
+</form>
+</div>
+</main>
+<!-- Biometric Floating Pulse (Contextual Decoration) -->
+<div class="fixed bottom-8 right-8 z-50 pointer-events-none opacity-20">
+<div class="relative flex items-center justify-center">
+<div class="absolute w-24 h-24 bg-tertiary-fixed-dim rounded-full animate-ping"></div>
+<div class="absolute w-20 h-20 bg-tertiary-fixed rounded-full opacity-50"></div>
+<span class="material-symbols-outlined text-4xl text-on-tertiary-container relative z-10">fingerprint</span>
+</div>
+</div>
+<script>
+        // Micro-interactions for inputs
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.querySelector('label')?.classList.add('text-secondary');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.querySelector('label')?.classList.remove('text-secondary');
+            });
+        });
+    </script>
+</body></html>

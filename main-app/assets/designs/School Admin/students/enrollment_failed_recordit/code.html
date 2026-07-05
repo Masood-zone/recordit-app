@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Enrollment Failed | RecordIT</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "on-surface": "#0d1d2a",
+                        "on-secondary-fixed-variant": "#003baf",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed": "#dce1ff",
+                        "primary": "#00113a",
+                        "tertiary": "#00171b",
+                        "secondary-container": "#446ce4",
+                        "on-secondary": "#ffffff",
+                        "outline": "#757682",
+                        "on-primary-fixed": "#00174a",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary-fixed-variant": "#2a4386",
+                        "on-primary-container": "#758dd5",
+                        "inverse-on-surface": "#e7f2ff",
+                        "background": "#f7f9ff",
+                        "on-tertiary-container": "#009eb0",
+                        "on-secondary-fixed": "#00164e",
+                        "inverse-surface": "#223240",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#435b9f",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "tertiary-container": "#002d33",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#001f24",
+                        "outline-variant": "#c5c6d2",
+                        "primary-container": "#002366",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#d9eafc",
+                        "surface-container": "#e2efff",
+                        "surface-variant": "#d4e4f6",
+                        "surface-bright": "#f7f9ff",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "inverse-primary": "#b3c5ff",
+                        "secondary": "#2552ca",
+                        "on-primary": "#ffffff",
+                        "on-background": "#0d1d2a",
+                        "surface-dim": "#cbdcee",
+                        "surface-container-highest": "#d4e4f6",
+                        "on-surface-variant": "#444650",
+                        "surface-container-low": "#ecf4ff",
+                        "surface": "#f7f9ff",
+                        "on-secondary-container": "#fffbff",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#00daf3",
+                        "tertiary-fixed": "#9cf0ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "tablet-breakpoint": "768px",
+                        "mobile-breakpoint": "375px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "desktop-max-width": "1280px",
+                        "container-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "button-text": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "label-sm": ["JetBrains Mono"],
+                        "body-md": ["Manrope"],
+                        "body-lg": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            vertical-align: middle;
+        }
+        .error-card-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .error-card-hover:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+        .backdrop-blur-academic {
+            backdrop-filter: blur(12px);
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-40 flex items-center justify-between px-gutter w-full h-16 bg-surface/80 dark:bg-surface-container-highest/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">RecordIT</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex gap-4">
+<span class="font-button-text text-button-text text-on-surface-variant dark:text-outline-variant hover:bg-secondary-container/10 transition-colors px-3 py-2 rounded-lg cursor-pointer active:scale-95 duration-150">Dashboard</span>
+<span class="font-button-text text-button-text text-primary dark:text-primary-fixed border-b-2 border-primary px-3 py-2 cursor-pointer">Biometric Setup</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-secondary-container/10 transition-colors text-secondary dark:text-secondary-fixed-dim">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-secondary-container/10 transition-colors text-secondary dark:text-secondary-fixed-dim">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center ml-2 overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a school administrator in a high-key, modern office setting. The person is wearing academic attire, conveying trust and authority. The lighting is soft and professional, following the Corporate Academic aesthetic with a clean, bright background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCM5U8IKdnu9s8T7lflfRmJikVvUs2bZRmoEnAtl25Jr-kj4aq1-4sxE96-c2RFW-oRFObNoNukBmgjRyEM4goBgAToqfEJn0cPQyTzbWpizr-xwnkGutnBzXaA98rGaVHu4ur2lCJ5cLt8pn0AH56f49gT7HGHBuoCsPUpca5DmZxs-yrCGQJAXOvx_BUdwpl5KVBkTuR-7mpkWRU0Ha20TOCz96jpXrQJDtvl5C64OwpM6-K9nD_ovQ"/>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow flex items-center justify-center px-4 py-12 relative overflow-hidden">
+<!-- Atmospheric Background Pattern -->
+<div class="absolute inset-0 opacity-10 pointer-events-none">
+<div class="absolute top-0 left-0 w-full h-full" style="background-image: radial-gradient(circle at 2px 2px, #00113a 1px, transparent 0); background-size: 40px 40px;"></div>
+</div>
+<!-- Enrollment Failed Card -->
+<div class="max-w-xl w-full z-10">
+<div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-8 error-card-shadow error-card-hover transition-all duration-300">
+<!-- Header Icon & Title -->
+<div class="flex flex-col items-center text-center mb-8">
+<div class="w-20 h-20 bg-error-container/20 rounded-full flex items-center justify-center mb-6 ring-8 ring-error-container/5">
+<span class="material-symbols-outlined text-error !text-5xl" style="font-variation-settings: 'wght' 300;">fingerprint_off</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Enrollment Failed</h1>
+<p class="text-on-surface-variant font-body-lg">Fingerprint enrollment failed.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Reasons Section -->
+<div class="space-y-4">
+<h3 class="font-button-text text-button-text text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+                            Possible Reasons
+                        </h3>
+<ul class="space-y-3">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline text-[20px]">usb_off</span>
+<span class="text-on-surface-variant text-body-md">Device not connected</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline text-[20px]">speed</span>
+<span class="text-on-surface-variant text-body-md">Finger moved too quickly</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline text-[20px]">texture</span>
+<span class="text-on-surface-variant text-body-md">Poor image quality</span>
+</li>
+</ul>
+</div>
+<!-- Instructions Section -->
+<div class="space-y-4">
+<h3 class="font-button-text text-button-text text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">info</span>
+                            What to do
+                        </h3>
+<ul class="space-y-3">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-on-tertiary-container text-[20px]">check_circle</span>
+<span class="text-on-surface-variant text-body-md">Check connection</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-on-tertiary-container text-[20px]">check_circle</span>
+<span class="text-on-surface-variant text-body-md">Clean scanner glass</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-on-tertiary-container text-[20px]">check_circle</span>
+<span class="text-on-surface-variant text-body-md">Place finger properly</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="mt-10 flex flex-col sm:flex-row gap-3 pt-6 border-t border-outline-variant/10">
+<button class="flex-1 bg-secondary text-on-secondary font-button-text text-button-text py-3 px-6 rounded-lg shadow-sm hover:bg-secondary-container transition-all active:scale-95 duration-150 flex items-center justify-center gap-2 group">
+<span class="material-symbols-outlined group-hover:rotate-45 transition-transform">refresh</span>
+                        Retry
+                    </button>
+<button class="flex-1 border-2 border-outline-variant text-on-surface-variant font-button-text text-button-text py-3 px-6 rounded-lg hover:bg-surface-container transition-all active:scale-95 duration-150 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">settings_input_component</span>
+                        Go to Device Settings
+                    </button>
+</div>
+<div class="mt-4 text-center">
+<button class="text-on-surface-variant font-button-text text-button-text hover:text-error hover:underline transition-all opacity-80 hover:opacity-100 py-2">
+                        Cancel Enrollment
+                    </button>
+</div>
+</div>
+<!-- Contextual Help Card (Asymmetric Layout) -->
+<div class="mt-6 flex flex-col md:flex-row gap-4 items-center">
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-xl p-4 flex items-center gap-4 w-full">
+<div class="w-12 h-12 bg-secondary-container/20 rounded-full flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-secondary">support_agent</span>
+</div>
+<div>
+<p class="font-button-text text-button-text text-on-surface">Need Technical Assistance?</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Contact the Central High School IT Desk for scanner hardware support.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- SideNavBar (Hidden on desktop as we use TopNavBar for this focused task, but kept for logic) -->
+<!-- Not visible in the fail screen to focus the user, as per "Relevance Check" -->
+<!-- Footer -->
+<footer class="bg-surface dark:bg-surface-dim border-t border-outline-variant/10 w-full py-6 mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center px-gutter max-w-desktop-max-width mx-auto gap-4">
+<div class="flex flex-col items-center md:items-start">
+<span class="font-button-text text-button-text font-semibold text-primary">RecordIT Admin</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline">© 2024 RecordIT Biometric Systems. All Rights Reserved.</span>
+</div>
+<div class="flex gap-6">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary underline transition-all opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary underline transition-all opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary underline transition-all opacity-80 hover:opacity-100" href="#">Security Whitepaper</a>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interaction: Subtle pulsing effect for the icon if error persists
+        document.addEventListener('DOMContentLoaded', () => {
+            const errorIcon = document.querySelector('.material-symbols-outlined.text-error');
+            if(errorIcon) {
+                setInterval(() => {
+                    errorIcon.classList.add('scale-105');
+                    setTimeout(() => errorIcon.classList.remove('scale-105'), 200);
+                }, 3000);
+            }
+        });
+    </script>
+</body></html>

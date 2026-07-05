@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Schools Management | RecordIT</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#f7f9ff",
+                        "on-tertiary-fixed": "#001f24",
+                        "on-primary-fixed-variant": "#2a4386",
+                        "inverse-primary": "#b3c5ff",
+                        "primary-container": "#002366",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#cbdcee",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "secondary": "#2552ca",
+                        "secondary-container": "#446ce4",
+                        "on-surface": "#0d1d2a",
+                        "primary": "#00113a",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#dbe1ff",
+                        "surface-bright": "#f7f9ff",
+                        "tertiary-fixed": "#9cf0ff",
+                        "error-container": "#ffdad6",
+                        "background": "#f7f9ff",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#444650",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#223240",
+                        "on-primary-container": "#758dd5",
+                        "inverse-on-surface": "#e7f2ff",
+                        "surface-container-low": "#ecf4ff",
+                        "surface-variant": "#d4e4f6",
+                        "surface-container-highest": "#d4e4f6",
+                        "surface-container-high": "#d9eafc",
+                        "tertiary-fixed-dim": "#00daf3",
+                        "tertiary-container": "#002d33",
+                        "outline": "#757682",
+                        "on-background": "#0d1d2a",
+                        "on-secondary-fixed": "#00164e",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#c5c6d2",
+                        "secondary-fixed": "#dce1ff",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#003baf",
+                        "on-tertiary-container": "#009eb0",
+                        "surface-tint": "#435b9f",
+                        "on-secondary-container": "#fffbff",
+                        "tertiary": "#00171b",
+                        "surface-container": "#e2efff",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "on-primary-fixed": "#00174a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "container-padding": "24px",
+                        "mobile-breakpoint": "375px",
+                        "desktop-max-width": "1280px",
+                        "tablet-breakpoint": "768px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-lg": ["Manrope"],
+                        "button-text": ["Manrope"],
+                        "body-md": ["Manrope"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .zebra-row:nth-child(5n) {
+            background-color: #ecf4ff;
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .hover-shadow:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-full flex flex-col py-6 px-4 gap-4 bg-primary dark:bg-primary-container shadow-lg z-50 w-64">
+<div class="flex items-center gap-3 px-2 mb-6">
+<div class="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-on-secondary">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div>
+<h1 class="text-headline-md font-black text-on-primary leading-tight">RecordIT</h1>
+<p class="text-label-sm text-on-primary-container/70">Platform Management</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container/70 hover:text-on-primary hover:bg-secondary-container/20 transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<!-- Active Tab: Schools -->
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary text-on-secondary rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-medium">Schools</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container/70 hover:text-on-primary hover:bg-secondary-container/20 transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined">badge</span>
+<span class="font-medium">Admins</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container/70 hover:text-on-primary hover:bg-secondary-container/20 transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-medium">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container/70 hover:text-on-primary hover:bg-secondary-container/20 transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-medium">Settings</span>
+</a>
+</nav>
+<button class="mt-auto flex items-center gap-3 px-4 py-3 bg-secondary-container text-white rounded-xl shadow-md hover:scale-[0.98] transition-transform duration-200">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-bold text-button-text">Add New School</span>
+</button>
+<div class="border-t border-on-primary-container/20 pt-4">
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary-container/70 hover:text-on-primary hover:bg-secondary-container/20 transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-medium">Log Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="flex justify-between items-center w-full px-container-padding h-16 sticky top-0 z-40 bg-surface/80 backdrop-blur-md border-b border-surface-variant shadow-sm">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-body-md focus:ring-2 focus:ring-secondary/20 transition-all" placeholder="Global search schools, admins, or locations..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+</button>
+<div class="flex items-center gap-3 cursor-pointer hover:bg-surface-container-low p-1 pr-3 rounded-full transition-colors">
+<img class="w-8 h-8 rounded-full border border-secondary/20" data-alt="A professional studio portrait of a high-level academic administrator in a clean modern office. The subject is a woman with a confident expression, wearing professional attire. The lighting is soft and high-key, emphasizing a reliable and authoritative academic environment. The background is slightly blurred showing a modern campus library." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBr3S-n8N5hUlEdK7SBKNZqHKn-HUt55KeriUTI1XnGouilr1B8y_NKmChCNduK96Y_G-65ncVV4esTtbQiCMFQLbBSCbkCMepZDIAIdaLM1eBFzhF8hRei8rvg63ZpINRG5wBtT88ByheSThEmqXf-Ke-QSTC34y4db88VSLuP3OMew-EyAYSbqDCsVErWPXaP4YAIY_qDkaKo6My7oczcHgCA9qUmD1suCo5va0_ExSiyYOg1OhGTpg"/>
+<span class="text-body-md font-bold text-primary">Super Admin</span>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="p-container-padding max-w-desktop-max-width mx-auto">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<nav class="flex items-center gap-2 text-label-sm text-outline mb-2">
+<span>Management</span>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<span class="text-secondary font-bold">Schools</span>
+</nav>
+<h2 class="text-headline-lg font-bold text-primary">Schools Directory</h2>
+<p class="text-body-md text-on-surface-variant">Manage 142 educational institutions across 8 regions.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 bg-surface-container-highest text-primary px-4 py-2.5 rounded-xl font-bold text-button-text border border-outline-variant hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">download</span>
+                        Export List
+                    </button>
+<button class="flex items-center gap-2 bg-secondary text-on-secondary px-5 py-2.5 rounded-xl font-bold text-button-text shadow-md hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">add</span>
+                        Add School
+                    </button>
+</div>
+</div>
+<!-- Dashboard Stats Snippet -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-variant soft-shadow flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div>
+<p class="text-label-sm text-outline uppercase tracking-wider">Active Schools</p>
+<p class="text-headline-md font-bold text-primary">128</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-variant soft-shadow flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed-dim/20 flex items-center justify-center text-on-tertiary-fixed-variant">
+<span class="material-symbols-outlined">pending</span>
+</div>
+<div>
+<p class="text-label-sm text-outline uppercase tracking-wider">Pending Approval</p>
+<p class="text-headline-md font-bold text-primary">12</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-surface-variant soft-shadow flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-error-container/50 flex items-center justify-center text-error">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<div>
+<p class="text-label-sm text-outline uppercase tracking-wider">Suspended</p>
+<p class="text-headline-md font-bold text-primary">2</p>
+</div>
+</div>
+</div>
+<!-- Table Container -->
+<div class="bg-surface-container-lowest rounded-xl border border-surface-variant soft-shadow overflow-hidden">
+<!-- Filters Bar -->
+<div class="p-4 border-b border-surface-variant bg-surface-container-low/30 flex flex-col md:flex-row gap-4 items-center">
+<div class="relative w-full md:w-80">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">filter_list</span>
+<input class="w-full bg-white border border-outline-variant rounded-lg pl-10 pr-4 py-2 text-body-md focus:ring-2 focus:ring-secondary/20 transition-all" placeholder="Filter by school name or code..." type="text"/>
+</div>
+<div class="flex gap-2 w-full md:w-auto">
+<select class="bg-white border border-outline-variant rounded-lg px-4 py-2 text-body-md focus:ring-2 focus:ring-secondary/20 appearance-none min-w-[140px]">
+<option value="">All Statuses</option>
+<option value="active">Active</option>
+<option value="pending">Pending</option>
+<option value="suspended">Suspended</option>
+</select>
+<select class="bg-white border border-outline-variant rounded-lg px-4 py-2 text-body-md focus:ring-2 focus:ring-secondary/20 appearance-none min-w-[140px]">
+<option value="">All Regions</option>
+<option value="north">North Region</option>
+<option value="south">South Region</option>
+<option value="east">East Region</option>
+<option value="west">West Region</option>
+</select>
+<button class="text-secondary font-bold text-button-text px-4 py-2 hover:underline">Clear Filters</button>
+</div>
+<div class="md:ml-auto text-label-sm text-outline">
+                        Showing <span class="font-bold text-on-surface">1 - 10</span> of 142
+                    </div>
+</div>
+<!-- Main Data Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container text-primary uppercase text-[11px] tracking-widest font-black border-b border-surface-variant">
+<th class="py-4 px-6">School Name</th>
+<th class="py-4 px-6">Code</th>
+<th class="py-4 px-6">Location</th>
+<th class="py-4 px-6">Admin Contact</th>
+<th class="py-4 px-6">Status</th>
+<th class="py-4 px-6">Date Added</th>
+<th class="py-4 px-6 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-variant">
+<!-- Row 1 -->
+<tr class="zebra-row hover:bg-surface-container-high/50 transition-colors group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim flex items-center justify-center font-bold text-primary">SA</div>
+<div class="font-bold text-primary">St. Andrews Academy</div>
+</div>
+</td>
+<td class="py-4 px-6 font-label-sm text-outline">SCH-2023-001</td>
+<td class="py-4 px-6 text-body-md">London, UK</td>
+<td class="py-4 px-6">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">James Wilson</span>
+<span class="text-label-sm text-outline">j.wilson@standrews.edu</span>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="px-3 py-1 rounded-full text-label-sm font-bold bg-[#D1FAE5] text-[#065F46] border border-[#A7F3D0]">Active</span>
+</td>
+<td class="py-4 px-6 text-body-md text-outline">Sep 12, 2023</td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-on-surface-variant hover:bg-secondary/10 hover:text-secondary rounded-lg transition-colors" title="View Details">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-secondary/10 hover:text-secondary rounded-lg transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-error-container/30 hover:text-error rounded-lg transition-colors" title="Suspend">
+<span class="material-symbols-outlined text-[20px]">block</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="zebra-row hover:bg-surface-container-high/50 transition-colors group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-secondary-fixed-dim flex items-center justify-center font-bold text-secondary">LV</div>
+<div class="font-bold text-primary">Lakeview High School</div>
+</div>
+</td>
+<td class="py-4 px-6 font-label-sm text-outline">SCH-2023-042</td>
+<td class="py-4 px-6 text-body-md">Manchester, UK</td>
+<td class="py-4 px-6">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">Sarah Connor</span>
+<span class="text-label-sm text-outline">s.connor@lakeview.sch</span>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="px-3 py-1 rounded-full text-label-sm font-bold bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]">Pending</span>
+</td>
+<td class="py-4 px-6 text-body-md text-outline">Jan 05, 2024</td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-on-surface-variant hover:bg-secondary/10 hover:text-secondary rounded-lg transition-colors" title="View Details">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-secondary/10 hover:text-secondary rounded-lg transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-secondary/10 hover:text-secondary rounded-lg transition-colors" title="Activate">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="zebra-row hover:bg-surface-container-high/50 transition-colors group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-outline-variant flex items-center justify-center font-bold text-on-surface-variant">OW</div>
+<div class="font-bold text-primary">Oakwood Primary</div>
+</div>
+</td>
+<td class="py-4 px-6 font-label-sm text-outline">SCH-2022-089</td>
+<td class="py-4 px-6 text-body-md">Bristol, UK</td>
+<td class="py-4 px-6">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">Mark Thompson</span>
+<span class="text-label-sm text-outline">m.thompson@oakwood.org</span>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="px-3 py-1 rounded-full text-label-sm font-bold bg-[#FEE2E2] text-[#991B1B] border border-[#FECACA]">Suspended</span>
+</td>
+<td class="py-4 px-6 text-body-md text-outline">Nov 22, 2022</td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-on-surface-variant hover:bg-secondary/10 hover:text-secondary rounded-lg transition-colors" title="View Details">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-secondary/10 hover:text-secondary rounded-lg transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-secondary/10 hover:text-secondary rounded-lg transition-colors" title="Activate">
+<span class="material-symbols-outlined text-[20px]">play_arrow</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Additional Zebra Stripe Example (Row 5 is special) -->
+<tr class="zebra-row hover:bg-surface-container-high/50 transition-colors group">
+<td class="py-4 px-6"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-lg bg-tertiary-fixed flex items-center justify-center font-bold text-on-tertiary-fixed">RH</div><div class="font-bold text-primary">River Heights Intl</div></div></td>
+<td class="py-4 px-6 font-label-sm text-outline">SCH-2023-112</td>
+<td class="py-4 px-6 text-body-md">Cambridge, UK</td>
+<td class="py-4 px-6"><div class="flex flex-col"><span class="font-medium text-on-surface">Dr. Emily Blunt</span><span class="text-label-sm text-outline">blunt@riverheights.com</span></div></td>
+<td class="py-4 px-6"><span class="px-3 py-1 rounded-full text-label-sm font-bold bg-[#D1FAE5] text-[#065F46] border border-[#A7F3D0]">Active</span></td>
+<td class="py-4 px-6 text-body-md text-outline">Feb 14, 2024</td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-on-surface-variant hover:bg-secondary/10 hover:text-secondary rounded-lg transition-colors"><span class="material-symbols-outlined text-[20px]">visibility</span></button>
+<button class="p-2 text-on-surface-variant hover:bg-secondary/10 hover:text-secondary rounded-lg transition-colors"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="p-2 text-on-surface-variant hover:bg-error-container/30 hover:text-error rounded-lg transition-colors"><span class="material-symbols-outlined text-[20px]">block</span></button>
+</div>
+</td>
+</tr>
+<!-- Repeat row for 5th row highlighting logic -->
+<tr class="zebra-row hover:bg-surface-container-high/50 transition-colors group">
+<td class="py-4 px-6"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-lg bg-secondary-fixed flex items-center justify-center font-bold text-secondary">CS</div><div class="font-bold text-primary">Crestview STEM</div></div></td>
+<td class="py-4 px-6 font-label-sm text-outline">SCH-2024-005</td>
+<td class="py-4 px-6 text-body-md">Oxford, UK</td>
+<td class="py-4 px-6"><div class="flex flex-col"><span class="font-medium text-on-surface">Alan Grant</span><span class="text-label-sm text-outline">grant@crestview.stem</span></div></td>
+<td class="py-4 px-6"><span class="px-3 py-1 rounded-full text-label-sm font-bold bg-[#D1FAE5] text-[#065F46] border border-[#A7F3D0]">Active</span></td>
+<td class="py-4 px-6 text-body-md text-outline">Mar 01, 2024</td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-on-surface-variant hover:bg-secondary/10 hover:text-secondary rounded-lg transition-colors"><span class="material-symbols-outlined text-[20px]">visibility</span></button>
+<button class="p-2 text-on-surface-variant hover:bg-secondary/10 hover:text-secondary rounded-lg transition-colors"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="p-6 bg-surface-container-low/20 border-t border-surface-variant flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="text-body-md text-on-surface-variant">
+                        Showing 1 to 10 of 142 results
+                    </div>
+<div class="flex items-center gap-1">
+<button class="p-2 text-outline hover:bg-surface-container-high rounded-lg transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">first_page</span>
+</button>
+<button class="p-2 text-outline hover:bg-surface-container-high rounded-lg transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<div class="flex gap-1 px-2">
+<button class="w-10 h-10 rounded-lg bg-secondary text-on-secondary font-bold flex items-center justify-center">1</button>
+<button class="w-10 h-10 rounded-lg hover:bg-surface-container-high text-on-surface-variant font-medium flex items-center justify-center transition-colors">2</button>
+<button class="w-10 h-10 rounded-lg hover:bg-surface-container-high text-on-surface-variant font-medium flex items-center justify-center transition-colors">3</button>
+<span class="w-10 h-10 flex items-center justify-center text-outline">...</span>
+<button class="w-10 h-10 rounded-lg hover:bg-surface-container-high text-on-surface-variant font-medium flex items-center justify-center transition-colors">15</button>
+</div>
+<button class="p-2 text-on-surface hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+<button class="p-2 text-on-surface hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined">last_page</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Contextual Help / Tips -->
+<div class="mt-8 p-6 bg-secondary-container/5 rounded-xl border border-secondary-container/20 flex gap-4 items-start">
+<div class="p-2 bg-secondary/10 rounded-lg text-secondary">
+<span class="material-symbols-outlined">info</span>
+</div>
+<div>
+<h4 class="text-body-md font-bold text-primary">Biometric Sync Status</h4>
+<p class="text-body-md text-on-surface-variant mt-1">All active schools are currently synchronized with the central biometric database. Suspended schools will have their student records locked until reactivation.</p>
+<button class="mt-3 text-secondary font-bold text-button-text hover:underline">Read the security policy →</button>
+</div>
+</div>
+</div>
+<!-- Footer Footer -->
+<footer class="mt-12 py-10 px-container-padding bg-surface-container-high border-t border-surface-variant text-center">
+<p class="text-label-sm text-outline mb-2 uppercase tracking-widest">RecordIT Schools Management Module</p>
+<p class="text-body-md text-on-surface-variant">© 2024 RecordIT Global Solutions. All rights reserved.</p>
+<div class="flex justify-center gap-6 mt-4">
+<a class="text-outline hover:text-secondary transition-colors text-label-sm font-bold" href="#">Privacy Policy</a>
+<a class="text-outline hover:text-secondary transition-colors text-label-sm font-bold" href="#">Support Center</a>
+<a class="text-outline hover:text-secondary transition-colors text-label-sm font-bold" href="#">Security Audits</a>
+</div>
+</footer>
+</main>
+<!-- Micro-interaction Scripts -->
+<script>
+        // Simple search highlight simulation
+        const searchInput = document.querySelector('input[placeholder*="Filter by school name"]');
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(val) ? '' : 'none';
+            });
+        });
+
+        // Hover animation for cards
+        const statsCards = document.querySelectorAll('.soft-shadow');
+        statsCards.forEach(card => {
+            card.addEventListener('mouseenter', () => card.classList.add('hover-shadow'));
+            card.addEventListener('mouseleave', () => card.classList.remove('hover-shadow'));
+        });
+    </script>
+</body></html>

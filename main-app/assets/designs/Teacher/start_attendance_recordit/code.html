@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Start Attendance Session | EduVerify Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..900&family=Manrope:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .soft-shadow-hover:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+        .biometric-pulse {
+            box-shadow: 0 0 0 0 rgba(0, 218, 243, 0.7);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 218, 243, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(0, 218, 243, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 218, 243, 0); }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#2a4386",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#435b9f",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#e2efff",
+                        "on-primary-container": "#758dd5",
+                        "inverse-on-surface": "#e7f2ff",
+                        "secondary-container": "#446ce4",
+                        "primary": "#00113a",
+                        "on-primary-fixed": "#00174a",
+                        "secondary": "#2552ca",
+                        "surface-variant": "#d4e4f6",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "on-surface-variant": "#444650",
+                        "surface-container-low": "#ecf4ff",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary": "#ffffff",
+                        "surface": "#f7f9ff",
+                        "background": "#f7f9ff",
+                        "on-surface": "#0d1d2a",
+                        "on-secondary-fixed-variant": "#003baf",
+                        "on-background": "#0d1d2a",
+                        "on-tertiary-container": "#009eb0",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#002d33",
+                        "surface-container-high": "#d9eafc",
+                        "surface-dim": "#cbdcee",
+                        "inverse-surface": "#223240",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "outline": "#757682",
+                        "tertiary-fixed": "#9cf0ff",
+                        "tertiary": "#00171b",
+                        "secondary-fixed": "#dce1ff",
+                        "outline-variant": "#c5c6d2",
+                        "on-tertiary": "#ffffff",
+                        "primary-container": "#002366",
+                        "on-secondary-fixed": "#00164e",
+                        "tertiary-fixed-dim": "#00daf3",
+                        "surface-container-highest": "#d4e4f6",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "inverse-primary": "#b3c5ff",
+                        "on-secondary-container": "#fffbff",
+                        "surface-bright": "#f7f9ff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#001f24"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "desktop-max-width": "1280px",
+                        "gutter": "16px",
+                        "container-padding": "24px",
+                        "base": "8px",
+                        "tablet-breakpoint": "768px",
+                        "mobile-breakpoint": "375px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Manrope"],
+                        "button-text": ["Manrope"],
+                        "body-md": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex">
+<!-- Side Navigation Shell (Hidden on Mobile) -->
+<aside class="hidden md:flex flex-col h-screen w-64 bg-surface-container-low border-r border-outline-variant p-4 gap-2 sticky top-0">
+<div class="flex items-center gap-3 px-2 mb-8">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">school</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary leading-tight">North Academy</h1>
+<p class="text-xs font-semibold text-outline tracking-wider uppercase">Faculty Portal</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container font-semibold rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<span class="font-body-md">Class Attendance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">group_add</span>
+<span class="font-body-md">Biometric Registry</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">insert_chart</span>
+<span class="font-body-md">Analytics Reports</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md">Academic Calendar</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-outline-variant flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-error hover:bg-error-container/20 transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col">
+<!-- Top Navigation Shell -->
+<header class="flex justify-between items-center w-full px-gutter h-16 sticky top-0 z-50 bg-surface-container-highest shadow-sm">
+<div class="flex items-center gap-4">
+<button class="md:hidden p-2 hover:bg-surface-variant rounded-full">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<span class="font-headline-md text-headline-md font-bold text-primary">EduVerify Pro</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="hidden sm:flex bg-surface-container-low px-4 py-1.5 rounded-full border border-outline-variant items-center gap-2">
+<span class="material-symbols-outlined text-outline text-lg">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48" placeholder="Search sessions..." type="text"/>
+</div>
+<button class="p-2 text-on-surface-variant hover:bg-surface-variant transition-colors rounded-full relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border border-white"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-variant transition-colors rounded-full">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="ml-2 w-8 h-8 rounded-full bg-primary-fixed overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a female school administrator with glasses, wearing a sharp navy blue blazer, set against a blurred academic background of a library with soft sunlight. The image conveys authority, reliability, and modern education leadership with a high-key lighting aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAC0CgiC4-Fl6a7z0Z3cSaS-ZsxAcit1ICWriPy2dggTyG6qXaQkj7VtNs7xB6zzjDYiZZUyazCFJYda-QhDcfPpons1uz-v-ynZPKFsFHTOaGQAx2ZocHX6AQ6jIB1rDrrwZ-sSAWdPVn1jJgoJHMyBJ3DDxGbLxAm6ya-mu0sKmtN3ItM_0mbFmUDP67xm0XB4JT1dkHtIIRIrOvVIfYLrWavp1DajBOY2K9ywcd23qLxnOmnDT_AOg"/>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<div class="p-6 md:p-10 flex-1 flex flex-col items-center justify-center relative overflow-hidden">
+<!-- Atmospheric Backdrop -->
+<div class="absolute inset-0 z-0 pointer-events-none opacity-40">
+<div class="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] bg-secondary-fixed opacity-20 blur-[100px] rounded-full"></div>
+<div class="absolute bottom-[-10%] left-[-5%] w-[300px] h-[300px] bg-tertiary-fixed opacity-10 blur-[80px] rounded-full"></div>
+</div>
+<!-- Bento Layout Content -->
+<div class="max-w-4xl w-full grid grid-cols-1 md:grid-cols-12 gap-6 z-10">
+<!-- Welcome/Status Card -->
+<div class="md:col-span-12 glass-card rounded-xl border border-outline-variant p-6 soft-shadow flex flex-col md:flex-row items-center gap-6">
+<div class="w-16 h-16 rounded-full bg-tertiary-fixed-dim biometric-pulse flex items-center justify-center">
+<span class="material-symbols-outlined text-on-tertiary-fixed text-4xl" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+</div>
+<div class="text-center md:text-left flex-1">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-1">Start Attendance Session</h2>
+<p class="text-on-surface-variant font-body-md italic">Open a session when you are ready to begin fingerprint attendance verification.</p>
+</div>
+<div class="px-4 py-2 bg-surface-container rounded-lg border border-outline-variant text-center">
+<span class="text-xs font-label-sm text-outline tracking-widest uppercase block mb-1">Terminal Status</span>
+<span class="text-sm font-bold text-secondary flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim inline-block"></span> Ready to Sync
+                        </span>
+</div>
+</div>
+<!-- Form Section -->
+<div class="md:col-span-8 bg-surface-container-lowest rounded-xl border border-outline-variant p-8 soft-shadow">
+<form class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Class Dropdown -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">school</span> Select Class
+                                </label>
+<select class="w-full h-12 bg-surface border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all rounded-t-lg px-4 text-on-surface">
+<option>Grade 10 - Advanced Physics</option>
+<option>Grade 11 - Computer Science</option>
+<option>Grade 9 - Mathematics A</option>
+<option>Grade 12 - Senior Seminar</option>
+</select>
+</div>
+<!-- Date Picker -->
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">calendar_month</span> Select Date
+                                </label>
+<input class="w-full h-12 bg-surface border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all rounded-t-lg px-4 text-on-surface" type="date" value="2023-10-27"/>
+</div>
+<!-- Session Type -->
+<div class="flex flex-col gap-2 md:col-span-2">
+<label class="text-sm font-semibold text-on-surface-variant mb-1">Session Type</label>
+<div class="grid grid-cols-3 gap-3">
+<label class="cursor-pointer group">
+<input checked="" class="hidden peer" name="session_type" type="radio"/>
+<div class="p-3 border border-outline-variant rounded-lg text-center peer-checked:bg-secondary-container peer-checked:text-on-secondary-container peer-checked:border-secondary transition-all soft-shadow-hover hover:bg-surface-container">
+<span class="material-symbols-outlined block mb-1">wb_sunny</span>
+<span class="text-sm font-bold">Morning</span>
+</div>
+</label>
+<label class="cursor-pointer group">
+<input class="hidden peer" name="session_type" type="radio"/>
+<div class="p-3 border border-outline-variant rounded-lg text-center peer-checked:bg-secondary-container peer-checked:text-on-secondary-container peer-checked:border-secondary transition-all soft-shadow-hover hover:bg-surface-container">
+<span class="material-symbols-outlined block mb-1">wb_twilight</span>
+<span class="text-sm font-bold">Afternoon</span>
+</div>
+</label>
+<label class="cursor-pointer group">
+<input class="hidden peer" name="session_type" type="radio"/>
+<div class="p-3 border border-outline-variant rounded-lg text-center peer-checked:bg-secondary-container peer-checked:text-on-secondary-container peer-checked:border-secondary transition-all soft-shadow-hover hover:bg-surface-container">
+<span class="material-symbols-outlined block mb-1">history_toggle_off</span>
+<span class="text-sm font-bold">Period</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Remarks -->
+<div class="flex flex-col gap-2 md:col-span-2">
+<label class="text-sm font-semibold text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">notes</span> Remarks
+                                </label>
+<textarea class="w-full bg-surface border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all rounded-t-lg px-4 py-3 text-on-surface resize-none" placeholder="Optional: Add specific notes about this attendance window..." rows="3"></textarea>
+</div>
+</div>
+<!-- Form Actions -->
+<div class="pt-6 flex flex-col sm:flex-row gap-4">
+<button class="flex-1 h-14 bg-primary text-on-primary rounded-xl font-bold text-body-md flex items-center justify-center gap-3 transition-all hover:brightness-110 active:scale-95 shadow-lg shadow-primary/20" type="submit">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+                                Open Attendance Session
+                            </button>
+<button class="px-8 h-14 bg-surface-container-high text-on-surface-variant rounded-xl font-bold text-body-md transition-all hover:bg-surface-variant active:scale-95" type="button">
+                                Cancel
+                            </button>
+</div>
+</form>
+</div>
+<!-- Info/Guide Side Bento -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<div class="bg-primary-container text-white p-6 rounded-xl soft-shadow flex-1 relative overflow-hidden">
+<div class="relative z-10">
+<h3 class="text-lg font-bold mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined">info</span> Session Guide
+                            </h3>
+<ul class="space-y-4 text-sm text-surface-variant">
+<li class="flex gap-3">
+<span class="w-6 h-6 rounded-full bg-secondary-container flex-shrink-0 flex items-center justify-center text-[10px] font-bold">1</span>
+<span>Ensure the biometric reader is plugged in and glowing cyan.</span>
+</li>
+<li class="flex gap-3">
+<span class="w-6 h-6 rounded-full bg-secondary-container flex-shrink-0 flex items-center justify-center text-[10px] font-bold">2</span>
+<span>Once opened, students can begin scanning their registered fingerprints.</span>
+</li>
+<li class="flex gap-3">
+<span class="w-6 h-6 rounded-full bg-secondary-container flex-shrink-0 flex items-center justify-center text-[10px] font-bold">3</span>
+<span>Closing the session will generate an instant attendance report.</span>
+</li>
+</ul>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-[120px]">verified</span>
+</div>
+</div>
+<div class="bg-secondary p-6 rounded-xl text-white soft-shadow flex items-center justify-between">
+<div>
+<p class="text-xs uppercase tracking-widest font-label-sm opacity-80">Last Session</p>
+<p class="text-lg font-bold">24 Oct, 2023</p>
+</div>
+<div class="text-right">
+<p class="text-xs uppercase tracking-widest font-label-sm opacity-80">Sync Rate</p>
+<p class="text-lg font-bold">98.4%</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Mobile Bottom Nav (Shown on mobile only) -->
+<nav class="md:hidden sticky bottom-0 w-full h-16 bg-surface-container-highest flex items-center justify-around px-4 z-50">
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary font-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<span class="text-[10px]">Session</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[10px]">Students</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="text-[10px]">Reports</span>
+</a>
+</nav>
+</main>
+<script>
+        // Simple micro-interaction for form focus effects
+        const inputs = document.querySelectorAll('select, input, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.querySelector('label').classList.add('text-primary');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.querySelector('label').classList.remove('text-primary');
+            });
+        });
+
+        // Set current date if picker supports it (fallback logic)
+        const datePicker = document.querySelector('input[type="date"]');
+        if(datePicker) {
+            const today = new Date().toISOString().split('T')[0];
+            datePicker.value = today;
+        }
+    </script>
+</body></html>

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EduVerify Pro | My Classes</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#2a4386",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#435b9f",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container": "#e2efff",
+                    "on-primary-container": "#758dd5",
+                    "inverse-on-surface": "#e7f2ff",
+                    "secondary-container": "#446ce4",
+                    "primary": "#00113a",
+                    "on-primary-fixed": "#00174a",
+                    "secondary": "#2552ca",
+                    "surface-variant": "#d4e4f6",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "on-surface-variant": "#444650",
+                    "surface-container-low": "#ecf4ff",
+                    "primary-fixed": "#dbe1ff",
+                    "on-primary": "#ffffff",
+                    "surface": "#f7f9ff",
+                    "background": "#f7f9ff",
+                    "on-surface": "#0d1d2a",
+                    "on-secondary-fixed-variant": "#003baf",
+                    "on-background": "#0d1d2a",
+                    "on-tertiary-container": "#009eb0",
+                    "error-container": "#ffdad6",
+                    "on-error": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "tertiary-container": "#002d33",
+                    "surface-container-high": "#d9eafc",
+                    "surface-dim": "#cbdcee",
+                    "inverse-surface": "#223240",
+                    "secondary-fixed-dim": "#b6c4ff",
+                    "outline": "#757682",
+                    "tertiary-fixed": "#9cf0ff",
+                    "tertiary": "#00171b",
+                    "secondary-fixed": "#dce1ff",
+                    "outline-variant": "#c5c6d2",
+                    "on-tertiary": "#ffffff",
+                    "primary-container": "#002366",
+                    "on-secondary-fixed": "#00164e",
+                    "tertiary-fixed-dim": "#00daf3",
+                    "surface-container-highest": "#d4e4f6",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "inverse-primary": "#b3c5ff",
+                    "on-secondary-container": "#fffbff",
+                    "surface-bright": "#f7f9ff",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#001f24"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "desktop-max-width": "1280px",
+                    "gutter": "16px",
+                    "container-padding": "24px",
+                    "base": "8px",
+                    "tablet-breakpoint": "768px",
+                    "mobile-breakpoint": "375px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Manrope"],
+                    "button-text": ["Manrope"],
+                    "body-md": ["Manrope"],
+                    "body-lg": ["Manrope"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "label-sm": ["JetBrains Mono"],
+                    "headline-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .soft-card-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .hover-card-shadow:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+        .biometric-pulse {
+            animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .7; transform: scale(1.05); }
+        }
+        .glass-overlay {
+            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="hidden md:flex flex-col h-full w-64 fixed left-0 bg-surface-container-low border-r border-outline-variant p-4 gap-2 z-50">
+<div class="flex items-center gap-3 mb-8 px-2">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">school</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md font-extrabold text-primary leading-tight">North Academy</h2>
+<p class="text-on-surface-variant font-body-md text-[13px]">Faculty Portal</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container font-semibold rounded-lg transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">fingerprint</span>
+                Class Attendance
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">group_add</span>
+                Biometric Registry
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">insert_chart</span>
+                Analytics Reports
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+                Academic Calendar
+            </a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-4 space-y-1">
+<button class="w-full mb-4 py-3 px-4 bg-primary text-white font-button-text text-button-text rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition-all">
+                Start Biometric Session
+            </button>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+                Help Center
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+                Logout
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 flex flex-col h-screen overflow-y-auto">
+<!-- Top Navigation Bar -->
+<header class="flex justify-between items-center w-full px-container-padding h-16 sticky top-0 z-40 bg-surface-container-highest shadow-sm">
+<div class="flex items-center gap-4">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">EduVerify Pro</h1>
+<div class="hidden lg:flex items-center bg-white rounded-full px-4 py-1.5 border border-outline-variant ml-4">
+<span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-64" placeholder="Search classes or students..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex gap-2 mr-2">
+<button class="p-2 rounded-full text-on-surface-variant hover:bg-surface-variant transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-full text-on-surface-variant hover:bg-surface-variant transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="flex items-center gap-3 border-l border-outline-variant pl-4">
+<div class="text-right hidden sm:block">
+<p class="font-bold text-primary leading-none">Dr. Sarah Jenkins</p>
+<p class="text-[12px] text-on-surface-variant">Mathematics Dept.</p>
+</div>
+<img class="w-10 h-10 rounded-full object-cover border-2 border-primary" data-alt="A professional headshot of a female professor in a modern office, featuring soft studio lighting and a clean background. She has a confident, approachable expression, wearing professional academic attire. The overall aesthetic is clean, corporate, and high-quality, reflecting an institutional leadership role." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVwDXDkrB-9RkGA7DbHJxsVwFZaOOntZbcoggVSiC_v4J2bZpXwBHURFQAd-Mj79daO10Nn3QPsT0kGHitIn4mBiMpvkvNG21BXn5vo5oewO3_DIA3iPH4JcBVh9kK4Ww9VwqYyQnRrISvYx9US2edAPY_x-rNonG_FpurEjoHmRCLVNoKL5j4XzBiy-OVFkvPuxKbjV2dUAwtM1PohKk2Fpo046mNROWG9YIVzdE8EyS3hffWaDN9gw"/>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="p-container-padding flex-1">
+<!-- Page Heading Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<nav class="flex text-on-surface-variant text-xs gap-2 mb-2 font-label-sm uppercase tracking-wider">
+<span>Dashboard</span>
+<span>/</span>
+<span class="text-secondary font-bold">My Classes</span>
+</nav>
+<h2 class="font-headline-lg text-headline-lg text-primary">Current Semester Classes</h2>
+<p class="text-on-surface-variant max-w-xl">Manage your active academic courses and monitor student attendance via biometric verification records.</p>
+</div>
+<div class="flex gap-3">
+<div class="bg-white p-4 rounded-xl border border-outline-variant flex items-center gap-4 soft-card-shadow">
+<div class="bg-tertiary-container/10 p-2 rounded-lg">
+<span class="material-symbols-outlined text-on-tertiary-container">history</span>
+</div>
+<div>
+<p class="text-[11px] font-label-sm uppercase text-on-surface-variant">Avg. Attendance</p>
+<p class="font-headline-md text-headline-md text-on-surface">94.2%</p>
+</div>
+</div>
+<button class="bg-secondary text-white px-6 py-4 rounded-xl flex items-center gap-2 font-button-text hover:shadow-lg active:scale-95 transition-all">
+<span class="material-symbols-outlined">add</span>
+                        New Class
+                    </button>
+</div>
+</div>
+<!-- Bento Grid of Class Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="bg-white rounded-xl border border-outline-variant soft-card-shadow hover-card-shadow transition-all duration-300 flex flex-col group overflow-hidden">
+<div class="h-2 bg-secondary group-hover:bg-tertiary-fixed-dim transition-colors"></div>
+<div class="p-6 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-secondary font-label-sm uppercase mb-1">MATH102</p>
+<h3 class="font-headline-md text-headline-md text-primary">Advanced Mathematics</h3>
+</div>
+<span class="bg-green-100 text-green-800 text-[11px] font-bold px-2 py-1 rounded flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-green-500 biometric-pulse"></span>
+                                COMPLETED
+                            </span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30">
+<p class="text-[11px] font-label-sm text-on-surface-variant uppercase">Students</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-primary text-sm">groups</span>
+<span class="font-bold text-lg">32</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30">
+<p class="text-[11px] font-label-sm text-on-surface-variant uppercase">Last Session</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-primary text-sm">event</span>
+<span class="font-bold">Oct 24, 2023</span>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant flex flex-col gap-2">
+<button class="w-full py-3 bg-secondary text-white rounded-lg font-button-text hover:brightness-110 transition-all flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+                                Start Attendance
+                            </button>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2.5 bg-white border border-outline text-on-surface font-button-text rounded-lg hover:bg-surface transition-all flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">assignment</span>
+                                    Records
+                                </button>
+<button class="py-2.5 bg-white border border-outline text-on-surface font-button-text rounded-lg hover:bg-surface transition-all flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">person</span>
+                                    Students
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white rounded-xl border border-outline-variant soft-card-shadow hover-card-shadow transition-all duration-300 flex flex-col group overflow-hidden">
+<div class="h-2 bg-secondary group-hover:bg-tertiary-fixed-dim transition-colors"></div>
+<div class="p-6 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-secondary font-label-sm uppercase mb-1">PHYS204</p>
+<h3 class="font-headline-md text-headline-md text-primary">Quantum Mechanics I</h3>
+</div>
+<span class="bg-amber-100 text-amber-800 text-[11px] font-bold px-2 py-1 rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">schedule</span>
+                                PENDING
+                            </span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30">
+<p class="text-[11px] font-label-sm text-on-surface-variant uppercase">Students</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-primary text-sm">groups</span>
+<span class="font-bold text-lg">24</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30">
+<p class="text-[11px] font-label-sm text-on-surface-variant uppercase">Last Session</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-primary text-sm">event</span>
+<span class="font-bold">Oct 23, 2023</span>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant flex flex-col gap-2">
+<button class="w-full py-3 bg-secondary text-white rounded-lg font-button-text hover:brightness-110 transition-all flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">fingerprint</span>
+                                Start Attendance
+                            </button>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2.5 bg-white border border-outline text-on-surface font-button-text rounded-lg hover:bg-surface transition-all flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">assignment</span>
+                                    Records
+                                </button>
+<button class="py-2.5 bg-white border border-outline text-on-surface font-button-text rounded-lg hover:bg-surface transition-all flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">person</span>
+                                    Students
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-white rounded-xl border border-outline-variant soft-card-shadow hover-card-shadow transition-all duration-300 flex flex-col group overflow-hidden">
+<div class="h-2 bg-secondary group-hover:bg-tertiary-fixed-dim transition-colors"></div>
+<div class="p-6 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-secondary font-label-sm uppercase mb-1">CS101</p>
+<h3 class="font-headline-md text-headline-md text-primary">Intro to Computation</h3>
+</div>
+<span class="bg-green-100 text-green-800 text-[11px] font-bold px-2 py-1 rounded flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-green-500 biometric-pulse"></span>
+                                COMPLETED
+                            </span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30">
+<p class="text-[11px] font-label-sm text-on-surface-variant uppercase">Students</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-primary text-sm">groups</span>
+<span class="font-bold text-lg">45</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30">
+<p class="text-[11px] font-label-sm text-on-surface-variant uppercase">Last Session</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-primary text-sm">event</span>
+<span class="font-bold">Today, 09:00</span>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant flex flex-col gap-2">
+<button class="w-full py-3 bg-secondary text-white rounded-lg font-button-text hover:brightness-110 transition-all flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+                                Start Attendance
+                            </button>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2.5 bg-white border border-outline text-on-surface font-button-text rounded-lg hover:bg-surface transition-all flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">assignment</span>
+                                    Records
+                                </button>
+<button class="py-2.5 bg-white border border-outline text-on-surface font-button-text rounded-lg hover:bg-surface transition-all flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">person</span>
+                                    Students
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-white rounded-xl border border-outline-variant soft-card-shadow hover-card-shadow transition-all duration-300 flex flex-col group overflow-hidden">
+<div class="h-2 bg-secondary group-hover:bg-tertiary-fixed-dim transition-colors"></div>
+<div class="p-6 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-4">
+<div>
+<p class="text-secondary font-label-sm uppercase mb-1">STAT301</p>
+<h3 class="font-headline-md text-headline-md text-primary">Applied Statistics</h3>
+</div>
+<span class="bg-amber-100 text-amber-800 text-[11px] font-bold px-2 py-1 rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">schedule</span>
+                                PENDING
+                            </span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30">
+<p class="text-[11px] font-label-sm text-on-surface-variant uppercase">Students</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-primary text-sm">groups</span>
+<span class="font-bold text-lg">28</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30">
+<p class="text-[11px] font-label-sm text-on-surface-variant uppercase">Last Session</p>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-primary text-sm">event</span>
+<span class="font-bold">Oct 21, 2023</span>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant flex flex-col gap-2">
+<button class="w-full py-3 bg-secondary text-white rounded-lg font-button-text hover:brightness-110 transition-all flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">fingerprint</span>
+                                Start Attendance
+                            </button>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2.5 bg-white border border-outline text-on-surface font-button-text rounded-lg hover:bg-surface transition-all flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">assignment</span>
+                                    Records
+                                </button>
+<button class="py-2.5 bg-white border border-outline text-on-surface font-button-text rounded-lg hover:bg-surface transition-all flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">person</span>
+                                    Students
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Add New Class Card -->
+<button class="rounded-xl border-2 border-dashed border-outline-variant flex flex-col items-center justify-center p-8 bg-surface-container-lowest hover:bg-surface-container transition-all group min-h-[300px]">
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:scale-110 transition-transform mb-4">
+<span class="material-symbols-outlined text-3xl">add</span>
+</div>
+<p class="font-bold text-primary">Create New Class</p>
+<p class="text-on-surface-variant text-sm mt-1">Add a new course to your dashboard</p>
+</button>
+</div>
+<!-- Attendance History Mini Table Section -->
+<div class="mt-12 bg-white rounded-xl border border-outline-variant soft-card-shadow overflow-hidden">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center">
+<div>
+<h3 class="font-headline-md text-headline-md text-primary">Recent Activity</h3>
+<p class="text-on-surface-variant text-sm">Log of the last five biometric sessions completed.</p>
+</div>
+<button class="text-secondary font-button-text flex items-center gap-2 hover:underline">
+                        View All History <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-sm uppercase text-[11px] tracking-widest">
+<th class="px-6 py-4">Class</th>
+<th class="px-6 py-4">Time</th>
+<th class="px-6 py-4">Status</th>
+<th class="px-6 py-4">Total Scanned</th>
+<th class="px-6 py-4 text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-6 py-4 font-bold">Advanced Mathematics</td>
+<td class="px-6 py-4 text-on-surface-variant">Today, 10:30 AM</td>
+<td class="px-6 py-4">
+<span class="bg-green-100 text-green-800 text-[11px] font-bold px-2 py-0.5 rounded">Success</span>
+</td>
+<td class="px-6 py-4">32 / 32</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:bg-surface-variant p-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</td>
+</tr>
+<tr class="bg-secondary/5 hover:bg-secondary/10 transition-colors">
+<td class="px-6 py-4 font-bold">Intro to Computation</td>
+<td class="px-6 py-4 text-on-surface-variant">Today, 09:15 AM</td>
+<td class="px-6 py-4">
+<span class="bg-green-100 text-green-800 text-[11px] font-bold px-2 py-0.5 rounded">Success</span>
+</td>
+<td class="px-6 py-4">44 / 45</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:bg-surface-variant p-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-6 py-4 font-bold">Quantum Mechanics I</td>
+<td class="px-6 py-4 text-on-surface-variant">Yesterday, 02:45 PM</td>
+<td class="px-6 py-4">
+<span class="bg-green-100 text-green-800 text-[11px] font-bold px-2 py-0.5 rounded">Success</span>
+</td>
+<td class="px-6 py-4">22 / 24</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:bg-surface-variant p-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Footer Credits -->
+<footer class="p-container-padding bg-surface-container-low text-on-surface-variant flex flex-col md:flex-row justify-between items-center text-sm gap-4">
+<p>© 2023 EduVerify Pro. All biometric data is encrypted and secured under FERPA guidelines.</p>
+<div class="flex gap-6">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Security Standards</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+</div>
+</footer>
+</main>
+<!-- Biometric Floating Modal (Hidden by Default) -->
+<div class="hidden fixed inset-0 z-[100] flex items-center justify-center px-4" id="scan-modal">
+<div class="absolute inset-0 bg-primary/20 backdrop-blur-sm" onclick="toggleModal()"></div>
+<div class="glass-overlay w-full max-w-md rounded-2xl p-8 soft-card-shadow border border-white flex flex-col items-center text-center relative z-10">
+<button class="absolute top-4 right-4 text-on-surface-variant hover:text-primary" onclick="toggleModal()">
+<span class="material-symbols-outlined">close</span>
+</button>
+<div class="w-24 h-24 rounded-full border-4 border-secondary flex items-center justify-center mb-6 biometric-pulse">
+<span class="material-symbols-outlined text-5xl text-secondary">fingerprint</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Biometric Session Ready</h3>
+<p class="text-on-surface-variant mb-8">Please instruct students to place their finger on the terminal. The system is synchronized and waiting.</p>
+<div class="w-full space-y-3">
+<div class="flex justify-between text-sm px-2">
+<span class="text-on-surface-variant">Live Scanner Status:</span>
+<span class="text-secondary font-bold">READY</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2">
+<div class="bg-secondary h-2 rounded-full w-0" id="progress-bar"></div>
+</div>
+<button class="w-full py-3 bg-primary text-white rounded-xl font-button-text mt-4" onclick="toggleModal()">
+                    End Session
+                </button>
+</div>
+</div>
+</div>
+<script>
+        function toggleModal() {
+            const modal = document.getElementById('scan-modal');
+            modal.classList.toggle('hidden');
+            
+            if (!modal.classList.contains('hidden')) {
+                let width = 0;
+                const bar = document.getElementById('progress-bar');
+                const interval = setInterval(() => {
+                    if (width >= 100) {
+                        width = 0;
+                    } else {
+                        width++;
+                        bar.style.width = width + '%';
+                    }
+                }, 50);
+                modal.dataset.interval = interval;
+            } else {
+                clearInterval(modal.dataset.interval);
+            }
+        }
+
+        // Attach modal trigger to "Start Attendance" buttons for demo purposes
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.innerText.includes('Start Attendance')) {
+                btn.onclick = toggleModal;
+            }
+        });
+    </script>
+</body></html>

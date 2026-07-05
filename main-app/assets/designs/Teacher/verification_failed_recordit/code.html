@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Verification Failed | EduVerify Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed-variant": "#2a4386",
+                      "on-error-container": "#93000a",
+                      "surface-tint": "#435b9f",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container": "#e2efff",
+                      "on-primary-container": "#758dd5",
+                      "inverse-on-surface": "#e7f2ff",
+                      "secondary-container": "#446ce4",
+                      "primary": "#00113a",
+                      "on-primary-fixed": "#00174a",
+                      "secondary": "#2552ca",
+                      "surface-variant": "#d4e4f6",
+                      "primary-fixed-dim": "#b3c5ff",
+                      "on-surface-variant": "#444650",
+                      "surface-container-low": "#ecf4ff",
+                      "primary-fixed": "#dbe1ff",
+                      "on-primary": "#ffffff",
+                      "surface": "#f7f9ff",
+                      "background": "#f7f9ff",
+                      "on-surface": "#0d1d2a",
+                      "on-secondary-fixed-variant": "#003baf",
+                      "on-background": "#0d1d2a",
+                      "on-tertiary-container": "#009eb0",
+                      "error-container": "#ffdad6",
+                      "on-error": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "tertiary-container": "#002d33",
+                      "surface-container-high": "#d9eafc",
+                      "surface-dim": "#cbdcee",
+                      "inverse-surface": "#223240",
+                      "secondary-fixed-dim": "#b6c4ff",
+                      "outline": "#757682",
+                      "tertiary-fixed": "#9cf0ff",
+                      "tertiary": "#00171b",
+                      "secondary-fixed": "#dce1ff",
+                      "outline-variant": "#c5c6d2",
+                      "on-tertiary": "#ffffff",
+                      "primary-container": "#002366",
+                      "on-secondary-fixed": "#00164e",
+                      "tertiary-fixed-dim": "#00daf3",
+                      "surface-container-highest": "#d4e4f6",
+                      "on-tertiary-fixed-variant": "#004f58",
+                      "inverse-primary": "#b3c5ff",
+                      "on-secondary-container": "#fffbff",
+                      "surface-bright": "#f7f9ff",
+                      "error": "#ba1a1a",
+                      "on-tertiary-fixed": "#001f24"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "desktop-max-width": "1280px",
+                      "gutter": "16px",
+                      "container-padding": "24px",
+                      "base": "8px",
+                      "tablet-breakpoint": "768px",
+                      "mobile-breakpoint": "375px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Manrope"],
+                      "button-text": ["Manrope"],
+                      "body-md": ["Manrope"],
+                      "body-lg": ["Manrope"],
+                      "headline-lg-mobile": ["Manrope"],
+                      "label-sm": ["JetBrains Mono"],
+                      "headline-md": ["Manrope"]
+              },
+              "fontSize": {
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .hover-shadow:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+        .biometric-glow {
+            box-shadow: 0 0 15px rgba(0, 218, 243, 0.4);
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-hidden">
+<!-- TopNavBar Implementation -->
+<header class="flex justify-between items-center w-full px-gutter h-16 sticky top-0 z-50 bg-surface-container-highest dark:bg-surface-container-highest shadow-sm">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">EduVerify Pro</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="hidden md:flex items-center bg-surface-container rounded-full px-4 py-1.5 mr-4">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md text-on-surface w-64" placeholder="Search students..." type="text"/>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-variant transition-colors cursor-pointer active:scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-variant transition-colors cursor-pointer active:scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+</button>
+<div class="ml-2 w-8 h-8 rounded-full overflow-hidden bg-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Professional headshot of a female school faculty member wearing a navy blazer, captured in a bright, modern academic office environment with soft natural lighting and a blurred bookshelf background. High-quality corporate photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCt4mFVWXuwVCQducEcgdb9iQku3a1MvUbln04-_GIbMDMqee951UZJnq8yEz8P2yEUnFRdvEg8ln0cjd7O25SkHWve_m_bTZ8hrEKK8u3CLKW2WDmPCfNkftIOUCduS5kveJctbzoju1w6P8Zk520wV0ugOihfrx1PIvpDeK0ZeXxrITqi_R9cbO6oc0IytR0EWoowyVmqIelYBDfxKWAorh9CTW7do7Mo0kz4EtmLn6195qm5OtC3ig"/>
+</div>
+</div>
+</header>
+<div class="flex h-[calc(100vh-64px)]">
+<!-- SideNavBar Implementation -->
+<aside class="hidden md:flex flex-col h-full w-64 p-4 gap-2 bg-surface-container-low dark:bg-surface-container-low border-r border-outline-variant">
+<div class="flex items-center gap-3 px-2 mb-6">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">school</span>
+</div>
+<div>
+<h2 class="font-headline-md text-body-md font-extrabold text-primary leading-tight">North Academy</h2>
+<p class="text-[12px] text-on-surface-variant font-medium">Faculty Portal</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 bg-secondary-container text-on-secondary-container font-semibold rounded-lg transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<span class="font-body-md">Biometric Registry</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">group_add</span>
+<span class="font-body-md">Class Attendance</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">insert_chart</span>
+<span class="font-body-md">Analytics Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md">Academic Calendar</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-1">
+<button class="w-full mb-4 py-3 bg-secondary text-on-secondary rounded-xl font-button-text hover:shadow-lg transition-all flex items-center justify-center gap-2 active:scale-95">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+                    Start Biometric Session
+                </button>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area: Verification Failed State -->
+<main class="flex-1 overflow-y-auto bg-surface relative">
+<!-- Background Decorative Element -->
+<div class="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-bl from-surface-container to-transparent opacity-50 -z-10"></div>
+<div class="max-w-desktop-max-width mx-auto p-container-padding">
+<!-- Navigation Breadcrumb -->
+<nav class="flex items-center gap-2 mb-8 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">home</span>
+<span class="text-label-sm">DASHBOARD</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-label-sm">ATTENDANCE</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-label-sm text-secondary font-bold">VERIFICATION</span>
+</nav>
+<!-- Status Card (Bento Layout) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Main Error Feedback Column -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-8 soft-shadow relative overflow-hidden">
+<!-- Visual Indicator Header -->
+<div class="flex items-start justify-between mb-8">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-2xl bg-error-container flex items-center justify-center">
+<span class="material-symbols-outlined text-error text-[32px]">person_off</span>
+</div>
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-1">Student not found.</h1>
+<p class="text-body-lg text-on-surface-variant">Biometric identity verification failed for the current attempt.</p>
+</div>
+</div>
+<span class="px-4 py-1.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm">ERROR_ID: 404_BIO</span>
+</div>
+<!-- Diagnostic Info -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+<div>
+<h3 class="font-headline-md text-body-md font-bold text-primary mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">troubleshoot</span>
+                                        Possible Reasons
+                                    </h3>
+<ul class="space-y-4">
+<li class="flex items-start gap-3 p-3 rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-outline text-[20px]">humidity_low</span>
+<p class="text-body-md text-on-surface-variant"><span class="font-semibold text-on-surface">Poor Scan Quality:</span> Sensor may be dirty or dry fingers prevented a clear reading.</p>
+</li>
+<li class="flex items-start gap-3 p-3 rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-outline text-[20px]">person_search</span>
+<p class="text-body-md text-on-surface-variant"><span class="font-semibold text-on-surface">Record Missing:</span> The student may not yet be registered in the North Academy biometric database.</p>
+</li>
+<li class="flex items-start gap-3 p-3 rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-outline text-[20px]">sync_disabled</span>
+<p class="text-body-md text-on-surface-variant"><span class="font-semibold text-on-surface">Data Sync Lag:</span> Recent registrations may take up to 5 minutes to propagate to this terminal.</p>
+</li>
+</ul>
+</div>
+<div class="bg-surface-container rounded-xl p-6 border border-outline-variant/30 flex flex-col items-center justify-center text-center">
+<div class="relative mb-4">
+<div class="w-24 h-24 rounded-full border-4 border-error/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-error text-[48px]">fingerprint</span>
+</div>
+<div class="absolute -bottom-2 -right-2 bg-error text-on-error rounded-full p-1 border-4 border-surface-container">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</div>
+</div>
+<p class="text-body-md font-semibold text-error mb-1">Unrecognized Signature</p>
+<p class="text-label-sm text-on-surface-variant">Last attempt: 09:42 AM</p>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col sm:flex-row gap-4">
+<button class="flex-1 py-4 bg-primary text-on-primary rounded-xl font-button-text flex items-center justify-center gap-3 hover-shadow active:scale-95 transition-all group">
+<span class="material-symbols-outlined group-hover:animate-spin">refresh</span>
+                                    Retry Biometric Scan
+                                </button>
+<button class="flex-1 py-4 bg-surface-container-high text-on-surface rounded-xl font-button-text flex items-center justify-center gap-3 border border-outline-variant hover:bg-outline-variant/20 active:scale-95 transition-all">
+<span class="material-symbols-outlined">search</span>
+                                    Search Student Manually
+                                </button>
+<button class="px-6 py-4 border border-outline text-on-surface rounded-xl font-button-text flex items-center justify-center gap-3 hover:bg-surface transition-all active:scale-95">
+<span class="material-symbols-outlined">contact_support</span>
+                                    Contact Admin
+                                </button>
+</div>
+</div>
+<!-- Manual Entry Quick-Link (Secondary Context) -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-6 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary text-[32px]">id_card</span>
+<div>
+<h4 class="font-headline-md text-body-md font-bold text-on-surface">Use Student ID Instead?</h4>
+<p class="text-on-surface-variant">Type the student's 8-digit unique identifier for manual check-in.</p>
+</div>
+</div>
+<div class="flex items-center bg-surface rounded-lg border border-outline-variant p-1 shadow-inner">
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-32 px-3" placeholder="ID Number..." type="text"/>
+<button class="bg-secondary text-on-secondary px-4 py-2 rounded-md font-button-text text-label-sm">GO</button>
+</div>
+</div>
+</div>
+<!-- Side Context: Recent Failed Attempts / Scanner Status -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Scanner Status Widget -->
+<div class="bg-surface-container-highest rounded-xl border border-outline-variant p-6 soft-shadow">
+<h3 class="font-headline-md text-body-md font-bold text-primary mb-6 flex items-center justify-between">
+                                Device Status
+                                <span class="w-3 h-3 rounded-full bg-green-500 biometric-glow"></span>
+</h3>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-20 h-20 rounded-xl bg-cover bg-center border-2 border-primary/10" data-alt="A macro close-up of a professional-grade biometric fingerprint scanner module integrated into a sleek, dark slate housing. A soft, cyan light ring pulses around the scanning glass, creating a high-tech, secure atmosphere in a clean academic setting." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCXi0B7lC5HFgFr2kY2xHtRJwrDGELuqG0sCiyb27EX_Cs6hvW1-2gUsz7oJagcVr7Zumib5NVjKXJ8pe_5jFfVgdkd0_LH23JuWjFLljvDxw7OG1v63hK9YCi4WsdV9ubAolL6e6DeGe2X-f6-6uEHkg4I17U4uUycwFq9UvsKmBW6n8cMvMkEqWFCHdUJJIyl0EhhSZv82257ZLAFTJ7N4PC_lG4h44iAsOJEOmv9ow8oPRIr2XEGRA')"></div>
+<div>
+<p class="font-semibold text-on-surface">BioScan X-900</p>
+<p class="text-label-sm text-on-surface-variant">Connected &amp; Online</p>
+<div class="mt-2 flex gap-1">
+<div class="h-1 w-8 bg-primary rounded-full"></div>
+<div class="h-1 w-8 bg-primary rounded-full"></div>
+<div class="h-1 w-8 bg-outline-variant rounded-full"></div>
+</div>
+</div>
+</div>
+<button class="w-full py-2 bg-surface text-secondary border border-secondary rounded-lg font-label-sm text-label-sm hover:bg-secondary/5 transition-colors">
+                                Run Diagnostics
+                            </button>
+</div>
+<!-- Recent Mismatches -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 soft-shadow flex-1">
+<h3 class="font-headline-md text-body-md font-bold text-primary mb-4">Unmatched Events</h3>
+<div class="space-y-4">
+<!-- Log Item -->
+<div class="flex items-center gap-4 p-3 border-b border-outline-variant last:border-0">
+<div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-error text-[20px]">warning</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-body-md font-semibold text-on-surface truncate">Unknown Fingerprint</p>
+<p class="text-label-sm text-on-surface-variant">09:41 AM · Terminal A</p>
+</div>
+</div>
+<!-- Log Item -->
+<div class="flex items-center gap-4 p-3 border-b border-outline-variant last:border-0">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-outline text-[20px]">person_search</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-body-md font-semibold text-on-surface truncate">Registration Pending</p>
+<p class="text-label-sm text-on-surface-variant">09:35 AM · Terminal B</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-4 py-2 text-on-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors">
+                                View Detailed Log
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Contextual Help FAB (Only if active task) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-secondary text-on-secondary rounded-full flex items-center justify-center shadow-xl hover:scale-110 active:scale-90 transition-all z-50">
+<span class="material-symbols-outlined">question_answer</span>
+</button>
+</main>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+        // Simple ripple-like effect on primary buttons or retry logic simulation
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if(this.innerText.includes('Retry')) {
+                    const originalContent = this.innerHTML;
+                    this.innerHTML = `<span class="material-symbols-outlined animate-spin">sync</span> Scanning...`;
+                    this.disabled = true;
+                    this.classList.add('opacity-80');
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalContent;
+                        this.disabled = false;
+                        this.classList.remove('opacity-80');
+                        // Simulation over
+                    }, 2000);
+                }
+            });
+        });
+
+        // Search bar focus behavior
+        const searchInput = document.querySelector('input[placeholder="Search students..."]');
+        searchInput?.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-primary/20', 'bg-surface-container-highest');
+        });
+        searchInput?.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-primary/20', 'bg-surface-container-highest');
+        });
+    </script>
+</body></html>

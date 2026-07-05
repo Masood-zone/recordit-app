@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RecordIT - Class Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..900&family=Manrope:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#00174a",
+                        "primary-fixed": "#dbe1ff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#2a4386",
+                        "on-primary-container": "#758dd5",
+                        "inverse-surface": "#223240",
+                        "tertiary-container": "#002d33",
+                        "tertiary": "#00171b",
+                        "on-background": "#0d1d2a",
+                        "surface-container-low": "#ecf4ff",
+                        "secondary": "#2552ca",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#e7f2ff",
+                        "surface-container": "#e2efff",
+                        "inverse-primary": "#b3c5ff",
+                        "on-error-container": "#93000a",
+                        "secondary-container": "#446ce4",
+                        "on-secondary-fixed-variant": "#003baf",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#00164e",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#435b9f",
+                        "outline": "#757682",
+                        "surface-dim": "#cbdcee",
+                        "secondary-fixed": "#dce1ff",
+                        "on-tertiary-container": "#009eb0",
+                        "tertiary-fixed-dim": "#00daf3",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#9cf0ff",
+                        "surface": "#f7f9ff",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "surface-container-highest": "#d4e4f6",
+                        "primary-container": "#002366",
+                        "surface-bright": "#f7f9ff",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#d9eafc",
+                        "on-tertiary-fixed": "#001f24",
+                        "background": "#f7f9ff",
+                        "surface-variant": "#d4e4f6",
+                        "primary": "#00113a",
+                        "on-surface-variant": "#444650",
+                        "outline-variant": "#c5c6d2",
+                        "on-surface": "#0d1d2a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Manrope"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "button-text": ["Manrope"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-md": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "body-md": ["Manrope"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .soft-shadow:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbdcee;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<!-- Side Navigation Bar -->
+<aside class="fixed left-0 top-0 h-full flex flex-col p-4 bg-primary dark:bg-primary border-r border-outline-variant shadow-sm w-64 z-50">
+<div class="mb-8 px-4 flex items-center gap-3">
+<span class="material-symbols-outlined text-on-primary text-3xl" style="font-variation-settings: 'FILL' 1;">school</span>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md font-bold text-on-primary dark:text-on-primary">RecordIT</span>
+<span class="text-[10px] uppercase tracking-widest text-primary-fixed-dim font-bold">Admin Terminal</span>
+</div>
+</div>
+<nav class="flex-1 space-y-1 overflow-y-auto pr-2">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<!-- Academic Setup -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">school</span>
+<span class="font-body-md">Academic Setup</span>
+</a>
+<!-- Students -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">group</span>
+<span class="font-body-md">Students</span>
+</a>
+<!-- Teachers -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">person</span>
+<span class="font-body-md">Teachers</span>
+</a>
+<!-- Classes (ACTIVE) -->
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-semibold shadow-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">class</span>
+<span class="font-body-md">Classes</span>
+</a>
+<!-- Attendance -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">calendar_today</span>
+<span class="font-body-md">Attendance</span>
+</a>
+<!-- Reports -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">assessment</span>
+<span class="font-body-md">Reports</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-on-primary-fixed-variant space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg group text-error-container" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen flex flex-col relative">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center h-16 px-8 sticky top-0 bg-surface/80 backdrop-blur-md border-b border-outline-variant z-40">
+<div class="flex items-center gap-6 flex-1">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Class Management</h1>
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-lowest border-none ring-1 ring-outline-variant focus:ring-2 focus:ring-secondary rounded-full py-2 pl-10 pr-4 text-body-md transition-all shadow-sm" placeholder="Search by name or class code..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors relative group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary">fingerprint</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary">help_outline</span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-3 cursor-pointer group">
+<img class="h-10 w-10 rounded-full border-2 border-secondary-container object-cover" data-alt="A professional high-resolution close-up portrait of a school administrator in a bright, modern academic setting. The lighting is soft and professional, emphasizing a friendly yet authoritative demeanor. The aesthetic is clean and corporate, consistent with the RecordIT educational brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlnbPnwEFHmlme6V-f8-VG6TFAqa3_ThsZBHXFcJBRFdWABbx8an42uokhQ4jt084slajL4VoCeAFvDUcE-btZgAW0EEBnztoqfvV2C_DQlLhNtIH_GDpPxGS5zedNtIY-PeYqRGiWSncpdmLyzMJEshoPdShpRY4zbZvVumth3t0vtf864E_CgO4vbXDC3OcOc76s6lFa3guS4dNiIDxXJ_7midYeEHJuxiSGUtLQHmlmAEI3LSRSpQ"/>
+<div class="flex flex-col">
+<span class="text-label-sm font-bold text-on-surface group-hover:text-secondary transition-colors">Admin Terminal</span>
+<span class="text-[10px] text-on-surface-variant">Principal Office</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<div class="flex-1 p-8 space-y-8 overflow-y-auto">
+<!-- Filter Section -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-surface-container-low p-4 rounded-xl border border-outline-variant soft-shadow">
+<div class="space-y-1">
+<label class="text-[10px] uppercase tracking-wider font-bold text-on-surface-variant px-1">Academic Year</label>
+<select class="w-full bg-surface-container-lowest border-none ring-1 ring-outline-variant focus:ring-2 focus:ring-secondary rounded-lg py-2 px-3 text-body-md appearance-none cursor-pointer">
+<option>2023 - 2024</option>
+<option>2022 - 2023</option>
+</select>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] uppercase tracking-wider font-bold text-on-surface-variant px-1">Academic Level</label>
+<select class="w-full bg-surface-container-lowest border-none ring-1 ring-outline-variant focus:ring-2 focus:ring-secondary rounded-lg py-2 px-3 text-body-md appearance-none cursor-pointer">
+<option>All Levels</option>
+<option>Primary</option>
+<option>Middle School</option>
+<option>High School</option>
+</select>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] uppercase tracking-wider font-bold text-on-surface-variant px-1">Assigned Teacher</label>
+<select class="w-full bg-surface-container-lowest border-none ring-1 ring-outline-variant focus:ring-2 focus:ring-secondary rounded-lg py-2 px-3 text-body-md appearance-none cursor-pointer">
+<option>All Teachers</option>
+<option>Dr. Sarah Jenkins</option>
+<option>Mr. Marcus Reed</option>
+<option>Ms. Elena Vance</option>
+</select>
+</div>
+<div class="flex items-end">
+<button class="w-full bg-secondary text-on-secondary font-button-text py-2.5 rounded-lg flex items-center justify-center gap-2 hover:bg-secondary-container transition-all active:scale-95 shadow-sm">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+                        Apply Filters
+                    </button>
+</div>
+</section>
+<!-- Grid View -->
+<section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Class Card 1 -->
+<div class="glass-card rounded-xl border border-outline-variant soft-shadow flex flex-col group transition-all hover:-translate-y-1 overflow-hidden">
+<div class="p-6 space-y-4">
+<div class="flex justify-between items-start">
+<div>
+<span class="bg-secondary-fixed text-on-secondary-fixed text-[10px] px-2 py-1 rounded font-bold tracking-widest uppercase">Grade 10-A</span>
+<h3 class="font-headline-md text-headline-md font-bold mt-1 text-on-surface">Advanced Mathematics</h3>
+</div>
+<span class="text-label-sm font-medium text-on-surface-variant font-mono bg-surface-container px-2 py-1 rounded">#MATH102</span>
+</div>
+<div class="flex items-center gap-4 py-2 border-y border-outline-variant/30">
+<div class="flex flex-col items-center flex-1">
+<span class="text-on-surface-variant text-[10px] uppercase font-bold">Students</span>
+<span class="text-body-lg font-bold text-primary">32</span>
+</div>
+<div class="w-[1px] h-8 bg-outline-variant/30"></div>
+<div class="flex flex-col items-center flex-1">
+<span class="text-on-surface-variant text-[10px] uppercase font-bold">Status</span>
+<span class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-on-tertiary-container/10 text-on-tertiary-container text-[11px] font-bold">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span>
+                                    Present
+                                </span>
+</div>
+</div>
+<div class="flex items-center gap-3 pt-2">
+<img class="h-10 w-10 rounded-full object-cover ring-2 ring-surface-container" data-alt="A detailed headshot of a middle-aged female teacher with glasses and a friendly, professional expression. She is in a blurred classroom setting with soft morning sunlight. The visual style is crisp and corporate, matching a high-end school administration software aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMONfiAAo5xLaRyqRFNSMmCl09-oII773tytcEMaeTKos8nsqAQSKPzPLsgEeKWwp9rNyKF_GT-AgVv9N0CNfdprtXXpl78oH7K3LMIRWT71_41VfppD4QDiphdjw6K2tE92yokSBR1xPS7vLPjz-T7sbITHhyXtTONjD8zG1RioZMsx_4CaRvUxFUKyB4opbQ3bv1W5uyomKxhlyH4DgId2uzeM8bYkZUETuozV_62Y_Xf4Yu9_3SzA"/>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase font-bold text-on-surface-variant">Teacher</span>
+<span class="text-body-md font-semibold text-on-surface">Dr. Sarah Jenkins</span>
+</div>
+</div>
+</div>
+<div class="mt-auto grid grid-cols-2 border-t border-outline-variant">
+<button class="py-3 px-4 text-label-sm font-bold text-on-surface-variant hover:bg-surface-container hover:text-secondary transition-colors border-r border-outline-variant flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">visibility</span>
+                            View Class
+                        </button>
+<button class="py-3 px-4 text-label-sm font-bold text-on-surface-variant hover:bg-surface-container hover:text-secondary transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">group</span>
+                            Students
+                        </button>
+</div>
+<div class="p-2 bg-surface-container-low grid grid-cols-2 gap-2">
+<button class="py-2 text-[11px] font-bold text-on-surface-variant hover:text-primary transition-all flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-sm">edit</span> Edit
+                        </button>
+<button class="py-2 text-[11px] font-bold text-on-surface-variant hover:text-primary transition-all flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-sm">person_add</span> Assign
+                        </button>
+</div>
+</div>
+<!-- Class Card 2 (Absent Highlight) -->
+<div class="glass-card rounded-xl border border-outline-variant soft-shadow flex flex-col group transition-all hover:-translate-y-1 overflow-hidden">
+<div class="p-6 space-y-4">
+<div class="flex justify-between items-start">
+<div>
+<span class="bg-primary-fixed text-on-primary-fixed text-[10px] px-2 py-1 rounded font-bold tracking-widest uppercase">Grade 11-C</span>
+<h3 class="font-headline-md text-headline-md font-bold mt-1 text-on-surface">English Literature</h3>
+</div>
+<span class="text-label-sm font-medium text-on-surface-variant font-mono bg-surface-container px-2 py-1 rounded">#LIT104</span>
+</div>
+<div class="flex items-center gap-4 py-2 border-y border-outline-variant/30">
+<div class="flex flex-col items-center flex-1">
+<span class="text-on-surface-variant text-[10px] uppercase font-bold">Students</span>
+<span class="text-body-lg font-bold text-primary">28</span>
+</div>
+<div class="w-[1px] h-8 bg-outline-variant/30"></div>
+<div class="flex flex-col items-center flex-1">
+<span class="text-on-surface-variant text-[10px] uppercase font-bold">Status</span>
+<span class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-error-container text-error text-[11px] font-bold">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+                                    3 Absent
+                                </span>
+</div>
+</div>
+<div class="flex items-center gap-3 pt-2">
+<img class="h-10 w-10 rounded-full object-cover ring-2 ring-surface-container" data-alt="A professional headshot of a younger male teacher with a clean-cut look, wearing a casual blazer and smiling warmly. The setting is a bright, modern school library with books in the background. The aesthetic is clean, academic, and trustworthy, with high-quality photographic lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPsPs33hN-642Ktp1tDVDCF7rhscPIkIMlg8WyUIIxQwoenN86rb-zEXYnAysLtOgjS1eTwftMUOTbxQPy81Ypi6cgi3FiDRN0zX7Vf5gtkOkRnZdyic5chAwzVz1v5nGi1Z6_wIaXzUJRsmfg6pXZWhrJLYuF2Z-wOfLoVXlT3xD_PuBakYepCXLRR685Vi9KROwfUzMaNAvmrP6gcJijlCKnPqxePT2CzLYCR2qVkDYIqekimk4Yyg"/>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase font-bold text-on-surface-variant">Teacher</span>
+<span class="text-body-md font-semibold text-on-surface">Mr. Marcus Reed</span>
+</div>
+</div>
+</div>
+<div class="mt-auto grid grid-cols-2 border-t border-outline-variant">
+<button class="py-3 px-4 text-label-sm font-bold text-on-surface-variant hover:bg-surface-container hover:text-secondary transition-colors border-r border-outline-variant flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">visibility</span>
+                            View Class
+                        </button>
+<button class="py-3 px-4 text-label-sm font-bold text-on-surface-variant hover:bg-surface-container hover:text-secondary transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">group</span>
+                            Students
+                        </button>
+</div>
+<div class="p-2 bg-surface-container-low grid grid-cols-2 gap-2">
+<button class="py-2 text-[11px] font-bold text-on-surface-variant hover:text-primary transition-all flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-sm">edit</span> Edit
+                        </button>
+<button class="py-2 text-[11px] font-bold text-on-surface-variant hover:text-primary transition-all flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-sm">person_add</span> Assign
+                        </button>
+</div>
+</div>
+<!-- Class Card 3 -->
+<div class="glass-card rounded-xl border border-outline-variant soft-shadow flex flex-col group transition-all hover:-translate-y-1 overflow-hidden">
+<div class="p-6 space-y-4">
+<div class="flex justify-between items-start">
+<div>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed text-[10px] px-2 py-1 rounded font-bold tracking-widest uppercase">Grade 9-B</span>
+<h3 class="font-headline-md text-headline-md font-bold mt-1 text-on-surface">Molecular Biology</h3>
+</div>
+<span class="text-label-sm font-medium text-on-surface-variant font-mono bg-surface-container px-2 py-1 rounded">#BIO301</span>
+</div>
+<div class="flex items-center gap-4 py-2 border-y border-outline-variant/30">
+<div class="flex flex-col items-center flex-1">
+<span class="text-on-surface-variant text-[10px] uppercase font-bold">Students</span>
+<span class="text-body-lg font-bold text-primary">25</span>
+</div>
+<div class="w-[1px] h-8 bg-outline-variant/30"></div>
+<div class="flex flex-col items-center flex-1">
+<span class="text-on-surface-variant text-[10px] uppercase font-bold">Status</span>
+<span class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-on-tertiary-container/10 text-on-tertiary-container text-[11px] font-bold">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span>
+                                    Active
+                                </span>
+</div>
+</div>
+<div class="flex items-center gap-3 pt-2">
+<div class="h-10 w-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold">EV</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase font-bold text-on-surface-variant">Teacher</span>
+<span class="text-body-md font-semibold text-on-surface">Ms. Elena Vance</span>
+</div>
+</div>
+</div>
+<div class="mt-auto grid grid-cols-2 border-t border-outline-variant">
+<button class="py-3 px-4 text-label-sm font-bold text-on-surface-variant hover:bg-surface-container hover:text-secondary transition-colors border-r border-outline-variant flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">visibility</span>
+                            View Class
+                        </button>
+<button class="py-3 px-4 text-label-sm font-bold text-on-surface-variant hover:bg-surface-container hover:text-secondary transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">group</span>
+                            Students
+                        </button>
+</div>
+<div class="p-2 bg-surface-container-low grid grid-cols-2 gap-2">
+<button class="py-2 text-[11px] font-bold text-on-surface-variant hover:text-primary transition-all flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-sm">edit</span> Edit
+                        </button>
+<button class="py-2 text-[11px] font-bold text-on-surface-variant hover:text-primary transition-all flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-sm">person_add</span> Assign
+                        </button>
+</div>
+</div>
+<!-- Add New Class Card -->
+<button class="border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center gap-4 p-8 group hover:border-secondary hover:bg-secondary/5 transition-all min-h-[300px]">
+<div class="h-16 w-16 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-secondary/10 transition-colors">
+<span class="material-symbols-outlined text-4xl text-on-surface-variant group-hover:text-secondary transition-colors">add_circle</span>
+</div>
+<div class="text-center">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">Add New Class</span>
+<p class="text-on-surface-variant text-body-md">Configure a new classroom unit</p>
+</div>
+</button>
+</section>
+<!-- Bottom Stats Bar -->
+<section class="flex flex-wrap gap-6 mt-12 bg-primary-container p-6 rounded-xl text-on-primary-container soft-shadow relative overflow-hidden">
+<div class="absolute right-0 top-0 opacity-10 scale-150 rotate-12">
+<span class="material-symbols-outlined text-[160px]" style="font-variation-settings: 'FILL' 1;">class</span>
+</div>
+<div class="flex-1 min-w-[200px]">
+<span class="text-[10px] uppercase tracking-widest font-bold opacity-70">Global Summary</span>
+<h2 class="text-headline-lg font-bold">Academic Status</h2>
+</div>
+<div class="flex gap-12">
+<div>
+<span class="text-[10px] uppercase font-bold opacity-70">Total Classes</span>
+<div class="text-headline-md font-bold">124</div>
+</div>
+<div>
+<span class="text-[10px] uppercase font-bold opacity-70">Active Students</span>
+<div class="text-headline-md font-bold">2,842</div>
+</div>
+<div>
+<span class="text-[10px] uppercase font-bold opacity-70">Avg. Attendance</span>
+<div class="text-headline-md font-bold text-tertiary-fixed-dim">96.4%</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Floating Action Button for Mobile Contexts (though hidden on desktop via design logic) -->
+<button class="fixed bottom-8 right-8 h-14 w-14 bg-secondary text-on-secondary rounded-full shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center z-50 md:hidden">
+<span class="material-symbols-outlined">add</span>
+</button>
+<script>
+        // Subtle micro-interaction: Pulse effect for biometric icon when hovered
+        const bioIcon = document.querySelector('.material-symbols-outlined.group-hover\\:text-secondary');
+        if (bioIcon) {
+            bioIcon.parentElement.addEventListener('mouseenter', () => {
+                bioIcon.style.transition = 'all 0.3s ease';
+                bioIcon.style.textShadow = '0 0 8px rgba(37, 82, 202, 0.4)';
+            });
+            bioIcon.parentElement.addEventListener('mouseleave', () => {
+                bioIcon.style.textShadow = 'none';
+            });
+        }
+        
+        // Active state ripple for buttons
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', function(e) {
+                const x = e.clientX - e.target.offsetLeft;
+                const y = e.clientY - e.target.offsetTop;
+                // Interaction logic could be expanded here for custom ripples
+            });
+        });
+    </script>
+</body></html>

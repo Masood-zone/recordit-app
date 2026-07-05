@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EduVerify Pro | Teacher Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .hover-shadow:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #f7f9ff;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#2a4386",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#435b9f",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#e2efff",
+                        "on-primary-container": "#758dd5",
+                        "inverse-on-surface": "#e7f2ff",
+                        "secondary-container": "#446ce4",
+                        "primary": "#00113a",
+                        "on-primary-fixed": "#00174a",
+                        "secondary": "#2552ca",
+                        "surface-variant": "#d4e4f6",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "on-surface-variant": "#444650",
+                        "surface-container-low": "#ecf4ff",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary": "#ffffff",
+                        "surface": "#f7f9ff",
+                        "background": "#f7f9ff",
+                        "on-surface": "#0d1d2a",
+                        "on-secondary-fixed-variant": "#003baf",
+                        "on-background": "#0d1d2a",
+                        "on-tertiary-container": "#009eb0",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#002d33",
+                        "surface-container-high": "#d9eafc",
+                        "surface-dim": "#cbdcee",
+                        "inverse-surface": "#223240",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "outline": "#757682",
+                        "tertiary-fixed": "#9cf0ff",
+                        "tertiary": "#00171b",
+                        "secondary-fixed": "#dce1ff",
+                        "outline-variant": "#c5c6d2",
+                        "on-tertiary": "#ffffff",
+                        "primary-container": "#002366",
+                        "on-secondary-fixed": "#00164e",
+                        "tertiary-fixed-dim": "#00daf3",
+                        "surface-container-highest": "#d4e4f6",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "inverse-primary": "#b3c5ff",
+                        "on-secondary-container": "#fffbff",
+                        "surface-bright": "#f7f9ff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#001f24"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "desktop-max-width": "1280px",
+                        "gutter": "16px",
+                        "container-padding": "24px",
+                        "base": "8px",
+                        "tablet-breakpoint": "768px",
+                        "mobile-breakpoint": "375px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Manrope"],
+                        "button-text": ["Manrope"],
+                        "body-md": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface">
+<!-- Sidebar Navigation -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant p-4 gap-2 z-40">
+<div class="flex items-center gap-3 px-2 py-4 mb-4">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">school</span>
+</div>
+<div>
+<h2 class="font-headline-md text-[18px] leading-tight font-extrabold text-primary">North Academy</h2>
+<p class="text-on-surface-variant font-body-md text-[12px]">Faculty Portal</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-3 bg-secondary-container text-on-secondary-container font-semibold rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-lg transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">fingerprint</span>
+<span class="font-body-md text-body-md">Class Attendance</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-lg transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">group_add</span>
+<span class="font-body-md text-body-md">Biometric Registry</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-lg transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">insert_chart</span>
+<span class="font-body-md text-body-md">Analytics Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-lg transition-all active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md text-body-md">Academic Calendar</span>
+</a>
+</nav>
+<button class="w-full py-3 px-4 bg-primary text-on-primary rounded-xl font-button-text text-button-text flex items-center justify-center gap-2 mb-4 hover:opacity-90 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">sensors</span>
+            Start Biometric Session
+        </button>
+<div class="border-t border-outline-variant pt-4 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md text-body-md">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-error hover:bg-error-container/20 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md text-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-64 min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 flex justify-between items-center w-full px-container-padding h-16 bg-surface-container-highest shadow-sm">
+<div class="flex items-center gap-4">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">EduVerify Pro</h1>
+<div class="hidden md:flex items-center bg-surface-container-lowest rounded-full px-4 py-1.5 border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px] mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-64 p-0 placeholder:text-on-surface-variant" placeholder="Search student or records..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 rounded-full hover:bg-surface-variant text-on-surface-variant active:scale-95 duration-200 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-variant text-on-surface-variant active:scale-95 duration-200 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="flex items-center gap-3 ml-2 pl-4 border-l border-outline-variant">
+<div class="text-right hidden sm:block">
+<p class="text-on-surface font-bold text-sm">Prof. Julian Archer</p>
+<p class="text-on-surface-variant text-xs">Mathematics Dept.</p>
+</div>
+<img class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" data-alt="A professional headshot of a teacher in a modern, brightly lit academic setting, with soft focus bookshelves in the background. The lighting is warm and clear, projecting a sense of authority and approachability. The image follows a corporate, high-end educational aesthetic with a clean blue and white color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBfYAs1Bm8AT1WlF39SkpcJYPR-vHILCFaEuFwsPsPa7GAHNT1Zqh3Oq6IXYg74Uwp9xjv6t6r4qk-c4b6wfqBJdJw_94u_OX3b-hp1Kc01-HYX85WXG50h1A7yPJ0JeOP3-_mbMLgQD7NRwgsx5nPz7-uX8XRvHdZ_yuoJfHafl8ihDRdg2R2v7oz-2DKaLIIU5gLTqMNtnFdLag2sBxMSowR0JnTUTmbiAVqStGAxOTwFdeoJF7lYw"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-container-padding max-w-desktop-max-width mx-auto">
+<!-- Welcome Header -->
+<div class="mb-8">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-1">Welcome, Prof. Archer</h2>
+<p class="text-on-surface-variant font-body-lg">Here's your academic overview for Monday, Oct 23rd.</p>
+</div>
+<!-- Bento Grid - Summary Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="glass-card soft-shadow hover-shadow rounded-xl p-6 border border-outline-variant/30 flex flex-col justify-between transition-all">
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 rounded-lg bg-primary-container text-on-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">class</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-tertiary-container bg-tertiary-fixed/30 px-2 py-1 rounded">Active</span>
+</div>
+<div>
+<p class="text-headline-md font-bold text-primary">4</p>
+<p class="text-on-surface-variant font-body-md">My Classes</p>
+</div>
+</div>
+<div class="glass-card soft-shadow hover-shadow rounded-xl p-6 border border-outline-variant/30 flex flex-col justify-between transition-all">
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 rounded-lg bg-secondary-container text-on-secondary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-primary-fixed-variant bg-primary-fixed/30 px-2 py-1 rounded">+3 New</span>
+</div>
+<div>
+<p class="text-headline-md font-bold text-primary">124</p>
+<p class="text-on-surface-variant font-body-md">Students Assigned</p>
+</div>
+</div>
+<div class="glass-card soft-shadow hover-shadow rounded-xl p-6 border border-outline-variant/30 flex flex-col justify-between transition-all">
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed-variant">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_available</span>
+</div>
+</div>
+<div>
+<p class="text-headline-md font-bold text-primary">2</p>
+<p class="text-on-surface-variant font-body-md">Attendance Sessions Today</p>
+</div>
+</div>
+<div class="glass-card soft-shadow hover-shadow rounded-xl p-6 border border-error/20 bg-error-container/10 flex flex-col justify-between transition-all relative overflow-hidden">
+<div class="absolute top-0 right-0 w-2 h-full bg-error"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 rounded-lg bg-error text-on-error">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">pending_actions</span>
+</div>
+</div>
+<div>
+<p class="text-headline-md font-bold text-error">1</p>
+<p class="text-error font-body-md font-semibold">Pending Attendance</p>
+</div>
+</div>
+</div>
+<!-- Main Interactive Section -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Today's Schedule -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<div class="glass-card rounded-xl soft-shadow border border-outline-variant/30 p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">schedule</span>
+                                Today's Schedule
+                            </h3>
+<button class="text-primary font-button-text hover:underline">View Full Calendar</button>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Class Entry 1 -->
+<div class="flex items-center gap-6 p-4 rounded-xl hover:bg-surface-container transition-colors group">
+<div class="flex flex-col items-center justify-center w-20 h-20 bg-surface-container-high rounded-xl border border-outline-variant group-hover:border-primary/30 transition-all">
+<span class="text-label-sm font-label-sm text-on-surface-variant">08:30</span>
+<span class="text-headline-md font-bold text-primary">AM</span>
+</div>
+<div class="flex-1">
+<h4 class="font-headline-md text-[20px] text-primary">Grade 10-A (Morning)</h4>
+<p class="text-on-surface-variant font-body-md flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">room</span> Room 302 • Algebra II
+                                    </p>
+</div>
+<button class="px-6 py-2.5 bg-primary text-on-primary rounded-full font-button-text hover:shadow-lg transition-shadow active:scale-95">
+                                    Start Session
+                                </button>
+</div>
+<div class="h-[1px] bg-outline-variant/40 mx-4"></div>
+<!-- Class Entry 2 -->
+<div class="flex items-center gap-6 p-4 rounded-xl hover:bg-surface-container transition-colors group">
+<div class="flex flex-col items-center justify-center w-20 h-20 bg-surface-container-high rounded-xl border border-outline-variant group-hover:border-primary/30 transition-all">
+<span class="text-label-sm font-label-sm text-on-surface-variant">02:15</span>
+<span class="text-headline-md font-bold text-primary">PM</span>
+</div>
+<div class="flex-1">
+<h4 class="font-headline-md text-[20px] text-primary">Grade 11-C (Afternoon)</h4>
+<p class="text-on-surface-variant font-body-md flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">room</span> Hall B • Calculus I
+                                    </p>
+</div>
+<button class="px-6 py-2.5 bg-surface-container-highest text-primary border border-primary/20 rounded-full font-button-text hover:bg-primary hover:text-on-primary transition-all active:scale-95">
+                                    Preview List
+                                </button>
+</div>
+</div>
+</div>
+<!-- Statistics / Charts (Visual interest) -->
+<div class="glass-card rounded-xl soft-shadow border border-outline-variant/30 p-6 overflow-hidden relative min-h-[240px]">
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Weekly Attendance Trend</h3>
+<p class="text-on-surface-variant font-body-md mb-4">Consistency is up by 12% this week.</p>
+<div class="flex items-end gap-3 h-32 mt-8">
+<div class="flex-1 bg-primary/10 rounded-t-lg transition-all hover:bg-primary/30 h-[60%]"></div>
+<div class="flex-1 bg-primary/10 rounded-t-lg transition-all hover:bg-primary/30 h-[85%]"></div>
+<div class="flex-1 bg-primary rounded-t-lg h-[95%] shadow-md"></div>
+<div class="flex-1 bg-primary/10 rounded-t-lg transition-all hover:bg-primary/30 h-[70%]"></div>
+<div class="flex-1 bg-primary/10 rounded-t-lg transition-all hover:bg-primary/30 h-[40%]"></div>
+<div class="flex-1 bg-primary/10 rounded-t-lg transition-all hover:bg-primary/30 h-[0%] border-b-2 border-outline-variant"></div>
+<div class="flex-1 bg-primary/10 rounded-t-lg transition-all hover:bg-primary/30 h-[0%] border-b-2 border-outline-variant"></div>
+</div>
+<div class="flex justify-between mt-2 text-label-sm font-label-sm text-on-surface-variant">
+<span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Quick Actions & Alerts -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Quick Actions -->
+<div class="glass-card rounded-xl soft-shadow border border-outline-variant/30 p-6">
+<h3 class="font-headline-md text-[18px] text-primary mb-4 font-bold">Quick Actions</h3>
+<div class="grid grid-cols-1 gap-3">
+<button class="w-full flex items-center justify-between p-4 bg-primary text-on-primary rounded-xl hover:opacity-90 transition-all active:scale-95 group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_task</span>
+<span class="font-button-text">Start Attendance</span>
+</div>
+<span class="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-4 bg-surface-container-high text-on-surface rounded-xl hover:bg-surface-variant transition-all active:scale-95 group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined">visibility</span>
+<span class="font-button-text">View Class Attendance</span>
+</div>
+<span class="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-4 bg-surface-container-high text-on-surface rounded-xl hover:bg-surface-variant transition-all active:scale-95 group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-button-text">View Reports</span>
+</div>
+<span class="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Attendance Chips / Biometric Status -->
+<div class="glass-card rounded-xl soft-shadow border border-outline-variant/30 p-6">
+<h3 class="font-headline-md text-[18px] text-primary mb-4 font-bold">System Status</h3>
+<div class="flex flex-wrap gap-2">
+<div class="flex items-center gap-2 px-3 py-1.5 bg-[#DCFCE7] text-[#166534] rounded-full text-label-sm font-label-sm">
+<span class="w-2 h-2 bg-[#166534] rounded-full animate-pulse"></span>
+                                Biometric Reader: Active
+                            </div>
+<div class="flex items-center gap-2 px-3 py-1.5 bg-surface-container text-on-surface-variant rounded-full text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[14px]">cloud_done</span>
+                                Cloud Sync: On
+                            </div>
+</div>
+</div>
+<!-- Recent Activity -->
+<div class="glass-card rounded-xl soft-shadow border border-outline-variant/30 p-6 flex-1">
+<h3 class="font-headline-md text-[18px] text-primary mb-4 font-bold">Recent Updates</h3>
+<div class="space-y-4">
+<div class="flex gap-3">
+<div class="mt-1 w-2 h-2 rounded-full bg-secondary shrink-0"></div>
+<div>
+<p class="text-body-md text-on-surface leading-tight">Student <span class="font-bold">Marcus V.</span> added biometric signature.</p>
+<p class="text-label-sm text-on-surface-variant mt-1">10 mins ago</p>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="mt-1 w-2 h-2 rounded-full bg-on-tertiary-container shrink-0"></div>
+<div>
+<p class="text-body-md text-on-surface leading-tight">Weekly report for <span class="font-bold">Grade 10-A</span> generated.</p>
+<p class="text-label-sm text-on-surface-variant mt-1">2 hours ago</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Attendance Pulse Indicator (Contextual Visual) -->
+<div class="fixed bottom-8 right-8 z-50 pointer-events-none opacity-0 transition-opacity duration-500" id="biometric-pulse">
+<div class="relative flex items-center justify-center">
+<div class="absolute w-24 h-24 bg-tertiary-fixed-dim/20 rounded-full animate-ping"></div>
+<div class="absolute w-16 h-16 bg-tertiary-fixed-dim/40 rounded-full animate-pulse"></div>
+<div class="relative w-12 h-12 bg-primary rounded-full flex items-center justify-center text-on-primary shadow-xl">
+<span class="material-symbols-outlined">fingerprint</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Mobile Navigation (Suppressed on Desktop) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-highest border-t border-outline-variant flex justify-around items-center h-16 px-4 z-50">
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-[10px] font-bold">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">fingerprint</span>
+<span class="text-[10px]">Verify</span>
+</button>
+<div class="mb-8 w-14 h-14 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-lg border-4 border-background">
+<span class="material-symbols-outlined">add</span>
+</div>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[10px]">Students</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px]">Profile</span>
+</button>
+</nav>
+<script>
+        // Micro-interaction: Biometric Pulse appearance
+        // Simulates a background biometric "listening" state
+        document.addEventListener('DOMContentLoaded', () => {
+            const pulse = document.getElementById('biometric-pulse');
+            
+            // Randomly "ping" to show system is live
+            setInterval(() => {
+                pulse.style.opacity = '1';
+                setTimeout(() => {
+                    pulse.style.opacity = '0';
+                }, 3000);
+            }, 12000);
+
+            // Add smooth active state to all interactive items
+            const interactiveElements = document.querySelectorAll('.active\\:scale-95');
+            interactiveElements.forEach(el => {
+                el.addEventListener('mousedown', () => el.style.transform = 'scale(0.95)');
+                el.addEventListener('mouseup', () => el.style.transform = 'scale(1)');
+                el.addEventListener('mouseleave', () => el.style.transform = 'scale(1)');
+            });
+        });
+    </script>
+</body></html>

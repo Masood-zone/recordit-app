@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Attendance Management | EduSecure Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "on-primary-container": "#758dd5",
+                        "surface-container-highest": "#d4e4f6",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed": "#00164e",
+                        "on-error-container": "#93000a",
+                        "surface": "#f7f9ff",
+                        "surface-dim": "#cbdcee",
+                        "primary-container": "#002366",
+                        "surface-bright": "#f7f9ff",
+                        "outline-variant": "#c5c6d2",
+                        "on-primary-fixed": "#00174a",
+                        "secondary-container": "#446ce4",
+                        "inverse-surface": "#223240",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#e7f2ff",
+                        "error": "#ba1a1a",
+                        "secondary": "#2552ca",
+                        "surface-tint": "#435b9f",
+                        "on-surface-variant": "#444650",
+                        "tertiary": "#00171b",
+                        "tertiary-container": "#002d33",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#d9eafc",
+                        "primary": "#00113a",
+                        "outline": "#757682",
+                        "tertiary-fixed": "#9cf0ff",
+                        "surface-container-low": "#ecf4ff",
+                        "on-tertiary-fixed": "#001f24",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "primary-fixed": "#dbe1ff",
+                        "on-surface": "#0d1d2a",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#e2efff",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "on-background": "#0d1d2a",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary-fixed-variant": "#2a4386",
+                        "background": "#f7f9ff",
+                        "on-secondary-fixed-variant": "#003baf",
+                        "surface-variant": "#d4e4f6",
+                        "on-tertiary-container": "#009eb0",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#dce1ff",
+                        "tertiary-fixed-dim": "#00daf3",
+                        "inverse-primary": "#b3c5ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "base": "8px",
+                        "mobile-breakpoint": "375px",
+                        "tablet-breakpoint": "768px",
+                        "desktop-max-width": "1280px",
+                        "container-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "button-text": ["Manrope"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-md": ["Manrope"],
+                        "body-md": ["Manrope"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .biometric-pulse {
+            animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 0.3; }
+            100% { transform: scale(0.8); opacity: 0.8; }
+        }
+        .glass-overlay {
+            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.8);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .row-tint:nth-child(5n) { background-color: rgba(67, 91, 159, 0.03); }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-16 bg-primary dark:bg-primary-container shadow-sm">
+<div class="flex items-center gap-4">
+<span class="text-headline-md font-headline-md font-bold text-on-primary dark:text-on-primary-container">EduSecure Pro</span>
+<div class="hidden md:flex items-center ml-8 gap-6 h-full">
+<a class="font-body-md text-on-primary-fixed border-b-2 border-on-primary-fixed pb-1" href="#">Analytics</a>
+<a class="font-body-md text-on-primary/80 dark:text-on-primary-container/80 hover:bg-primary-fixed-dim/10 transition-colors" href="#">Users</a>
+<a class="font-body-md text-on-primary/80 dark:text-on-primary-container/80 hover:bg-primary-fixed-dim/10 transition-colors" href="#">Audit Log</a>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="hidden md:flex items-center gap-2 bg-secondary-container text-on-secondary-container px-4 py-2 rounded-lg font-bold active:scale-95 transition-transform">
+<span class="material-symbols-outlined">fingerprint</span>
+<span>Scan Biometric</span>
+</button>
+<div class="flex items-center gap-2 text-on-primary">
+<span class="material-symbols-outlined p-2 hover:bg-white/10 rounded-full cursor-pointer">notifications</span>
+<span class="material-symbols-outlined p-2 hover:bg-white/10 rounded-full cursor-pointer">settings</span>
+<img class="w-8 h-8 rounded-full border-2 border-on-primary/20 object-cover" data-alt="Close-up professional headshot of a school administrator in a bright, modern office setting. The person is smiling warmly, wearing business casual attire. The lighting is soft and natural, emphasizing a high-end corporate school environment with clean blue and white accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDe4iK-b2xWCvsdQ4cRHXALGDqcxeD04IoU7CLSJByreYvuIVfW6NNJwXMUtwowVF4bs0EtjLgKONzQEtXwCmB0cu2vEemq5cuz8u90b7ugGU-PvW2ID-_rwa_ho69g4YjOtEyYjcwqG2rRMC-236f8vd91E4lBwbLqZcjFIwHbBXWcYhgbm89_Yr0u8__CsoZKp6X2lWUodBoF__P4IYCSOOUSnBWIM9zfbLIQHDS6Ir1nR9V4lNPlGA"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 flex flex-col p-4 bg-surface-container-low dark:bg-surface-dim border-r border-outline-variant">
+<div class="mb-8 px-2">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">school</span>
+</div>
+<div>
+<h2 class="font-headline-md text-[18px] text-primary leading-tight">Main Campus</h2>
+<p class="font-label-sm text-on-surface-variant">AY 2023-24</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<span class="font-body-md">Attendance</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-md">Students</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-body-md">Faculty</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-md">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">shield</span>
+<span class="font-body-md">Security</span>
+</a>
+</nav>
+<button class="mt-4 w-full py-3 bg-primary text-on-primary rounded-xl font-bold flex items-center justify-center gap-2 hover:shadow-lg transition-all">
+<span class="material-symbols-outlined">add</span>
+<span>New Entry</span>
+</button>
+<div class="mt-auto pt-4 border-t border-outline-variant">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-8 min-h-screen">
+<!-- Header & Action Row -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+<div>
+<nav class="flex items-center gap-2 text-on-surface-variant mb-2">
+<span class="font-label-sm">SCHOOL</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="font-label-sm">DETAILS</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="font-label-sm text-primary font-bold">ATTENDANCE</span>
+</nav>
+<h1 class="font-headline-lg text-headline-lg text-primary">Attendance Log</h1>
+<p class="font-body-md text-on-surface-variant">Real-time biometric monitoring for Main Campus.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-6 py-2.5 border-2 border-outline text-on-surface-variant rounded-xl font-bold hover:bg-surface-container transition-all flex items-center gap-2">
+<span class="material-symbols-outlined">edit_calendar</span>
+<span>Manual Entry</span>
+</button>
+<button class="px-6 py-2.5 bg-primary text-on-primary rounded-xl font-bold shadow-sm hover:shadow-md transition-all flex items-center gap-2">
+<span class="material-symbols-outlined">download</span>
+<span>Export Data</span>
+</button>
+</div>
+</div>
+<!-- Metric Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,35,102,0.05)]">
+<p class="text-on-surface-variant font-label-sm mb-1 uppercase tracking-wider">Today's Presence</p>
+<div class="flex items-end gap-2">
+<span class="font-headline-lg text-[36px] text-primary">94.2%</span>
+<span class="text-green-600 font-bold mb-2 flex items-center text-sm"><span class="material-symbols-outlined text-sm">trending_up</span> 1.2%</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-4 overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 94.2%"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,35,102,0.05)]">
+<p class="text-on-surface-variant font-label-sm mb-1 uppercase tracking-wider">Late Arrivals</p>
+<div class="flex items-end gap-2">
+<span class="font-headline-lg text-[36px] text-primary">12</span>
+<span class="text-amber-600 font-bold mb-2 text-sm">Warning</span>
+</div>
+<p class="text-on-surface-variant text-sm mt-2">Peak: 08:05 AM - 08:15 AM</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,35,102,0.05)]">
+<p class="text-on-surface-variant font-label-sm mb-1 uppercase tracking-wider">Unexcused Absences</p>
+<div class="flex items-end gap-2">
+<span class="font-headline-lg text-[36px] text-error">08</span>
+<span class="text-error font-bold mb-2 text-sm">+2 from yesterday</span>
+</div>
+<p class="text-on-surface-variant text-sm mt-2">Critical follow-up required</p>
+</div>
+<div class="relative bg-primary text-on-primary p-6 rounded-xl shadow-lg overflow-hidden group">
+<div class="relative z-10">
+<p class="font-label-sm mb-1 uppercase tracking-wider opacity-80">Scanning Status</p>
+<div class="flex items-center gap-3 mb-2">
+<div class="w-3 h-3 bg-cyan-400 rounded-full biometric-pulse"></div>
+<span class="font-bold text-lg">System Active</span>
+</div>
+<p class="text-sm opacity-70">Gate A, B &amp; Central Library biometric terminals synced.</p>
+</div>
+<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-[100px] opacity-10 group-hover:scale-110 transition-transform">fingerprint</span>
+</div>
+</div>
+<!-- Main Content Area: Heatmap and Table -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Left: Table & Filters -->
+<div class="lg:col-span-2 space-y-6">
+<!-- Filters -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant flex flex-wrap items-center gap-4">
+<div class="flex-1 min-w-[200px] relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2.5 bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-lg text-sm transition-all" placeholder="Search student name..." type="text"/>
+</div>
+<div class="w-40 relative">
+<select class="w-full pl-3 pr-10 py-2.5 bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-lg text-sm appearance-none">
+<option>All Classes</option>
+<option>Grade 10-A</option>
+<option>Grade 11-B</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+<div class="w-48 relative">
+<input class="w-full px-3 py-2.5 bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary focus:ring-0 rounded-lg text-sm" type="date"/>
+</div>
+</div>
+<!-- Daily Log Table -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+<div class="px-6 py-4 border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<h3 class="font-bold text-primary">Live Transaction Log</h3>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+<span class="text-[12px] font-label-sm text-on-surface-variant">AUTO-REFRESHING</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low text-on-surface-variant font-label-sm uppercase tracking-wider text-[11px]">
+<tr>
+<th class="px-6 py-3 font-semibold">Student / Staff</th>
+<th class="px-6 py-3 font-semibold">Class</th>
+<th class="px-6 py-3 font-semibold">Scan Time</th>
+<th class="px-6 py-3 font-semibold">Status</th>
+<th class="px-6 py-3 font-semibold text-right">Method</th>
+</tr>
+</thead>
+<tbody class="text-on-surface text-sm divide-y divide-outline-variant">
+<tr class="row-tint hover:bg-surface-container-high transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-xs">EJ</div>
+<div>
+<p class="font-bold">Elena Jenkins</p>
+<p class="text-[12px] text-on-surface-variant">ID: #4492-ST</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">Grade 11-B</td>
+<td class="px-6 py-4">08:02:14 AM</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200">Present</span>
+</td>
+<td class="px-6 py-4 text-right text-on-surface-variant italic">Fingerprint</td>
+</tr>
+<tr class="row-tint hover:bg-surface-container-high transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center font-bold text-xs">MR</div>
+<div>
+<p class="font-bold">Marcus Rhodes</p>
+<p class="text-[12px] text-on-surface-variant">ID: #3108-ST</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">Grade 10-A</td>
+<td class="px-6 py-4">08:14:55 AM</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold border border-amber-200">Late</span>
+</td>
+<td class="px-6 py-4 text-right text-on-surface-variant italic">Facial ID</td>
+</tr>
+<tr class="row-tint hover:bg-surface-container-high transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant flex items-center justify-center font-bold text-xs">SL</div>
+<div>
+<p class="font-bold">Sarah Loftis</p>
+<p class="text-[12px] text-on-surface-variant">ID: #2291-FA</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">Faculty</td>
+<td class="px-6 py-4">07:55:20 AM</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200">Present</span>
+</td>
+<td class="px-6 py-4 text-right text-on-surface-variant italic">RFID Card</td>
+</tr>
+<tr class="row-tint hover:bg-surface-container-high transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-error-container text-error flex items-center justify-center font-bold text-xs">DT</div>
+<div>
+<p class="font-bold">David Thorne</p>
+<p class="text-[12px] text-on-surface-variant">ID: #9932-ST</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">Grade 12-C</td>
+<td class="px-6 py-4 text-on-surface-variant italic">--:--:--</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold border border-red-200">Absent</span>
+</td>
+<td class="px-6 py-4 text-right text-on-surface-variant italic">No Record</td>
+</tr>
+<tr class="row-tint hover:bg-surface-container-high transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-xs">KA</div>
+<div>
+<p class="font-bold">Kevin Adams</p>
+<p class="text-[12px] text-on-surface-variant">ID: #1042-ST</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">Grade 11-B</td>
+<td class="px-6 py-4">08:00:10 AM</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200">Present</span>
+</td>
+<td class="px-6 py-4 text-right text-on-surface-variant italic">Fingerprint</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 bg-surface-container-lowest border-t border-outline-variant flex items-center justify-between">
+<p class="text-xs text-on-surface-variant font-label-sm">Showing 1-5 of 1,240 entries</p>
+<div class="flex gap-2">
+<button class="p-1 hover:bg-surface-container rounded transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="p-1 hover:bg-surface-container rounded transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Peak Times Heatmap -->
+<div class="space-y-6">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm h-full">
+<h3 class="font-bold text-primary mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined">query_stats</span>
+                        Peak Arrival Times
+                    </h3>
+<div class="space-y-4">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between text-xs font-label-sm text-on-surface-variant mb-1">
+<span>07:00 AM</span>
+<span>15% Traffic</span>
+</div>
+<div class="w-full bg-surface-container h-8 rounded-lg overflow-hidden flex gap-0.5">
+<div class="bg-secondary/10 h-full w-[10%]"></div>
+<div class="bg-secondary/20 h-full w-[10%]"></div>
+<div class="bg-secondary/10 h-full w-[80%]"></div>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between text-xs font-label-sm text-on-surface-variant mb-1">
+<span class="text-primary font-bold">08:00 AM (Peak)</span>
+<span class="text-primary font-bold">88% Traffic</span>
+</div>
+<div class="w-full bg-surface-container h-8 rounded-lg overflow-hidden flex gap-0.5">
+<div class="bg-secondary/40 h-full w-[15%]"></div>
+<div class="bg-secondary/70 h-full w-[25%]"></div>
+<div class="bg-secondary h-full w-[40%]"></div>
+<div class="bg-secondary/60 h-full w-[20%]"></div>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between text-xs font-label-sm text-on-surface-variant mb-1">
+<span>09:00 AM</span>
+<span>24% Traffic</span>
+</div>
+<div class="w-full bg-surface-container h-8 rounded-lg overflow-hidden flex gap-0.5">
+<div class="bg-secondary/20 h-full w-[20%]"></div>
+<div class="bg-secondary/10 h-full w-[10%]"></div>
+<div class="bg-secondary/30 h-full w-[20%]"></div>
+<div class="bg-secondary/10 h-full w-[50%]"></div>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-outline-variant">
+<h4 class="font-bold text-primary mb-4 text-sm">Attendance Distribution</h4>
+<div class="flex flex-wrap gap-2">
+<div class="flex-1 min-w-[100px] p-3 bg-surface-container rounded-lg">
+<p class="text-[10px] uppercase font-label-sm text-on-surface-variant">Early</p>
+<p class="font-bold text-lg">62%</p>
+</div>
+<div class="flex-1 min-w-[100px] p-3 bg-surface-container rounded-lg">
+<p class="text-[10px] uppercase font-label-sm text-on-surface-variant">On-Time</p>
+<p class="font-bold text-lg">32%</p>
+</div>
+</div>
+</div>
+<div class="mt-6 p-4 bg-secondary-container/10 border border-secondary-container/20 rounded-xl">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-secondary">info</span>
+<p class="text-sm text-on-secondary-fixed-variant leading-relaxed">
+                                Most late arrivals (78%) are occurring at <span class="font-bold">Gate B</span> during the 08:10 AM window. Suggest rerouting traffic flow.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Modal: Manual Entry (Hidden by default) -->
+<div class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-primary/20 backdrop-blur-sm" id="manualEntryModal">
+<div class="bg-surface-container-lowest w-full max-w-lg rounded-xl shadow-2xl overflow-hidden">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-headline-md text-primary">Manual Attendance Entry</h3>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container rounded-full p-1" onclick="document.getElementById('manualEntryModal').classList.add('hidden')">close</button>
+</div>
+<div class="p-6 space-y-4">
+<div class="space-y-1">
+<label class="font-label-sm text-on-surface-variant">STUDENT/STAFF SEARCH</label>
+<input class="w-full px-4 py-3 bg-surface-container border-0 border-b-2 border-outline focus:border-primary focus:ring-0 rounded-t-lg" placeholder="Start typing name or ID..." type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1">
+<label class="font-label-sm text-on-surface-variant">STATUS</label>
+<select class="w-full px-4 py-3 bg-surface-container border-0 border-b-2 border-outline focus:border-primary focus:ring-0 rounded-t-lg">
+<option>Present</option>
+<option>Excused Absence</option>
+<option>Late Arrival</option>
+</select>
+</div>
+<div class="space-y-1">
+<label class="font-label-sm text-on-surface-variant">TIMESTAMP</label>
+<input class="w-full px-4 py-3 bg-surface-container border-0 border-b-2 border-outline focus:border-primary focus:ring-0 rounded-t-lg" type="time"/>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-label-sm text-on-surface-variant">REASON FOR EXCEPTION</label>
+<textarea class="w-full px-4 py-3 bg-surface-container border-0 border-b-2 border-outline focus:border-primary focus:ring-0 rounded-t-lg resize-none" placeholder="Medical leave, field trip, system error..." rows="3"></textarea>
+</div>
+</div>
+<div class="p-6 bg-surface-container-low flex gap-3">
+<button class="flex-1 py-3 border-2 border-outline text-on-surface-variant font-bold rounded-xl hover:bg-surface-container-highest transition-all" onclick="document.getElementById('manualEntryModal').classList.add('hidden')">Cancel</button>
+<button class="flex-1 py-3 bg-primary text-on-primary font-bold rounded-xl shadow-md hover:shadow-lg transition-all">Save Entry</button>
+</div>
+</div>
+</div>
+<script>
+        // Toggle Manual Entry Modal for demonstration
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.innerText.includes('Manual Entry')) {
+                btn.onclick = () => document.getElementById('manualEntryModal').classList.remove('hidden');
+            }
+        });
+
+        // Simple pulse effect for biometric terminal indicator
+        setInterval(() => {
+            const indicator = document.querySelector('.biometric-pulse');
+            if (indicator) {
+                indicator.style.opacity = indicator.style.opacity === '0.8' ? '0.3' : '0.8';
+            }
+        }, 1000);
+    </script>
+</body></html>

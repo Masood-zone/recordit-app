@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RecordIT | User Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#00174a",
+                        "primary-fixed": "#dbe1ff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#2a4386",
+                        "on-primary-container": "#758dd5",
+                        "inverse-surface": "#223240",
+                        "tertiary-container": "#002d33",
+                        "tertiary": "#00171b",
+                        "on-background": "#0d1d2a",
+                        "surface-container-low": "#ecf4ff",
+                        "secondary": "#2552ca",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#e7f2ff",
+                        "surface-container": "#e2efff",
+                        "inverse-primary": "#b3c5ff",
+                        "on-error-container": "#93000a",
+                        "secondary-container": "#446ce4",
+                        "on-secondary-fixed-variant": "#003baf",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#00164e",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#435b9f",
+                        "outline": "#757682",
+                        "surface-dim": "#cbdcee",
+                        "secondary-fixed": "#dce1ff",
+                        "on-tertiary-container": "#009eb0",
+                        "tertiary-fixed-dim": "#00daf3",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#9cf0ff",
+                        "surface": "#f7f9ff",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "surface-container-highest": "#d4e4f6",
+                        "primary-container": "#002366",
+                        "surface-bright": "#f7f9ff",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#d9eafc",
+                        "on-tertiary-fixed": "#001f24",
+                        "background": "#f7f9ff",
+                        "surface-variant": "#d4e4f6",
+                        "primary": "#00113a",
+                        "on-surface-variant": "#444650",
+                        "outline-variant": "#c5c6d2",
+                        "on-surface": "#0d1d2a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "body-md": ["Manrope"],
+                        "label-sm": ["JetBrains Mono"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbdcee;
+            border-radius: 10px;
+        }
+        .user-row:nth-child(5n) {
+            background-color: rgba(67, 91, 159, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<!-- Side Navigation Shell -->
+<nav class="fixed left-0 top-0 h-full flex flex-col p-4 bg-primary dark:bg-primary border-r border-outline-variant shadow-sm docked h-screen w-64 z-50">
+<div class="mb-8 px-4 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary font-bold">school</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-on-primary">RecordIT</h1>
+<p class="text-xs text-on-primary-container/80 uppercase tracking-widest">Admin Terminal</p>
+</div>
+</div>
+<div class="flex-1 space-y-1 overflow-y-auto custom-scrollbar">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors font-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<!-- Academic Setup -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors font-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+                Academic Setup
+            </a>
+<!-- Active Tab: Students (Mapping closely to User Management) -->
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-semibold font-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                Students
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors font-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+                Teachers
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors font-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="family_restroom">family_restroom</span>
+                Parents/Guardians
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors font-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="class">class</span>
+                Classes
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors font-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+                Attendance
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors font-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+                Reports
+            </a>
+</div>
+<div class="pt-4 mt-4 border-t border-on-primary/10">
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors font-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="biometric_setup">phonelink_setup</span>
+                Device Settings
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors font-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-error transition-colors font-body-md mt-2" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Logout
+            </a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-64 w-[calc(100%-16rem)] h-screen flex flex-col relative">
+<!-- Top App Bar Shell -->
+<header class="flex justify-between items-center h-16 px-8 w-full bg-surface/80 backdrop-blur-md border-b border-outline-variant z-40 sticky top-0">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md focus-within:ring-2 focus-within:ring-secondary rounded-full bg-surface-container transition-all">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-transparent border-none focus:ring-0 pl-12 pr-4 py-2 text-sm text-on-surface" placeholder="Search students, faculty, or staff..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="fingerprint">fingerprint</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden xl:block">
+<p class="text-sm font-bold text-on-surface leading-tight">Admin User</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Institution Head</p>
+</div>
+<img class="w-10 h-10 rounded-full border-2 border-primary object-cover" data-alt="A professional headshot of a school administrator, wearing a sharp navy blue blazer, set against a blurred academic building background. The lighting is crisp and natural, projecting authority and institutional reliability. The image reflects high-quality photography suited for a corporate education dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfICshRG_p6D5wXCGWfo_4Tk-2aLqZhlhRbHPcvjTBBIxwrrZV4EOA9HsfytjEZxW28Lb4LY-5J1lCm-gY00xNGdsuz-Aozpi8Asog2th8JFgXDIoZevl4yw2e3mo0TfyL_VCKFTjERlzdzSCGD53Nggm_Vk54v7nKRcHPSMZDaoZV-xM3ORiKlUfUJliDX00MtXgcl-782XsLEifgB2-8Y2BtKfXSJ0phgZwVsiOWM4nw75BFUAeUPQ"/>
+</div>
+</div>
+</header>
+<!-- Dynamic Body Area -->
+<div class="p-8 flex-1 overflow-y-auto custom-scrollbar bg-background">
+<!-- Page Header & Main Actions -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-1">User Management</h2>
+<p class="text-on-surface-variant max-w-xl">Configure system access and manage credentials for all institutional stakeholders within the biometric ecosystem.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-6 py-3 bg-secondary text-on-secondary rounded-xl font-button-text hover:bg-primary-container transition-all active:scale-95 shadow-md">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+                        Add User
+                    </button>
+</div>
+</div>
+<!-- Dashboard Bento / Stats Row -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,35,102,0.05)]">
+<p class="text-xs text-on-surface-variant uppercase font-bold tracking-wider mb-2">Total Users</p>
+<div class="flex items-end justify-between">
+<span class="text-3xl font-extrabold text-primary">2,842</span>
+<span class="text-success text-xs font-bold bg-tertiary-fixed text-on-tertiary-fixed px-2 py-1 rounded-full">+12%</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,35,102,0.05)]">
+<p class="text-xs text-on-surface-variant uppercase font-bold tracking-wider mb-2">Administrators</p>
+<div class="flex items-end justify-between">
+<span class="text-3xl font-extrabold text-secondary">24</span>
+<span class="material-symbols-outlined text-outline-variant">admin_panel_settings</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,35,102,0.05)]">
+<p class="text-xs text-on-surface-variant uppercase font-bold tracking-wider mb-2">Teachers</p>
+<div class="flex items-end justify-between">
+<span class="text-3xl font-extrabold text-secondary">156</span>
+<span class="material-symbols-outlined text-outline-variant">co_present</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,35,102,0.05)]">
+<p class="text-xs text-on-surface-variant uppercase font-bold tracking-wider mb-2">Biometric Ready</p>
+<div class="flex items-end justify-between">
+<span class="text-3xl font-extrabold text-tertiary-fixed-dim">98%</span>
+<div class="w-8 h-8 rounded-full border-2 border-tertiary-fixed-dim border-t-transparent animate-spin"></div>
+</div>
+</div>
+</div>
+<!-- Content Area (Tabs + Table) -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-md">
+<!-- Tab Navigation & Filters -->
+<div class="border-b border-outline-variant px-6 pt-4 bg-surface-bright">
+<div class="flex flex-col lg:flex-row items-center justify-between gap-4 pb-4">
+<div class="flex gap-8">
+<button class="pb-4 text-primary font-bold border-b-2 border-primary transition-all relative">
+                                Administrators
+                                <span class="absolute -top-1 -right-4 px-1.5 py-0.5 bg-primary-fixed text-on-primary-fixed text-[10px] rounded-md">24</span>
+</button>
+<button class="pb-4 text-on-surface-variant font-medium hover:text-secondary transition-all">Teachers</button>
+<button class="pb-4 text-on-surface-variant font-medium hover:text-secondary transition-all">Parents/Guardians</button>
+</div>
+<div class="flex items-center gap-3 w-full lg:w-auto">
+<div class="flex-1 lg:w-64 relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full bg-surface-container text-sm border-none rounded-lg pl-10 pr-4 py-2 focus:ring-2 focus:ring-secondary" placeholder="Search name or email..." type="text"/>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-sm font-medium hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                                Filter
+                            </button>
+<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-[18px]">file_download</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Table Content -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">User</th>
+<th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Phone</th>
+<th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Role</th>
+<th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Status</th>
+<th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Date Added</th>
+<th class="px-6 py-4 text-right text-xs font-bold text-on-surface-variant uppercase tracking-wider">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="user-row hover:bg-surface-container-high/50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed flex items-center justify-center font-bold text-on-primary-fixed">
+                                            AM
+                                        </div>
+<div>
+<p class="font-bold text-on-surface group-hover:text-secondary transition-colors">Adrian Miller</p>
+<p class="text-xs text-on-surface-variant">a.miller@recordit.edu</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">+1 (555) 012-3456</td>
+<td class="px-6 py-4">
+<span class="text-xs font-bold text-secondary uppercase tracking-tight">Super Admin</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-xs font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span>
+                                        Active
+                                    </span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Oct 12, 2023</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors" title="View Profile">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors" title="More">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="user-row hover:bg-surface-container-high/50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-secondary-fixed flex items-center justify-center font-bold text-on-secondary-fixed">
+                                            EW
+                                        </div>
+<div>
+<p class="font-bold text-on-surface group-hover:text-secondary transition-colors">Elena Wright</p>
+<p class="text-xs text-on-surface-variant">e.wright@recordit.edu</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">+1 (555) 012-9876</td>
+<td class="px-6 py-4">
+<span class="text-xs font-bold text-on-surface-variant uppercase tracking-tight">Registrar</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-error-container text-on-error-container text-xs font-bold">
+                                        Suspended
+                                    </span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Nov 05, 2023</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="user-row hover:bg-surface-container-high/50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-tertiary-fixed flex items-center justify-center font-bold text-on-tertiary-fixed">
+                                            TC
+                                        </div>
+<div>
+<p class="font-bold text-on-surface group-hover:text-secondary transition-colors">Thomas Chen</p>
+<p class="text-xs text-on-surface-variant">t.chen@recordit.edu</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">+1 (555) 012-1122</td>
+<td class="px-6 py-4">
+<span class="text-xs font-bold text-on-surface-variant uppercase tracking-tight">IT Manager</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-highest text-on-surface-variant text-xs font-bold">
+                                        Inactive
+                                    </span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Jan 18, 2024</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="user-row hover:bg-surface-container-high/50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed flex items-center justify-center font-bold text-on-primary-fixed">
+                                            SL
+                                        </div>
+<div>
+<p class="font-bold text-on-surface group-hover:text-secondary transition-colors">Sarah Lopez</p>
+<p class="text-xs text-on-surface-variant">s.lopez@recordit.edu</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">+1 (555) 012-3344</td>
+<td class="px-6 py-4">
+<span class="text-xs font-bold text-on-surface-variant uppercase tracking-tight">Dean of Students</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-xs font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span>
+                                        Active
+                                    </span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Feb 02, 2024</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 5 (Triggering the subtle blue tint as per design guidelines) -->
+<tr class="user-row hover:bg-surface-container-high/50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-secondary-fixed flex items-center justify-center font-bold text-on-secondary-fixed">
+                                            JB
+                                        </div>
+<div>
+<p class="font-bold text-on-surface group-hover:text-secondary transition-colors">James Bennett</p>
+<p class="text-xs text-on-surface-variant">j.bennett@recordit.edu</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">+1 (555) 012-5566</td>
+<td class="px-6 py-4">
+<span class="text-xs font-bold text-on-surface-variant uppercase tracking-tight">Admin Assistant</span>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-xs font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container animate-pulse"></span>
+                                        Active
+                                    </span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Mar 15, 2024</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2">
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container-highest text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 border-t border-outline-variant flex items-center justify-between bg-surface-bright">
+<p class="text-xs text-on-surface-variant font-medium">Showing 1 to 5 of 24 Administrators</p>
+<div class="flex items-center gap-1">
+<button class="p-2 rounded hover:bg-surface-container transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="px-3 py-1 rounded bg-secondary text-on-secondary text-xs font-bold">1</button>
+<button class="px-3 py-1 rounded hover:bg-surface-container text-on-surface-variant text-xs font-medium">2</button>
+<button class="px-3 py-1 rounded hover:bg-surface-container text-on-surface-variant text-xs font-medium">3</button>
+<button class="px-3 py-1 rounded hover:bg-surface-container text-on-surface-variant text-xs font-medium">4</button>
+<span class="px-2 text-on-surface-variant text-xs">...</span>
+<button class="px-3 py-1 rounded hover:bg-surface-container text-on-surface-variant text-xs font-medium">5</button>
+<button class="p-2 rounded hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Action FAB (Contextual for Home/Management) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-secondary-container text-on-secondary-container rounded-full shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center group">
+<span class="material-symbols-outlined text-[32px] group-hover:rotate-90 transition-transform duration-300">add</span>
+</button>
+</main>
+<!-- Biometric Indicator Modal (Hidden by Default) -->
+<div class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6" id="biometricModal">
+<div class="absolute inset-0 bg-primary/20 backdrop-blur-sm"></div>
+<div class="glass-panel w-full max-w-sm rounded-xl p-8 shadow-2xl relative border border-white/40">
+<button class="absolute top-4 right-4 text-on-surface-variant hover:text-primary" onclick="toggleModal()">
+<span class="material-symbols-outlined">close</span>
+</button>
+<div class="text-center">
+<div class="relative w-24 h-24 mx-auto mb-6 flex items-center justify-center">
+<div class="absolute inset-0 rounded-full border-4 border-tertiary-fixed-dim/20"></div>
+<div class="absolute inset-0 rounded-full border-4 border-tertiary-fixed-dim border-t-transparent animate-spin"></div>
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[48px]" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Awaiting Scan</h3>
+<p class="text-on-surface-variant text-sm mb-8">Please place the administrator's finger on the secondary verification reader.</p>
+<div class="flex flex-col gap-3">
+<button class="w-full py-3 bg-secondary text-on-secondary rounded-xl font-bold shadow-lg shadow-secondary/20">Process Biometric</button>
+<button class="w-full py-3 bg-transparent text-on-surface-variant font-bold border border-outline-variant rounded-xl hover:bg-surface-container transition-colors" onclick="toggleModal()">Cancel</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+        function toggleModal() {
+            const modal = document.getElementById('biometricModal');
+            modal.classList.toggle('hidden');
+        }
+
+        // Simulating some UI micro-interactions
+        document.querySelectorAll('.user-row').forEach(row => {
+            row.addEventListener('click', (e) => {
+                // Ignore clicks on buttons inside the row
+                if (e.target.closest('button')) return;
+                
+                // Show a ripple or subtle effect
+                console.log('Row clicked for profile viewing');
+            });
+        });
+    </script>
+</body></html>

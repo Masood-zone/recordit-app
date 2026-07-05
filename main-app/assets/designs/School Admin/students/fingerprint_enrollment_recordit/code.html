@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fingerprint Enrollment | RecordIT</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error": "#ba1a1a",
+                    "on-surface": "#0d1d2a",
+                    "on-secondary-fixed-variant": "#003baf",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed": "#dce1ff",
+                    "primary": "#00113a",
+                    "tertiary": "#00171b",
+                    "secondary-container": "#446ce4",
+                    "on-secondary": "#ffffff",
+                    "outline": "#757682",
+                    "on-primary-fixed": "#00174a",
+                    "primary-fixed": "#dbe1ff",
+                    "on-primary-fixed-variant": "#2a4386",
+                    "on-primary-container": "#758dd5",
+                    "inverse-on-surface": "#e7f2ff",
+                    "background": "#f7f9ff",
+                    "on-tertiary-container": "#009eb0",
+                    "on-secondary-fixed": "#00164e",
+                    "inverse-surface": "#223240",
+                    "on-error": "#ffffff",
+                    "surface-tint": "#435b9f",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "tertiary-container": "#002d33",
+                    "secondary-fixed-dim": "#b6c4ff",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed": "#001f24",
+                    "outline-variant": "#c5c6d2",
+                    "primary-container": "#002366",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-high": "#d9eafc",
+                    "surface-container": "#e2efff",
+                    "surface-variant": "#d4e4f6",
+                    "surface-bright": "#f7f9ff",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "inverse-primary": "#b3c5ff",
+                    "secondary": "#2552ca",
+                    "on-primary": "#ffffff",
+                    "on-background": "#0d1d2a",
+                    "surface-dim": "#cbdcee",
+                    "surface-container-highest": "#d4e4f6",
+                    "on-surface-variant": "#444650",
+                    "surface-container-low": "#ecf4ff",
+                    "surface": "#f7f9ff",
+                    "on-secondary-container": "#fffbff",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#00daf3",
+                    "tertiary-fixed": "#9cf0ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "tablet-breakpoint": "768px",
+                    "mobile-breakpoint": "375px",
+                    "gutter": "16px",
+                    "base": "8px",
+                    "desktop-max-width": "1280px",
+                    "container-padding": "24px"
+            },
+            "fontFamily": {
+                    "button-text": ["Manrope"],
+                    "headline-md": ["Manrope"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "label-sm": ["JetBrains Mono"],
+                    "body-md": ["Manrope"],
+                    "body-lg": ["Manrope"]
+            },
+            "fontSize": {
+                    "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+        }
+        .biometric-pulse {
+            animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 0.3; }
+            100% { transform: scale(0.8); opacity: 0.8; }
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .scan-glow {
+            box-shadow: 0 0 20px rgba(0, 218, 243, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-40 flex items-center justify-between px-gutter w-full h-16 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary">RecordIT</span>
+<div class="hidden md:flex gap-6 ml-8">
+<span class="text-on-surface-variant cursor-pointer font-button-text text-button-text hover:text-secondary transition-colors">Dashboard</span>
+<span class="text-primary border-b-2 border-primary cursor-pointer font-button-text text-button-text">Students</span>
+<span class="text-on-surface-variant cursor-pointer font-button-text text-button-text hover:text-secondary transition-colors">Attendance</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-outline mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48" placeholder="Search student..." type="text"/>
+</div>
+<button class="p-2 rounded-full hover:bg-secondary-container/10 transition-colors">
+<span class="material-symbols-outlined text-secondary">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-secondary-container/10 transition-colors">
+<span class="material-symbols-outlined text-secondary">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-fixed overflow-hidden border border-primary/10">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a school administrator in a clean office setting, featuring soft natural lighting and a modern corporate aesthetic. The person is smiling warmly, wearing business casual attire, embodying trust and academic professionalism. The background is a slightly blurred administrative office with bookshelf elements." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAegYDkuxIWjUcei4j3UnjeiGvSJ21C8S9KL-wp5duQbeeJ0eR3tHGMfgHBm7PG34bflVLqpsWYvMEdM5eFUjHj-9X0jUFrqZCq9CMRaEepPngcQXFqokRH96Rs0UxdlPb8p5SRhXrBDMupuY3mhX0W72K90ibISJApHlfhOJMp-LAAfnEwAvPrj4P6G0Mbu1hqVxqYv0xO04YknE9tNvVvwtNZqdmUG4oc33IA5vOlm0ymJiUtq-KFaA"/>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col w-64 h-[calc(100vh-64px)] bg-surface-container-low border-r border-outline-variant/20 py-4">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 rounded-lg cursor-pointer transition-all duration-200">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-button-text text-button-text">Dashboard</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 rounded-lg cursor-pointer transition-all duration-200">
+<span class="material-symbols-outlined">school</span>
+<span class="font-button-text text-button-text">Academic Setup</span>
+</div>
+<div class="flex items-center gap-3 bg-secondary-container text-on-secondary-container rounded-lg px-4 py-3 mx-2 shadow-sm transition-all duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="font-button-text text-button-text">Students</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 rounded-lg cursor-pointer transition-all duration-200">
+<span class="material-symbols-outlined">badge</span>
+<span class="font-button-text text-button-text">Teachers</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 rounded-lg cursor-pointer transition-all duration-200">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-button-text text-button-text">Reports</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 rounded-lg cursor-pointer transition-all duration-200">
+<span class="material-symbols-outlined">phonelink_setup</span>
+<span class="font-button-text text-button-text">Device Settings</span>
+</div>
+</div>
+<div class="mt-auto px-6 py-4 border-t border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div>
+<p class="font-button-text text-button-text text-on-surface">Central High</p>
+<p class="text-[10px] text-outline uppercase tracking-wider">Admin Portal</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto p-gutter md:p-10 bg-background">
+<div class="max-w-4xl mx-auto space-y-8">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<nav class="flex items-center gap-2 text-outline mb-2">
+<span class="font-label-sm text-label-sm cursor-pointer hover:text-primary">Students</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">Fingerprint Enrollment</span>
+</nav>
+<h1 class="font-headline-lg text-headline-lg text-primary">Fingerprint Enrollment</h1>
+</div>
+<div class="flex items-center gap-3 bg-surface-container-high px-4 py-2 rounded-full border border-outline-variant/30">
+<div class="w-2.5 h-2.5 rounded-full bg-[#009eb0] shadow-[0_0_8px_#009eb0]"></div>
+<div class="flex flex-col">
+<span class="font-label-sm text-[10px] leading-tight text-outline">HARDWARE STATUS</span>
+<span class="font-button-text text-xs text-on-surface">ZKTeco ZK9500 Connected</span>
+</div>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Student Summary Card -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<div class="bg-surface rounded-xl p-6 border border-outline-variant/30 shadow-[0px_4px_12px_rgba(0,35,102,0.05)]">
+<div class="flex flex-col items-center text-center">
+<div class="relative mb-4">
+<div class="w-24 h-24 rounded-full overflow-hidden border-4 border-surface-container-high shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A portrait of a male teenage student named Alexander Thorne, wearing a neat school uniform in a light blue shade. The lighting is crisp and academic, set against a soft-focus background of a modern school library. The style is professional and clean, with a high-key light mode aesthetic reflecting reliability and student success." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbu91QbMTcmaLnMmkoARYQ-TTNkerXMOrb_cQOCgQp9Ca6zH1HehyoUmnjMPGtvRrfMPzWlfPXYLtoZHBLVR7L1EoGrSX-tNGS0UOL6Vvp7kr84Y6M40TTbK929Nq7Skh_6KlfmcJ2q7dSvlEk4m5a2sN1QDGXIZk5FZzWHD1_4tZ8zqZpu4XH6UNyHN250AOL0ZAVtInvoHsseOdxOIgj48Jvrn9LJCxDBo4qMhqACgtGcgHn1ld-KQ"/>
+</div>
+<div class="absolute bottom-0 right-0 w-8 h-8 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center border-2 border-surface">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Alexander Thorne</h3>
+<p class="font-label-sm text-label-sm text-secondary uppercase tracking-widest mt-1">Student Profile</p>
+<div class="w-full mt-6 space-y-4 text-left">
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/10">
+<span class="text-on-surface-variant text-sm">Student ID</span>
+<span class="font-label-sm text-label-sm text-primary">STU-2024-001</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/10">
+<span class="text-on-surface-variant text-sm">Class</span>
+<span class="font-label-sm text-label-sm text-primary">Grade 10-A</span>
+</div>
+<div class="flex justify-between items-center py-2">
+<span class="text-on-surface-variant text-sm">Enrollment Status</span>
+<span class="bg-error-container text-error px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter">Not Enrolled</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Progress/Help Card -->
+<div class="bg-primary-container rounded-xl p-6 text-on-primary-container relative overflow-hidden">
+<div class="relative z-10">
+<h4 class="font-button-text text-button-text font-bold text-white mb-2">Enrollment Guide</h4>
+<p class="text-sm opacity-90 leading-relaxed">Ensure the student's finger is clean and dry. For best results, place the finger flat and apply moderate pressure until the scan light flashes.</p>
+</div>
+<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-8xl opacity-10 text-white">fingerprint</span>
+</div>
+</div>
+<!-- Scanner Central Card -->
+<div class="lg:col-span-8">
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-[0px_4px_12px_rgba(0,35,102,0.05)] overflow-hidden h-full flex flex-col">
+<div class="p-6 border-b border-outline-variant/10 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">phonelink_setup</span>
+<span class="font-headline-md text-headline-md text-primary">Biometric Interface</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-[10px] text-outline">QUALITY:</span>
+<div class="flex gap-1">
+<div class="w-6 h-1.5 rounded-full bg-outline-variant/30"></div>
+<div class="w-6 h-1.5 rounded-full bg-outline-variant/30"></div>
+<div class="w-6 h-1.5 rounded-full bg-outline-variant/30"></div>
+</div>
+<span class="font-label-sm text-[10px] text-outline ml-1">READY</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center p-12 text-center relative">
+<!-- Atmospheric pulses -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-64 h-64 rounded-full bg-tertiary-fixed-dim/5 biometric-pulse"></div>
+<div class="w-48 h-48 rounded-full bg-tertiary-fixed-dim/10 biometric-pulse" style="animation-delay: 0.5s"></div>
+</div>
+<!-- Scanner Visual -->
+<div class="relative z-10 mb-8">
+<div class="w-48 h-64 bg-surface-variant/40 rounded-2xl border-2 border-dashed border-tertiary-fixed-dim flex items-center justify-center glass-panel scan-glow overflow-hidden">
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-8xl text-tertiary-fixed-dim animate-pulse">fingerprint</span>
+<p class="font-label-sm text-[10px] text-on-tertiary-container mt-4 uppercase tracking-[0.2em]">Waiting for Finger</p>
+</div>
+<!-- Scanning beam effect -->
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-tertiary-fixed-dim to-transparent animate-[scan_3s_ease-in-out_infinite]" id="scanner-beam" style="display:none;"></div>
+</div>
+</div>
+<div class="max-w-sm space-y-2 relative z-10">
+<h2 class="font-headline-md text-headline-md text-on-surface">Ready to Capture</h2>
+<p class="text-on-surface-variant text-sm">Place the student’s finger on the <span class="font-bold text-primary">ZKTeco ZK9500</span> scanner to begin the multi-pass verification process.</p>
+</div>
+</div>
+<div class="p-8 bg-surface-container-low border-t border-outline-variant/10 flex items-center justify-center gap-4">
+<button class="px-8 py-3 rounded-lg font-button-text text-button-text border border-outline text-outline hover:bg-surface-variant transition-all active:scale-95 duration-150" id="cancel-btn">
+                                    Cancel
+                                </button>
+<button class="px-10 py-3 rounded-lg font-button-text text-button-text bg-secondary text-white shadow-lg shadow-secondary/20 hover:bg-primary transition-all active:scale-95 duration-150 flex items-center gap-2" id="start-btn">
+<span class="material-symbols-outlined text-sm">play_arrow</span>
+                                    Start Enrollment
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface border-t border-outline-variant/10 py-4 mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center px-gutter max-w-desktop-max-width mx-auto">
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 RecordIT Biometric Systems. All Rights Reserved.</p>
+<div class="flex gap-6 mt-2 md:mt-0">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary underline transition-all" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary underline transition-all" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary underline transition-all" href="#">Security Whitepaper</a>
+</div>
+</div>
+</footer>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startBtn = document.getElementById('start-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const beam = document.getElementById('scanner-beam');
+            const statusText = document.querySelector('h2.font-headline-md');
+            const statusDesc = statusText.nextElementSibling;
+            
+            let isScanning = false;
+
+            startBtn.addEventListener('click', () => {
+                if (!isScanning) {
+                    isScanning = true;
+                    startBtn.innerHTML = `<span class="material-symbols-outlined text-sm animate-spin">sync</span> Scanning...`;
+                    startBtn.classList.add('opacity-80');
+                    beam.style.display = 'block';
+                    statusText.innerText = "Scanning Finger...";
+                    statusDesc.innerHTML = "Processing high-resolution biometric data points. Keep finger still.";
+                    
+                    // Simulate capture
+                    setTimeout(() => {
+                        if (isScanning) {
+                            statusText.innerText = "Scan 1/3 Complete";
+                            statusDesc.innerHTML = "Lift finger and place it back on the scanner for verification.";
+                            // In a real app, logic would continue here
+                        }
+                    }, 3000);
+                }
+            });
+
+            cancelBtn.addEventListener('click', () => {
+                isScanning = false;
+                startBtn.innerHTML = `<span class="material-symbols-outlined text-sm">play_arrow</span> Start Enrollment`;
+                startBtn.classList.remove('opacity-80');
+                beam.style.display = 'none';
+                statusText.innerText = "Ready to Capture";
+                statusDesc.innerHTML = "Place the student’s finger on the <span class='font-bold text-primary'>ZKTeco ZK9500</span> scanner to begin the multi-pass verification process.";
+            });
+        });
+    </script>
+<style>
+        @keyframes scan {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+    </style>
+</body></html>

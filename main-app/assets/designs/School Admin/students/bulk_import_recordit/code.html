@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bulk Student Import | RecordIT</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error": "#ba1a1a",
+                    "on-surface": "#0d1d2a",
+                    "on-secondary-fixed-variant": "#003baf",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed": "#dce1ff",
+                    "primary": "#00113a",
+                    "tertiary": "#00171b",
+                    "secondary-container": "#446ce4",
+                    "on-secondary": "#ffffff",
+                    "outline": "#757682",
+                    "on-primary-fixed": "#00174a",
+                    "primary-fixed": "#dbe1ff",
+                    "on-primary-fixed-variant": "#2a4386",
+                    "on-primary-container": "#758dd5",
+                    "inverse-on-surface": "#e7f2ff",
+                    "background": "#f7f9ff",
+                    "on-tertiary-container": "#009eb0",
+                    "on-secondary-fixed": "#00164e",
+                    "inverse-surface": "#223240",
+                    "on-error": "#ffffff",
+                    "surface-tint": "#435b9f",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "tertiary-container": "#002d33",
+                    "secondary-fixed-dim": "#b6c4ff",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed": "#001f24",
+                    "outline-variant": "#c5c6d2",
+                    "primary-container": "#002366",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-high": "#d9eafc",
+                    "surface-container": "#e2efff",
+                    "surface-variant": "#d4e4f6",
+                    "surface-bright": "#f7f9ff",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "inverse-primary": "#b3c5ff",
+                    "secondary": "#2552ca",
+                    "on-primary": "#ffffff",
+                    "on-background": "#0d1d2a",
+                    "surface-dim": "#cbdcee",
+                    "surface-container-highest": "#d4e4f6",
+                    "on-surface-variant": "#444650",
+                    "surface-container-low": "#ecf4ff",
+                    "surface": "#f7f9ff",
+                    "on-secondary-container": "#fffbff",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#00daf3",
+                    "tertiary-fixed": "#9cf0ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "tablet-breakpoint": "768px",
+                    "mobile-breakpoint": "375px",
+                    "gutter": "16px",
+                    "base": "8px",
+                    "desktop-max-width": "1280px",
+                    "container-padding": "24px"
+            },
+            "fontFamily": {
+                    "button-text": ["Manrope"],
+                    "headline-md": ["Manrope"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "label-sm": ["JetBrains Mono"],
+                    "body-md": ["Manrope"],
+                    "body-lg": ["Manrope"]
+            },
+            "fontSize": {
+                    "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        display: inline-block;
+        line-height: 1;
+        text-transform: none;
+        letter-spacing: normal;
+        word-wrap: normal;
+        white-space: nowrap;
+        direction: ltr;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .custom-shadow {
+        box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+      }
+      .custom-shadow-hover:hover {
+        box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+      }
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #c5c6d2; border-radius: 10px; }
+      .import-active { border-color: #2552ca; background-color: #ecf4ff; }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-background min-h-screen flex">
+<!-- SideNavBar (Shared Component) -->
+<aside class="hidden md:flex flex-col border-r border-outline-variant/20 bg-surface-container-low dark:bg-surface-container-lowest h-screen w-64 fixed left-0 top-0 z-50">
+<div class="p-6 mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">school</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">RecordIT</h1>
+<p class="text-[10px] text-outline font-semibold tracking-widest uppercase">Admin Shell</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto space-y-1">
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">school</span> Academic Setup
+            </a>
+<a class="flex items-center gap-3 bg-secondary-container text-on-secondary-container rounded-lg px-4 py-3 mx-2 transition-all duration-200 ease-in-out font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span> Students
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">badge</span> Teachers
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">family_restroom</span> Parents/Guardians
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">door_open</span> Classes
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">fingerprint</span> Attendance
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">assessment</span> Reports
+            </a>
+<div class="pt-4 mt-4 border-t border-outline-variant/20">
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">phonelink_setup</span> Device Settings
+                </a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+                </a>
+</div>
+</nav>
+<div class="p-4 border-t border-outline-variant/20 bg-surface-container-lowest">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a school administrator in a bright office environment. The person is wearing a navy blazer and has a confident, welcoming expression. The lighting is soft and natural, emphasizing a high-end corporate academic aesthetic with professional clarity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwuFrCFityIhk7seIk-2UJP0GeUxbjmg_WL_9V_BU5jaug__KEaT5kBVzAbMg1dCvUkhhdKwnq9M5bBZx8RgVwgbd5cESnvsFpqvNIUog2jEktUF5wccuqE2tCkHhD5U5N2u91ltNwcc4lcJFYFLTl2RTewiyjfEs6oirJDcc-qBtztbfbtK65Jhaxo0DIZV0h06Y0fvBvU6F2lnSmDMStIzvMN2e7a7md25Y3avRQVZ-joj5clLEtog"/>
+</div>
+<div class="flex-1 overflow-hidden">
+<p class="text-xs font-bold text-on-surface truncate">Admin User</p>
+<p class="text-[10px] text-outline truncate">Central High School</p>
+</div>
+<span class="material-symbols-outlined text-outline text-sm">logout</span>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen">
+<!-- TopNavBar (Shared Component) -->
+<header class="sticky top-0 z-40 flex items-center justify-between px-gutter w-full h-16 backdrop-blur-xl border-b border-outline-variant/30 bg-surface/80 dark:bg-surface-container-highest/80 shadow-sm">
+<div class="flex items-center gap-4">
+<button class="md:hidden p-2 hover:bg-secondary-container/10 transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Bulk Student Import</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex bg-surface-container px-3 py-1.5 rounded-full items-center gap-2 border border-outline-variant/20">
+<span class="material-symbols-outlined text-sm text-outline">search</span>
+<input class="bg-transparent border-none text-sm focus:ring-0 w-48 placeholder-outline-variant" placeholder="Search student records..." type="text"/>
+</div>
+<button class="p-2 hover:bg-secondary-container/10 transition-colors cursor-pointer active:scale-95 duration-150 text-secondary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 hover:bg-secondary-container/10 transition-colors cursor-pointer active:scale-95 duration-150 text-secondary">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="max-w-desktop-max-width mx-auto w-full p-gutter flex flex-col gap-8 flex-1">
+<!-- Intro & Instructions -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<div class="lg:col-span-8 space-y-6">
+<!-- Drop Zone -->
+<div class="relative border-2 border-dashed border-outline-variant rounded-xl p-12 bg-surface-container-low flex flex-col items-center justify-center transition-all duration-300 hover:border-secondary hover:bg-surface-container custom-shadow group" id="drop-zone">
+<div class="w-16 h-16 rounded-full bg-secondary-fixed flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-secondary text-3xl">upload_file</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Drag and drop CSV file here</h3>
+<p class="text-on-surface-variant text-body-md mb-6 text-center max-w-sm">Support for .csv, .xlsx files only. Maximum file size: 25MB.</p>
+<div class="flex flex-col items-center gap-4">
+<label class="px-8 py-3 bg-secondary text-on-secondary rounded-lg font-button-text text-button-text cursor-pointer hover:shadow-lg active:scale-95 transition-all">
+                                Upload File
+                                <input accept=".csv,.xlsx" class="hidden" type="file"/>
+</label>
+<a class="text-secondary font-button-text text-button-text hover:underline flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-sm">download</span>
+                                Download Sample CSV Template
+                            </a>
+</div>
+</div>
+<!-- Instructions -->
+<div class="bg-surface glass-card rounded-xl p-6 border border-outline-variant/30 custom-shadow">
+<h4 class="font-button-text text-button-text text-primary flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined">info</span>
+                            Import Format Requirements
+                        </h4>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="flex gap-3">
+<div class="w-6 h-6 rounded bg-primary-container text-on-primary-container flex-shrink-0 flex items-center justify-center text-xs font-bold">1</div>
+<p class="text-sm text-on-surface-variant">The first row must contain headers: <code class="font-label-sm text-label-sm bg-surface-variant px-1 rounded">StudentID, FirstName, LastName, Grade, Section</code>.</p>
+</div>
+<div class="flex gap-3">
+<div class="w-6 h-6 rounded bg-primary-container text-on-primary-container flex-shrink-0 flex items-center justify-center text-xs font-bold">2</div>
+<p class="text-sm text-on-surface-variant">Ensure Student IDs are unique and do not contain special characters.</p>
+</div>
+<div class="flex gap-3">
+<div class="w-6 h-6 rounded bg-primary-container text-on-primary-container flex-shrink-0 flex items-center justify-center text-xs font-bold">3</div>
+<p class="text-sm text-on-surface-variant">Date format should be <code class="font-label-sm text-label-sm bg-surface-variant px-1 rounded">YYYY-MM-DD</code> for birth dates.</p>
+</div>
+<div class="flex gap-3">
+<div class="w-6 h-6 rounded bg-primary-container text-on-primary-container flex-shrink-0 flex items-center justify-center text-xs font-bold">4</div>
+<p class="text-sm text-on-surface-variant">Maximum of 500 records per individual import session.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Column: Status/Help -->
+<div class="lg:col-span-4 space-y-6">
+<div class="bg-surface-container-high rounded-xl p-6 border border-outline-variant/20">
+<h4 class="text-button-text font-button-text text-on-surface mb-4">Recent Import History</h4>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div>
+<p class="text-sm font-semibold text-on-surface">grade_10_students.csv</p>
+<p class="text-xs text-on-surface-variant">24 Oct, 2024 • 142 records</p>
+</div>
+<span class="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold">SUCCESS</span>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<p class="text-sm font-semibold text-on-surface">transfer_records.csv</p>
+<p class="text-xs text-on-surface-variant">22 Oct, 2024 • 12 records</p>
+</div>
+<span class="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold">SUCCESS</span>
+</div>
+</div>
+<button class="w-full mt-6 py-2 border border-outline text-on-surface-variant font-button-text text-button-text rounded-lg hover:bg-surface transition-colors">View All Logs</button>
+</div>
+<div class="bg-secondary-container text-on-secondary-container rounded-xl p-6 flex flex-col gap-3 relative overflow-hidden">
+<div class="relative z-10">
+<h4 class="font-headline-md text-headline-md">Need Help?</h4>
+<p class="text-sm opacity-90 mb-4">Read our guide on how to resolve common formatting errors during bulk imports.</p>
+<a class="inline-flex items-center gap-2 font-button-text text-button-text hover:underline" href="#">
+                                Help Center <span class="material-symbols-outlined text-sm">open_in_new</span>
+</a>
+</div>
+<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl opacity-10 rotate-12">help</span>
+</div>
+</div>
+</div>
+<!-- Preview Area -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-outline-variant/30 pb-4">
+<h3 class="font-headline-md text-headline-md text-on-surface">Data Preview &amp; Validation</h3>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 text-error px-3 py-1 bg-error-container rounded-full animate-pulse">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">error</span>
+<span class="text-xs font-bold">3 records contain errors</span>
+</div>
+<span class="text-sm text-outline">Showing 5 of 5 records</span>
+</div>
+</div>
+<div class="bg-surface glass-card border border-outline-variant/30 rounded-xl overflow-hidden custom-shadow">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container">
+<tr>
+<th class="px-6 py-4 text-button-text font-button-text text-on-surface-variant border-b border-outline-variant/20">Status</th>
+<th class="px-6 py-4 text-button-text font-button-text text-on-surface-variant border-b border-outline-variant/20">Student ID</th>
+<th class="px-6 py-4 text-button-text font-button-text text-on-surface-variant border-b border-outline-variant/20">First Name</th>
+<th class="px-6 py-4 text-button-text font-button-text text-on-surface-variant border-b border-outline-variant/20">Last Name</th>
+<th class="px-6 py-4 text-button-text font-button-text text-on-surface-variant border-b border-outline-variant/20">Grade/Section</th>
+<th class="px-6 py-4 text-button-text font-button-text text-on-surface-variant border-b border-outline-variant/20">Issue</th>
+</tr>
+</thead>
+<tbody>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 border-b border-outline-variant/10">
+<span class="material-symbols-outlined text-green-500" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm font-semibold">CHS-2024-001</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm">Alexandra</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm">Murdock</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm">10-A</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm text-on-surface-variant">—</td>
+</tr>
+<tr class="bg-error-container/20 hover:bg-error-container/30 transition-colors">
+<td class="px-6 py-4 border-b border-outline-variant/10">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">error</span>
+</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm font-semibold text-error">CHS-2024-002</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm">James</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm">--</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm">10-B</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-xs font-bold text-error">Missing Last Name</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 border-b border-outline-variant/10">
+<span class="material-symbols-outlined text-green-500" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm font-semibold">CHS-2024-003</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm">Sarah</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm">Conner</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm">10-A</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm text-on-surface-variant">—</td>
+</tr>
+<tr class="bg-error-container/20 hover:bg-error-container/30 transition-colors">
+<td class="px-6 py-4 border-b border-outline-variant/10">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">error</span>
+</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm font-semibold text-error">CHS-2024-001</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm">Marcus</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm">Fenix</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm">10-C</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-xs font-bold text-error">Duplicate ID</td>
+</tr>
+<tr class="bg-error-container/20 hover:bg-error-container/30 transition-colors">
+<td class="px-6 py-4 border-b border-outline-variant/10">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">error</span>
+</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm font-semibold">CHS-2024-005</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm">Dominic</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm">Santiago</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-sm text-error font-bold">UNDEFINED</td>
+<td class="px-6 py-4 border-b border-outline-variant/10 text-xs font-bold text-error">Invalid Section</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="sticky bottom-0 bg-surface/90 backdrop-blur-md border-t border-outline-variant/20 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 -mx-gutter px-gutter">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">security</span>
+<p class="text-xs text-on-surface-variant">All uploads are encrypted and processed in a secure academic environment.</p>
+</div>
+<div class="flex items-center gap-3 w-full sm:w-auto">
+<button class="flex-1 sm:flex-none px-6 py-3 text-on-surface-variant font-button-text text-button-text hover:bg-surface-container transition-colors rounded-lg">Cancel</button>
+<button class="flex-1 sm:flex-none px-6 py-3 border border-secondary text-secondary font-button-text text-button-text hover:bg-secondary/5 transition-colors rounded-lg">Validate Records</button>
+<button class="flex-1 sm:flex-none px-8 py-3 bg-outline text-white/50 cursor-not-allowed font-button-text text-button-text rounded-lg" disabled="">Import Students</button>
+</div>
+</div>
+</div>
+<!-- Footer (Shared Component) -->
+<footer class="w-full py-6 mt-auto border-t border-outline-variant/10 bg-surface dark:bg-surface-dim">
+<div class="flex flex-col md:flex-row justify-between items-center px-gutter max-w-desktop-max-width mx-auto gap-4">
+<div class="flex items-center gap-4">
+<span class="font-button-text text-button-text font-semibold text-primary">RecordIT</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant dark:text-outline">© 2024 RecordIT Biometric Systems. All Rights Reserved.</span>
+</div>
+<div class="flex gap-6">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary underline transition-all opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary underline transition-all opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary underline transition-all opacity-80 hover:opacity-100" href="#">Security Whitepaper</a>
+</div>
+</div>
+</footer>
+</main>
+<script>
+        // Simple micro-interactions
+        const dropZone = document.getElementById('drop-zone');
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('import-active');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('import-active');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', e => {
+            alert('File drop detected! Processing simulation...');
+        });
+    </script>
+</body></html>

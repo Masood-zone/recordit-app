@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Teacher Profile | RecordIT Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-primary-fixed": "#00174a",
+                "primary-fixed": "#dbe1ff",
+                "on-tertiary": "#ffffff",
+                "on-primary-fixed-variant": "#2a4386",
+                "on-primary-container": "#758dd5",
+                "inverse-surface": "#223240",
+                "tertiary-container": "#002d33",
+                "tertiary": "#00171b",
+                "on-background": "#0d1d2a",
+                "surface-container-low": "#ecf4ff",
+                "secondary": "#2552ca",
+                "on-secondary": "#ffffff",
+                "inverse-on-surface": "#e7f2ff",
+                "surface-container": "#e2efff",
+                "inverse-primary": "#b3c5ff",
+                "on-error-container": "#93000a",
+                "secondary-container": "#446ce4",
+                "on-secondary-fixed-variant": "#003baf",
+                "surface-container-lowest": "#ffffff",
+                "on-secondary-fixed": "#00164e",
+                "on-error": "#ffffff",
+                "surface-tint": "#435b9f",
+                "outline": "#757682",
+                "surface-dim": "#cbdcee",
+                "secondary-fixed": "#dce1ff",
+                "on-tertiary-container": "#009eb0",
+                "tertiary-fixed-dim": "#00daf3",
+                "error-container": "#ffdad6",
+                "tertiary-fixed": "#9cf0ff",
+                "surface": "#f7f9ff",
+                "on-tertiary-fixed-variant": "#004f58",
+                "error": "#ba1a1a",
+                "secondary-fixed-dim": "#b6c4ff",
+                "surface-container-highest": "#d4e4f6",
+                "primary-container": "#002366",
+                "surface-bright": "#f7f9ff",
+                "primary-fixed-dim": "#b3c5ff",
+                "on-secondary-container": "#fffbff",
+                "on-primary": "#ffffff",
+                "surface-container-high": "#d9eafc",
+                "on-tertiary-fixed": "#001f24",
+                "background": "#f7f9ff",
+                "surface-variant": "#d4e4f6",
+                "primary": "#00113a",
+                "on-surface-variant": "#444650",
+                "outline-variant": "#c5c6d2",
+                "on-surface": "#0d1d2a"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "fontFamily": {
+                "body-lg": ["Manrope"],
+                "headline-lg-mobile": ["Manrope"],
+                "button-text": ["Manrope"],
+                "label-sm": ["JetBrains Mono"],
+                "headline-md": ["Manrope"],
+                "headline-lg": ["Manrope"],
+                "body-md": ["Manrope"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .hover-shadow:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-nav-link {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full flex flex-col p-4 bg-primary dark:bg-primary border-r border-outline-variant shadow-sm w-64 z-50">
+<div class="mb-8 px-4">
+<h1 class="font-headline-md text-headline-md font-bold text-on-primary">RecordIT</h1>
+<p class="text-on-primary-container text-xs opacity-80">Admin Terminal</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1 overflow-y-auto">
+<!-- Mapping JSON labels and icons -->
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-body-md">Academic Setup</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-md">Students</span>
+</a>
+<!-- Teachers Active -->
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-semibold shadow-md active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-body-md">Teachers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">family_restroom</span>
+<span class="font-body-md">Parents/Guardians</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">class</span>
+<span class="font-body-md">Classes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md">Attendance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-body-md">Reports</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-1 border-t border-on-primary/10 pt-4">
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-secondary-fixed-dim hover:text-on-primary-fixed hover:bg-primary-fixed-dim transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="flex justify-between items-center h-16 px-8 ml-64 w-[calc(100%-16rem)] fixed top-0 bg-surface/80 backdrop-blur-md border-b border-outline-variant z-40">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md focus-within:ring-2 focus-within:ring-secondary rounded-lg overflow-hidden transition-all">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border-none pl-10 pr-4 py-2 text-on-surface placeholder:text-on-surface-variant focus:outline-none" placeholder="Search teacher profile..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:text-secondary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">fingerprint</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+<div class="flex items-center gap-3 border-l border-outline-variant pl-6">
+<div class="text-right hidden lg:block">
+<p class="text-sm font-bold text-on-surface">Admin User</p>
+<p class="text-xs text-on-surface-variant">System Registrar</p>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged academic administrator in a light blue blazer, smiling warmly against a clean white background. High-key studio lighting emphasizes clarity and professional trustworthiness, reflecting a modern corporate educational environment with soft blue tones and a high-end polished finish." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfmSkKdaZ1P3dp2a2mcnYe8UX65TUCKkuQmcXLsqK6MgMC990Y_CK0dkAQOi754O1Azb21X6Xaq1OD3hvQX5Ei35n4AW21oSgkEkMGk0-KbxhgcTdd9qzuOJqI-xKbt2-gMfJcttsGz4nRmAplA14psG--IqQjAcOYxdGVI3kDVzuwtJdaIumcScQzJ9QQM5E5_8Jh0HDEGnl3bgNPe3IwSDiW8Kq32pXbHUGEtdoPtMC_HAG_xRLZbw"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-64 pt-24 px-8 pb-12 max-w-7xl mx-auto">
+<!-- Breadcrumb / Header Section -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<nav class="flex items-center gap-2 text-on-surface-variant text-sm mb-2">
+<a class="hover:text-primary transition-colors" href="#">Teachers</a>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-primary font-semibold">Profile Details</span>
+</nav>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Teacher Profile</h2>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-6 py-2.5 bg-secondary text-on-secondary rounded-lg font-button-text soft-shadow hover:bg-primary-container transition-all active:scale-95">
+<span class="material-symbols-outlined text-lg">edit</span>
+                    Edit Teacher
+                </button>
+<button class="flex items-center gap-2 px-6 py-2.5 bg-white border-2 border-outline-variant text-on-surface-variant rounded-lg font-button-text hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-lg">settings_backup_restore</span>
+                    Reset Password
+                </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Profile Card (Left Column) -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+<div class="bg-white rounded-xl border border-outline-variant soft-shadow p-8 flex flex-col items-center text-center">
+<div class="relative group">
+<div class="w-48 h-48 rounded-full border-4 border-surface-container overflow-hidden soft-shadow mb-6">
+<img class="w-full h-full object-cover" data-alt="A high-quality portrait of a distinguished male university professor in his late 40s, wearing a crisp charcoal suit and scholarly spectacles. The background is a soft-focus library with blue-toned book spines. The lighting is sophisticated, casting gentle shadows that suggest professional wisdom and authority in a modern academic setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_NX6FUgD_xIQXa3k8jbPchNZmAsMwHVib96xLYLf5ygsk7kcQkrcS3lQL0vy6B_rkuryIqq0p005LC1xgWvXl-S_pxRjeR1cr5_r5oarEjCV2t0mgoEzclk83LG21ll7jkBX3zyD3T4tB2VAbSH0IBJLl_oAs0kFjAkcXnmM4vqd5bvYuPxx8TbAx3oQCLSkS8ZxwUWZvas8lDT2yP_TSQgghhzxPYVfEoRDXixN_EjbP-lIis6QIsg"/>
+</div>
+<button class="absolute bottom-6 right-2 bg-secondary text-on-secondary p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-base">photo_camera</span>
+</button>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Dr. Alistair Vance</h3>
+<p class="text-on-tertiary-container font-label-sm bg-tertiary-fixed-dim/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider mb-6">Senior Faculty</p>
+<div class="w-full space-y-4 pt-6 border-t border-outline-variant/30">
+<div class="flex justify-between items-center text-left">
+<span class="text-on-surface-variant text-sm">Staff Number</span>
+<span class="font-label-sm text-on-surface">FAC-2023-0089</span>
+</div>
+<div class="flex justify-between items-center text-left">
+<span class="text-on-surface-variant text-sm">Department</span>
+<span class="font-body-md font-semibold text-secondary">Advanced Sciences</span>
+</div>
+<div class="flex justify-between items-center text-left">
+<span class="text-on-surface-variant text-sm">Status</span>
+<span class="flex items-center gap-1.5 text-xs font-bold text-on-tertiary-container bg-tertiary-fixed px-2 py-1 rounded-full">
+<span class="w-2 h-2 bg-on-tertiary-container rounded-full"></span>
+                                ACTIVE
+                            </span>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-xl border border-outline-variant soft-shadow p-6">
+<h4 class="font-body-lg font-bold text-on-surface mb-4">Quick Actions</h4>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-secondary transition-all group">
+<span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">add_task</span>
+<span class="text-xs font-semibold">Assign Class</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl bg-surface-container-low hover:bg-error-container text-on-surface-variant hover:text-error transition-all group">
+<span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">block</span>
+<span class="text-xs font-semibold">Suspend</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-secondary transition-all group">
+<span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">mail</span>
+<span class="text-xs font-semibold">Email</span>
+</button>
+<button class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-secondary transition-all group">
+<span class="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">history</span>
+<span class="text-xs font-semibold">Logs</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Profile Info & Lists (Right Column) -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+<!-- Detailed Contact Info -->
+<div class="bg-white rounded-xl border border-outline-variant soft-shadow p-8">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-secondary">contact_page</span>
+<h4 class="font-headline-md text-headline-md text-on-surface">Contact Information</h4>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-1">
+<label class="text-xs font-label-sm text-on-surface-variant uppercase tracking-wider">Email Address</label>
+<p class="font-body-lg text-on-surface">a.vance@academic-institute.edu</p>
+</div>
+<div class="space-y-1">
+<label class="text-xs font-label-sm text-on-surface-variant uppercase tracking-wider">Phone Number</label>
+<p class="font-body-lg text-on-surface">+1 (555) 012-9938</p>
+</div>
+<div class="space-y-1">
+<label class="text-xs font-label-sm text-on-surface-variant uppercase tracking-wider">Secondary Contact</label>
+<p class="font-body-lg text-on-surface">+1 (555) 012-9900</p>
+</div>
+<div class="space-y-1">
+<label class="text-xs font-label-sm text-on-surface-variant uppercase tracking-wider">Office Location</label>
+<p class="font-body-lg text-on-surface">Science Block A, Room 402</p>
+</div>
+</div>
+</div>
+<!-- Metrics Bento -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-primary-container text-on-primary rounded-xl p-8 flex items-center justify-between overflow-hidden relative">
+<div class="z-10">
+<h5 class="text-on-primary-container font-label-sm text-xs mb-2">ATTENDANCE SESSIONS</h5>
+<p class="text-4xl font-extrabold tracking-tight">1,284</p>
+<p class="text-on-primary-container text-xs mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+                                12% increase this term
+                            </p>
+</div>
+<div class="opacity-20 translate-x-4">
+<span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">phonelink_setup</span>
+</div>
+<div class="absolute inset-0 opacity-10 pointer-events-none">
+
+</div>
+</div>
+<div class="bg-secondary-container text-on-secondary rounded-xl p-8 flex items-center justify-between">
+<div>
+<h5 class="text-secondary-fixed text-xs font-label-sm mb-2">ASSIGNED CLASSES</h5>
+<p class="text-4xl font-extrabold tracking-tight">08</p>
+<p class="text-secondary-fixed text-xs mt-2">Active across 3 departments</p>
+</div>
+<div class="opacity-20 translate-x-4">
+<span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">school</span>
+</div>
+</div>
+</div>
+<!-- Assigned Classes List -->
+<div class="bg-white rounded-xl border border-outline-variant soft-shadow overflow-hidden">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">class</span>
+<h4 class="font-body-lg font-bold text-on-surface">Assigned Classes</h4>
+</div>
+<button class="text-secondary text-sm font-semibold hover:underline">View All Schedule</button>
+</div>
+<div class="divide-y divide-outline-variant">
+<!-- Class Row -->
+<div class="p-4 hover:bg-surface-container-low transition-colors flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-primary-fixed-dim flex items-center justify-center text-on-primary-fixed">
+<span class="material-symbols-outlined">lyrics</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Advanced Particle Physics</p>
+<p class="text-xs text-on-surface-variant">PHY-401 • Mon, Wed, Fri</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-right">
+<p class="text-xs text-on-surface-variant">Enrollment</p>
+<p class="text-sm font-bold">42 Students</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">arrow_forward_ios</span>
+</div>
+</div>
+<!-- Class Row -->
+<div class="p-4 bg-primary-fixed-dim/5 hover:bg-surface-container-low transition-colors flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-tertiary-fixed-dim flex items-center justify-center text-on-tertiary-fixed-variant">
+<span class="material-symbols-outlined">science</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Quantum Mechanics II</p>
+<p class="text-xs text-on-surface-variant">PHY-405 • Tue, Thu</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-right">
+<p class="text-xs text-on-surface-variant">Enrollment</p>
+<p class="text-sm font-bold">18 Students</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">arrow_forward_ios</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Log -->
+<div class="bg-white rounded-xl border border-outline-variant soft-shadow p-6">
+<h4 class="font-body-lg font-bold text-on-surface mb-6">Recent Activity</h4>
+<div class="relative border-l-2 border-outline-variant ml-3 pl-8 space-y-8">
+<!-- Activity Item -->
+<div class="relative">
+<div class="absolute -left-[41px] top-0 w-4 h-4 rounded-full bg-secondary border-4 border-white"></div>
+<div class="flex flex-col">
+<span class="text-xs font-label-sm text-on-surface-variant uppercase">Today, 09:15 AM</span>
+<p class="text-on-surface font-semibold">Attendance session completed</p>
+<p class="text-sm text-on-surface-variant">Class: PHY-401 (42/42 students present)</p>
+</div>
+</div>
+<!-- Activity Item -->
+<div class="relative">
+<div class="absolute -left-[41px] top-0 w-4 h-4 rounded-full bg-outline-variant border-4 border-white"></div>
+<div class="flex flex-col">
+<span class="text-xs font-label-sm text-on-surface-variant uppercase">Yesterday, 02:40 PM</span>
+<p class="text-on-surface font-semibold">Device authentication sync</p>
+<p class="text-sm text-on-surface-variant">Terminal ID: LAB-04 (Success)</p>
+</div>
+</div>
+<!-- Activity Item -->
+<div class="relative">
+<div class="absolute -left-[41px] top-0 w-4 h-4 rounded-full bg-outline-variant border-4 border-white"></div>
+<div class="flex flex-col">
+<span class="text-xs font-label-sm text-on-surface-variant uppercase">24 Oct 2023, 10:00 AM</span>
+<p class="text-on-surface font-semibold">Account password updated</p>
+<p class="text-sm text-on-surface-variant">Action performed by System Admin</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-8 py-3 bg-surface-container-low text-on-surface-variant font-bold rounded-lg hover:bg-surface-container transition-colors">
+                        Full Activity Audit
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (SUPPRESSED per "Contextual FAB Suppression" rule as this is a Details/Profile screen) -->
+<script>
+        // Micro-interactions for hovering activity items
+        document.querySelectorAll('.hover-shadow').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0px)';
+            });
+        });
+    </script>
+</body></html>

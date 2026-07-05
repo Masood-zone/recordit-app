@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EduSecure Pro - Classes</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "on-primary-container": "#758dd5",
+                        "surface-container-highest": "#d4e4f6",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed": "#00164e",
+                        "on-error-container": "#93000a",
+                        "surface": "#f7f9ff",
+                        "surface-dim": "#cbdcee",
+                        "primary-container": "#002366",
+                        "surface-bright": "#f7f9ff",
+                        "outline-variant": "#c5c6d2",
+                        "on-primary-fixed": "#00174a",
+                        "secondary-container": "#446ce4",
+                        "inverse-surface": "#223240",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#e7f2ff",
+                        "error": "#ba1a1a",
+                        "secondary": "#2552ca",
+                        "surface-tint": "#435b9f",
+                        "on-surface-variant": "#444650",
+                        "tertiary": "#00171b",
+                        "tertiary-container": "#002d33",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#d9eafc",
+                        "primary": "#00113a",
+                        "outline": "#757682",
+                        "tertiary-fixed": "#9cf0ff",
+                        "surface-container-low": "#ecf4ff",
+                        "on-tertiary-fixed": "#001f24",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "primary-fixed": "#dbe1ff",
+                        "on-surface": "#0d1d2a",
+                        "surface-container": "#e2efff",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "on-background": "#0d1d2a",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary-fixed-variant": "#2a4386",
+                        "background": "#f7f9ff",
+                        "on-secondary-fixed-variant": "#003baf",
+                        "surface-variant": "#d4e4f6",
+                        "on-tertiary-container": "#009eb0",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#dce1ff",
+                        "tertiary-fixed-dim": "#00daf3",
+                        "inverse-primary": "#b3c5ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "base": "8px",
+                        "mobile-breakpoint": "375px",
+                        "tablet-breakpoint": "768px",
+                        "desktop-max-width": "1280px",
+                        "container-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "button-text": ["Manrope"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "body-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .raised-shadow:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c5c6d2;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #757682;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-16 bg-primary dark:bg-primary-container shadow-sm">
+<div class="flex items-center gap-4">
+<h1 class="text-headline-md font-headline-md font-bold text-on-primary dark:text-on-primary-container">EduSecure Pro</h1>
+<div class="hidden md:flex items-center bg-white/10 rounded-lg px-3 py-1 gap-2 ml-4">
+<span class="material-symbols-outlined text-on-primary/70 text-[20px]">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-on-primary placeholder-on-primary/50 text-sm w-64" placeholder="Search data..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2 mr-2">
+<button class="p-2 text-on-primary/80 hover:bg-white/10 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-primary/80 hover:bg-white/10 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="p-2 text-on-primary/80 hover:bg-white/10 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+<button class="hidden md:flex items-center gap-2 px-4 py-2 bg-secondary-container text-on-secondary-container rounded-lg font-button-text hover:brightness-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined">fingerprint</span>
+                Scan Biometric
+            </button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-on-primary/20">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a school administrator in a clean office setting. The person is smiling warmly, wearing business casual attire. The lighting is bright and even, reinforcing the corporate educational brand's reliable and trustworthy persona. High-quality digital photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSNJvbGnMkb3XLQ771f_RQKrVSdUjmRXY1ttupfypRgaadZGIgzP-OHwg3q-vU4FknixYAQZMUJDXSnh9va5q5gW8PxzPlylwMRQ4eZskXxj0Lr-Of6Pd27y_PJHQVyUIgMQqaVc5ULIv3_3JIj4cOej1KjOEjb8HbmAj9lv48TuHjxZAtsog6dSaUU645F1TY7Pjb6Fd2GbSPGuxLPKL4OmzuFKgdKZvVDKSOdYmfhUqoCiax3vH0XQ"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 flex flex-col p-4 bg-surface-container-low border-r border-outline-variant">
+<div class="flex items-center gap-3 mb-8 px-2">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div>
+<h3 class="font-bold text-primary leading-tight">Main Campus</h3>
+<p class="text-[11px] text-on-surface-variant">Academic Year 2023-24</p>
+</div>
+</div>
+<nav class="flex-grow space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">fingerprint</span>
+<span class="font-body-md">Attendance</span>
+</a>
+<!-- Students Active for this context -->
+<a class="flex items-center gap-3 px-3 py-2 bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-all" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-md">Students</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">school</span>
+<span class="font-body-md">Faculty</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">analytics</span>
+<span class="font-body-md">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">shield</span>
+<span class="font-body-md">Security</span>
+</a>
+</nav>
+<div class="pt-4 border-t border-outline-variant mt-4">
+<button class="w-full flex items-center justify-center gap-2 py-3 bg-primary text-on-primary rounded-xl font-button-text shadow-md hover:bg-primary/90 transition-all active:translate-x-1">
+<span class="material-symbols-outlined">add</span>
+                New Entry
+            </button>
+<a class="flex items-center gap-3 px-3 py-2 mt-4 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-gutter min-h-[calc(100vh-64px)]">
+<!-- School Header Banner -->
+<div class="relative w-full h-48 rounded-xl overflow-hidden mb-6 soft-shadow">
+<div class="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary/40 z-10"></div>
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="Panoramic architectural shot of a modern, high-tech school building with large glass windows and clean concrete lines. The sun is setting, casting a golden glow over the campus gardens. The atmosphere is prestigious and calm, reflecting the corporate academic identity. High-end architectural photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-D1ANcTiLCoW1fjvxgmU6eJuDpGrAApoBW8pCbIPUijfK17UNnTn4fLncRj1PGXv2Y8Cu8s4ivo-koudAShOfCe2lj5K292rnAMWQ57boJzUTcJB3d3jSAtx0hDRC5aQmC7-u9OHtj34h0F0JZaT_-26Skpoe5H2LzAjpwct69sKEGovhRyfU804MNjAOXE2qchKsySoz7e0meAAjSCj6R1wDFZeLw9-oFK0udHatS69udqGQaq2YJA"/>
+<div class="absolute inset-0 z-20 p-8 flex flex-col justify-end">
+<div class="flex items-center gap-4">
+<div class="w-20 h-20 bg-white p-2 rounded-xl shadow-lg border border-outline-variant">
+<img class="w-full h-full object-contain" data-alt="A minimalist and professional school crest logo featuring a stylized open book and a digital circuit pattern, symbolizing the blend of traditional education and biometric technology. The colors are Royal Blue and Platinum Silver. Vector graphic style on a clean white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1bZLs5EKMfZk-gefpBd5AtWFMVWKCj5uouioGgtJzK2weitH3-SUCvtwMrZ4qGEeWCBAIE5HvZHHLsLBr7baLr0vhV2sdXfp90amcOOXO6EdcPCdh32Oro8v-SSeHvKky1yRoNw7Z0Naf-zrWwxsZVz6KwgFMgCZG6roMBbpBvuDvMmyYqfEIZAIx0Eu4K9Bw4cEKGBJJ-rTgDHjHm4PNNU9WPvQevAO4i0ZwjCRU3qFxHeQobmLlFA"/>
+</div>
+<div>
+<h2 class="text-headline-lg font-headline-lg text-white">Main Campus Academy</h2>
+<p class="text-white/80 font-body-md">1240 Innovation Way, Silicon Valley • ID: EDU-99238</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<div class="flex items-center border-b border-outline-variant mb-8 px-2 gap-8">
+<button class="pb-4 text-on-surface-variant hover:text-primary transition-colors font-semibold">Overview</button>
+<button class="pb-4 text-primary border-b-2 border-primary font-bold">Classes</button>
+<button class="pb-4 text-on-surface-variant hover:text-primary transition-colors font-semibold">Students</button>
+<button class="pb-4 text-on-surface-variant hover:text-primary transition-colors font-semibold">Staff</button>
+<button class="pb-4 text-on-surface-variant hover:text-primary transition-colors font-semibold">Schedule</button>
+<button class="pb-4 text-on-surface-variant hover:text-primary transition-colors font-semibold">Settings</button>
+</div>
+<!-- Stats Overview Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<div class="bg-surface-container-lowest p-6 rounded-xl soft-shadow border border-outline-variant flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed">
+<span class="material-symbols-outlined">meeting_room</span>
+</div>
+<div>
+<p class="text-on-surface-variant text-sm font-medium">Total Classes</p>
+<p class="text-2xl font-bold text-primary">42</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl soft-shadow border border-outline-variant flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+<span class="material-symbols-outlined">groups</span>
+</div>
+<div>
+<p class="text-on-surface-variant text-sm font-medium">Avg. Class Size</p>
+<p class="text-2xl font-bold text-primary">24.5</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl soft-shadow border border-outline-variant flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">person_check</span>
+</div>
+<div>
+<p class="text-on-surface-variant text-sm font-medium">Capacity Used</p>
+<p class="text-2xl font-bold text-primary">88%</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl soft-shadow border border-outline-variant flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">apartment</span>
+</div>
+<div>
+<p class="text-on-surface-variant text-sm font-medium">Total Wings</p>
+<p class="text-2xl font-bold text-primary">04</p>
+</div>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+<div>
+<h3 class="text-headline-md font-headline-md text-primary">Academic Classes</h3>
+<p class="text-on-surface-variant text-sm">Managing current active classroom sessions and assignments.</p>
+</div>
+<div class="flex gap-3 w-full md:w-auto">
+<div class="relative flex-grow md:w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">filter_list</span>
+<select class="w-full pl-10 pr-4 py-2.5 bg-surface-container border border-outline-variant rounded-lg text-sm appearance-none focus:ring-primary focus:border-primary">
+<option>Sort by Grade</option>
+<option>Sort by Teacher</option>
+<option>Sort by Capacity</option>
+</select>
+</div>
+<button class="px-6 py-2.5 bg-primary text-on-primary rounded-lg font-button-text hover:brightness-110 active:scale-95 transition-all flex items-center gap-2 whitespace-nowrap shadow-md">
+<span class="material-symbols-outlined">add_circle</span>
+                    Create New Class
+                </button>
+</div>
+</div>
+<!-- Classes Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Class Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant soft-shadow raised-shadow transition-all group overflow-hidden">
+<div class="h-2 bg-primary"></div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="text-xl font-bold text-primary">Grade 10-A</h4>
+<p class="text-on-surface-variant text-sm font-medium">Advanced Mathematics Stream</p>
+</div>
+<span class="px-2 py-1 bg-secondary-fixed text-on-secondary-fixed text-[10px] font-bold rounded uppercase tracking-wider">Morning</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a male teacher in his late 40s, wearing glasses and a blue button-down shirt. He has a friendly, professional demeanor. Background is a soft-focus library. Light-mode aesthetic, corporate-educational vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMmwqtpgllrc288hWdZGoy_GcPKhcGcRY6uOlDaO-eHQaoJ3KmPrC8xqsvb566MZXrqQRCIW5CsKGVAeH6Xe2kOrEMxx5MPOwZ_pfcSQLHGdcbBsSk806LR41jpwdKRfjYxa-m6O1Wpf0kB1mPo9roTbAGjnpCBjZwAcFlxV8BJtFJeONwslvCWVI-MWvOi9kGWQml2TyxfQuavaS2R85pcPcVIkWnO91gDYEVyvIkAcdTHnuYf4h3uA"/>
+</div>
+<div>
+<p class="text-[10px] text-outline font-bold uppercase">Assigned Teacher</p>
+<p class="text-on-surface font-semibold">Dr. Marcus Sterling</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 py-4 border-y border-outline-variant/30">
+<div>
+<p class="text-[10px] text-outline font-bold uppercase">Students</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="material-symbols-outlined text-secondary text-[18px]">groups</span>
+<span class="text-on-surface font-bold">28 / 30</span>
+</div>
+</div>
+<div>
+<p class="text-[10px] text-outline font-bold uppercase">Room Number</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="material-symbols-outlined text-secondary text-[18px]">meeting_room</span>
+<span class="text-on-surface font-bold">Room 302-B</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2 pt-2">
+<button class="flex-grow py-2 bg-surface-container text-primary font-bold rounded-lg text-sm hover:bg-surface-container-high transition-colors">View Details</button>
+<button class="px-3 py-2 bg-surface-container text-on-surface-variant rounded-lg hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Class Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant soft-shadow raised-shadow transition-all group overflow-hidden">
+<div class="h-2 bg-tertiary-fixed-dim"></div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="text-xl font-bold text-primary">Grade 12-C</h4>
+<p class="text-on-surface-variant text-sm font-medium">Science &amp; Technology</p>
+</div>
+<span class="px-2 py-1 bg-secondary-fixed text-on-secondary-fixed text-[10px] font-bold rounded uppercase tracking-wider">Morning</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a female teacher in her 30s with professional attire, a warm smile, and a high-tech classroom background. Lighting is bright and crisp. Professional academic style with a focus on trust and intelligence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAl1TvJNZnW0d_p-CcoNUnWtDPUteotlnBuHsSs3OebbE1vdOLEmXvpY2ccL2zZ3-x6wAjzsx1P0ulvVxK-pi3ktDOIDpRDqT2zPqbLESZJXhGWzC8NuH0ITa9eHObO100kmaglhbxOQn-RCzcMQ3bEAxlGfk4mVkH4AyBGr_YqJ2Brq3QSY7jR4ZO-BoNCfdgr47wkpnbnF3edHI-XpWYFpEzbCz02mDFxbKbkI6hrR7u3SXtlYmULZA"/>
+</div>
+<div>
+<p class="text-[10px] text-outline font-bold uppercase">Assigned Teacher</p>
+<p class="text-on-surface font-semibold">Sarah Jenkins, M.Sc.</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 py-4 border-y border-outline-variant/30">
+<div>
+<p class="text-[10px] text-outline font-bold uppercase">Students</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="material-symbols-outlined text-secondary text-[18px]">groups</span>
+<span class="text-on-surface font-bold">22 / 25</span>
+</div>
+</div>
+<div>
+<p class="text-[10px] text-outline font-bold uppercase">Room Number</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="material-symbols-outlined text-secondary text-[18px]">meeting_room</span>
+<span class="text-on-surface font-bold">Lab 105</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2 pt-2">
+<button class="flex-grow py-2 bg-surface-container text-primary font-bold rounded-lg text-sm hover:bg-surface-container-high transition-colors">View Details</button>
+<button class="px-3 py-2 bg-surface-container text-on-surface-variant rounded-lg hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Class Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant soft-shadow raised-shadow transition-all group overflow-hidden">
+<div class="h-2 bg-secondary"></div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="text-xl font-bold text-primary">Grade 9-B</h4>
+<p class="text-on-surface-variant text-sm font-medium">Arts &amp; Humanities</p>
+</div>
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant text-[10px] font-bold rounded uppercase tracking-wider">Afternoon</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a male teacher in his 50s, wearing a tweed jacket, looking scholarly and approachable. The background shows a collection of classic literature. Bright, professional lighting, consistent with a high-end educational interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaAHmwlCnIMQghv4j4FvO5UMmWAW6IQUUuVgffAGt-oSBjPNj9EGVdW6NDG4j4dbTQS_zU7LJejfEFBhg0_sFbuJARnl2Xeg1S2d3k1lS2c-gdAEyVv3M1REdgpwO__Ys5PCaRzq_lq25msoTEQ0EjGP3cG92nM8t1D4w3HRtqJIJdXr1kFt2FzF732KVsNwgj_cuzkPhd2MJ-bcZeQYOIg16xzThtHvQll2T9SeQ4M-aavIlIAmzU0g"/>
+</div>
+<div>
+<p class="text-[10px] text-outline font-bold uppercase">Assigned Teacher</p>
+<p class="text-on-surface font-semibold">Robert Chen</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 py-4 border-y border-outline-variant/30">
+<div>
+<p class="text-[10px] text-outline font-bold uppercase">Students</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="material-symbols-outlined text-secondary text-[18px]">groups</span>
+<span class="text-on-surface font-bold">31 / 32</span>
+</div>
+</div>
+<div>
+<p class="text-[10px] text-outline font-bold uppercase">Room Number</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="material-symbols-outlined text-secondary text-[18px]">meeting_room</span>
+<span class="text-on-surface font-bold">Room 401</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2 pt-2">
+<button class="flex-grow py-2 bg-surface-container text-primary font-bold rounded-lg text-sm hover:bg-surface-container-high transition-colors">View Details</button>
+<button class="px-3 py-2 bg-surface-container text-on-surface-variant rounded-lg hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Class Card 4 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant soft-shadow raised-shadow transition-all group overflow-hidden">
+<div class="h-2 bg-on-tertiary-container"></div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="text-xl font-bold text-primary">Grade 11-E</h4>
+<p class="text-on-surface-variant text-sm font-medium">Business Administration</p>
+</div>
+<span class="px-2 py-1 bg-secondary-fixed text-on-secondary-fixed text-[10px] font-bold rounded uppercase tracking-wider">Morning</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Professional headshot of a teacher with an organized, corporate academic look. Neutral background, high-key lighting, bright colors, digital art aesthetic, ultra-high resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBngHl0EeZ8PkqgGR0dLIuh5VcVsybVRMzHovGZjR7NzsjgXs_SzprWzF1EIDE7p0thgxYg-JWDPE20gikRcRh3hr-CYTmgZKz5bQnnl9mmWKyML1bAi5DAoNFzh3z6W9HW1xffzRsrAcCX4IlP7wwvpykD4ElF5FcdJXCiQR5ShC-XWa51teFYQTmmkaC5sUow0nZBdWhWWLAfoyNDU5ALtdtqVzDEqtQFOlxJVQnGPhZEN0nX2Tx3Pw"/>
+</div>
+<div>
+<p class="text-[10px] text-outline font-bold uppercase">Assigned Teacher</p>
+<p class="text-on-surface font-semibold">Linda Velez</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 py-4 border-y border-outline-variant/30">
+<div>
+<p class="text-[10px] text-outline font-bold uppercase">Students</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="material-symbols-outlined text-secondary text-[18px]">groups</span>
+<span class="text-on-surface font-bold">25 / 30</span>
+</div>
+</div>
+<div>
+<p class="text-[10px] text-outline font-bold uppercase">Room Number</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="material-symbols-outlined text-secondary text-[18px]">meeting_room</span>
+<span class="text-on-surface font-bold">Room 208</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2 pt-2">
+<button class="flex-grow py-2 bg-surface-container text-primary font-bold rounded-lg text-sm hover:bg-surface-container-high transition-colors">View Details</button>
+<button class="px-3 py-2 bg-surface-container text-on-surface-variant rounded-lg hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Class Card 5 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant soft-shadow raised-shadow transition-all group overflow-hidden">
+<div class="h-2 bg-error"></div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="text-xl font-bold text-primary">Grade 12-F</h4>
+<p class="text-on-surface-variant text-sm font-medium">Physical Education</p>
+</div>
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant text-[10px] font-bold rounded uppercase tracking-wider">Afternoon</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of an athletic, professional teacher in sports coaching attire. He looks disciplined yet encouraging. The background is a blurred athletic track. Bright lighting, professional photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDH63QwSDBXceOXXc7xQJyAAJGuOsw1VVeTgPBe0Yqh7h7L01Z269HWB1dJhSfibZmkIVPyIDb59NtQep8Th31GAn9daLNEbVBG7mZj6yG2dST27EAOt61FBXCsHbr0CMoa68TEOIGSbY1U1jEj6mG0E09b2aHwAja3lX-0kuPpstpgxCdGXn_Jn9Rz2ozi-pxEiAXaTYLWBsTjSAK5r4zcMpxJOGw0c2WVMZWupiwncZbo0jDptxpikQ"/>
+</div>
+<div>
+<p class="text-[10px] text-outline font-bold uppercase">Assigned Teacher</p>
+<p class="text-on-surface font-semibold">Coach Alan Smith</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 py-4 border-y border-outline-variant/30">
+<div>
+<p class="text-[10px] text-outline font-bold uppercase">Students</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="material-symbols-outlined text-secondary text-[18px]">groups</span>
+<span class="text-on-surface font-bold">15 / 15</span>
+</div>
+</div>
+<div>
+<p class="text-[10px] text-outline font-bold uppercase">Room Number</p>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="material-symbols-outlined text-secondary text-[18px]">meeting_room</span>
+<span class="text-on-surface font-bold">Gymnasium</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2 pt-2">
+<button class="flex-grow py-2 bg-surface-container text-primary font-bold rounded-lg text-sm hover:bg-surface-container-high transition-colors">View Details</button>
+<button class="px-3 py-2 bg-surface-container text-on-surface-variant rounded-lg hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty State / Add New Card -->
+<div class="border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center p-8 hover:border-primary/50 transition-all cursor-pointer group hover:bg-surface-container-lowest">
+<div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:bg-primary group-hover:text-on-primary transition-all mb-4">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</div>
+<p class="font-bold text-primary">Add New Class</p>
+<p class="text-on-surface-variant text-sm text-center mt-2">Setup a new academic group or section for the current term.</p>
+</div>
+</div>
+<!-- Footer Pagination / Info -->
+<div class="mt-12 flex justify-between items-center py-6 border-t border-outline-variant">
+<p class="text-sm text-on-surface-variant">Showing <span class="font-bold">5</span> of <span class="font-bold">42</span> active classes</p>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 border border-outline-variant rounded-lg hover:bg-surface-container transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="px-3 py-1.5 border border-primary bg-primary text-on-primary rounded-lg font-bold">1</button>
+<button class="px-3 py-1.5 border border-outline-variant rounded-lg hover:bg-surface-container transition-colors">2</button>
+<button class="px-3 py-1.5 border border-outline-variant rounded-lg hover:bg-surface-container transition-colors">3</button>
+<button class="px-3 py-1.5 border border-outline-variant rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Micro-interaction Scripts -->
+<script>
+        document.querySelectorAll('.raised-shadow').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-4px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body></html>

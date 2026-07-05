@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EduVerify Pro | Manual Attendance Adjustment</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .attendance-row:nth-child(5n) {
+            background-color: rgba(68, 108, 228, 0.04);
+        }
+        .custom-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .custom-shadow-hover:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#2a4386",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#435b9f",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#e2efff",
+                        "on-primary-container": "#758dd5",
+                        "inverse-on-surface": "#e7f2ff",
+                        "secondary-container": "#446ce4",
+                        "primary": "#00113a",
+                        "on-primary-fixed": "#00174a",
+                        "secondary": "#2552ca",
+                        "surface-variant": "#d4e4f6",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "on-surface-variant": "#444650",
+                        "surface-container-low": "#ecf4ff",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary": "#ffffff",
+                        "surface": "#f7f9ff",
+                        "background": "#f7f9ff",
+                        "on-surface": "#0d1d2a",
+                        "on-secondary-fixed-variant": "#003baf",
+                        "on-background": "#0d1d2a",
+                        "on-tertiary-container": "#009eb0",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#002d33",
+                        "surface-container-high": "#d9eafc",
+                        "surface-dim": "#cbdcee",
+                        "inverse-surface": "#223240",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "outline": "#757682",
+                        "tertiary-fixed": "#9cf0ff",
+                        "tertiary": "#00171b",
+                        "secondary-fixed": "#dce1ff",
+                        "outline-variant": "#c5c6d2",
+                        "on-tertiary": "#ffffff",
+                        "primary-container": "#002366",
+                        "on-secondary-fixed": "#00164e",
+                        "tertiary-fixed-dim": "#00daf3",
+                        "surface-container-highest": "#d4e4f6",
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "inverse-primary": "#b3c5ff",
+                        "on-secondary-container": "#fffbff",
+                        "surface-bright": "#f7f9ff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#001f24"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "desktop-max-width": "1280px",
+                        "gutter": "16px",
+                        "container-padding": "24px",
+                        "base": "8px",
+                        "tablet-breakpoint": "768px",
+                        "mobile-breakpoint": "375px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Manrope"],
+                        "button-text": ["Manrope"],
+                        "body-md": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 bg-surface-container-low border-r border-outline-variant p-4 gap-2 z-40">
+<div class="flex items-center gap-3 mb-8 px-2">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional school logo designed with minimalist geometric shapes representing knowledge and security. The icon is rendered in a sharp, corporate style with a deep royal blue background and white structural lines, fitting for a modern educational institution's brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRJNc60LV8Il2tAGKzD914E-YBAjSqOt6AWBeZLQa4TKkoizMcceqHo0A_nzJEHePsvMb1UcaYC8fLdPLAyPFQZSkjwHxdsn42XSxKn-SuWSiWyh2fUTAWSrfU4GrENOomg36x7OUOkDor_h2jGxJFRZXw--PYRPGDHn1SjMw8vMU60WQfWIjgJDSMXsKv_ZRG1kxntcgyKB7r8Xy0Oa5gYWddbW1wMl8kzxEAlb1LaiCWcAvvKk2oFg"/>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md font-extrabold text-primary leading-tight">North Academy</h2>
+<p class="text-label-sm text-on-surface-variant">Faculty Portal</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all active:translate-x-1 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container font-semibold rounded-lg shadow-sm" href="#">
+<span class="material-symbols-outlined">fingerprint</span>
+<span class="font-body-md">Class Attendance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all active:translate-x-1 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">group_add</span>
+<span class="font-body-md">Biometric Registry</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all active:translate-x-1 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">insert_chart</span>
+<span class="font-body-md">Analytics Reports</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all active:translate-x-1 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md">Academic Calendar</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-4 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-error hover:bg-error-container transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<main class="flex-1 md:ml-64 min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-6 h-16 sticky top-0 z-50 bg-surface-container-highest shadow-sm">
+<div class="flex items-center gap-4 flex-1">
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="relative max-w-md w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-bright border-none rounded-full py-2 pl-10 pr-4 text-body-md focus:ring-2 focus:ring-secondary transition-all" placeholder="Search student records..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex gap-2">
+<button class="p-2 rounded-full hover:bg-surface-variant transition-colors cursor-pointer active:scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-variant transition-colors cursor-pointer active:scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+</button>
+</div>
+<div class="h-8 w-px bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full border-2 border-primary object-cover" data-alt="A portrait of a professional female teacher with a warm, confident expression. She is wearing a modern academic blazer. The lighting is soft and professional, set against a blurred modern classroom background with blue and white tones that match the EduVerify Pro branding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_CzBFWmx1lA8PAZ4q5xRGBI8Psb1TESYWPwYjvLedP7O1QDsMtCIL27jwn1-MDlaGTY7Xm0OkKQO3zpVCjZQcBU8iQhsUxeZL61PwVMeMHJvnU66FrcfErDXXLYQcNz4rorELdAYwR2x6mBws8QePmjJGrrcWUzKnQpqDAse0qiFaKiZXa3Pbrm0I96RmQSZcyjwlbmPZoFrCgTbdGPZjAGfC7A6fkI8PRGnqYm8UnWjdcnJAjNrYmA"/>
+<span class="hidden lg:block font-button-text text-primary">Prof. Sarah Jenkins</span>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<div class="p-6 md:p-8 flex flex-col gap-8 max-w-[1200px] mx-auto w-full">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<nav class="flex items-center gap-2 text-label-sm text-on-surface-variant mb-2">
+<span>Attendance</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-primary font-bold">Manual Adjustment</span>
+</nav>
+<h1 class="font-headline-lg text-headline-lg text-primary">Manual Attendance Adjustment</h1>
+<p class="text-body-md text-on-surface-variant mt-1">Correct biometric scanning errors or record authorized absences for specialized sessions.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-6 py-2.5 rounded-lg border-2 border-outline-variant text-on-surface font-button-text hover:bg-surface-container-high transition-all active:scale-95">Cancel</button>
+<button class="px-6 py-2.5 rounded-lg bg-secondary text-white font-button-text shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">save</span>
+                            Save Adjustment
+                        </button>
+</div>
+</div>
+<!-- Content Grid: Bento Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Left Column: Search & List (8 cols) -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<div class="rounded-xl bg-white border border-outline-variant custom-shadow p-6">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-lg bg-surface-container text-secondary">
+<span class="material-symbols-outlined">person_search</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary">Identify Students</h3>
+</div>
+<div class="flex-1 md:max-w-xs relative">
+<input class="w-full bg-surface-container-low border-none border-b-2 border-outline focus:border-secondary rounded-t-lg px-4 py-2.5 transition-all text-body-md" placeholder="Filter by Name, ID, or Group..." type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline">tune</span>
+</div>
+</div>
+<!-- Student Selection Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="text-label-sm text-outline border-b border-outline-variant uppercase tracking-wider">
+<th class="py-4 px-2">Student</th>
+<th class="py-4 px-2">Current Status</th>
+<th class="py-4 px-2">New Adjustment</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="attendance-row group hover:bg-surface-container transition-colors">
+<td class="py-4 px-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex-shrink-0">
+<img class="w-full h-full rounded-full object-cover" data-alt="A focused student portrait with a clean, academic look. High-quality lighting, professional depth of field, set against a modern school environment. Cohesive with the blue and slate professional color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9rjtsSu_O3qiJ_s1zgPPDSDbSIQ454Up5ssRZTi86Ol3c0KAIuHVmmJBxCewlqs8Do7jzOJ8QO9jRXmJLMKed6s8LG8X1mdB3uA1_eXNqYWzUNDhygm56tlnxe5ZcgdEJskNBsjK95lap6tjQAt1r8sK3L5s4XjTciC-zBkDYWoygDcUp0D-eNfK_-jr4WpoogIxnqqLRbSptrTKC0t75BRIS6pWtbd-RnG__eN8Lv_jsqGagHBZsXQ"/>
+</div>
+<div>
+<div class="font-semibold text-primary">Alex Rivera</div>
+<div class="text-label-sm text-on-surface-variant">ID: #STU-8821</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-2">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-label-sm bg-red-100 text-red-700">
+<span class="w-1.5 h-1.5 rounded-full bg-red-600 mr-2"></span>
+                                                    Absent
+                                                </span>
+</td>
+<td class="py-4 px-2">
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1.5 rounded-full border border-outline-variant text-label-sm hover:border-secondary hover:text-secondary transition-all bg-white font-medium">Present</button>
+<button class="px-3 py-1.5 rounded-full border-2 border-secondary bg-secondary-container text-on-secondary-container text-label-sm font-bold">Late</button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant text-label-sm hover:border-secondary hover:text-secondary transition-all bg-white font-medium">Excused</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="attendance-row group hover:bg-surface-container transition-colors">
+<td class="py-4 px-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex-shrink-0">
+<img class="w-full h-full rounded-full object-cover" data-alt="Profile photo of a young female student with a polite expression. She is wearing a school uniform. Soft daylight illumination, clean background, high resolution, minimalist academic aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeAV0fzra1xO8GmaKPhCGHY0eKckee8js-RD0gtzYC4h9fu6f2l7Mt5ETx_6543-9U10YS1x9k5q_sYHSYz_GI-wdLwUUdWT-HO_q8p_m1oKNnUOcprkiemFMmZ_8lhbbrf78BLuAmLhRdEqc13_1BVIC2jYVDIyEAKjNSY5h_sRjR1gltdkhcaTnrHhSxHkyL5o7FXjkkh2xAoRUaBZeqcDIl5If2xsVhhpJ-6VC9qyqBG9ZgWKx_BQ"/>
+</div>
+<div>
+<div class="font-semibold text-primary">Maya Thompson</div>
+<div class="text-label-sm text-on-surface-variant">ID: #STU-9204</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-2">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-label-sm bg-amber-100 text-amber-700">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-600 mr-2"></span>
+                                                    Late
+                                                </span>
+</td>
+<td class="py-4 px-2">
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1.5 rounded-full border-2 border-secondary bg-secondary-container text-on-secondary-container text-label-sm font-bold">Present</button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant text-label-sm hover:border-secondary hover:text-secondary transition-all bg-white font-medium">Absent</button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant text-label-sm hover:border-secondary hover:text-secondary transition-all bg-white font-medium">Excused</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="attendance-row group hover:bg-surface-container transition-colors">
+<td class="py-4 px-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex-shrink-0">
+<img class="w-full h-full rounded-full object-cover" data-alt="Studio portrait of a student, confident and smiling. The visual style is crisp and corporate, using cool blue tones and high-key lighting to emphasize trust and professional academic standards." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR_en-zhY5hfZzH2Jzpoir20L06J8HsEgznTtNiqNTtExwH_W3wPGDCAev48IMk4ISs8Y9hlPuAEL3kyeFhJ8BOmaQRv9MWvkkEai-QSfdsB6uc8CMpvLWOw8Iy5Z-rXrnWU6_jx1gpv-zxSaTePS0rtaMnjWgUgQiz2h40i7ooe5WRauPcj31z_cLGQmPdZcoGHiq3ivkY29HrvNo5uW8SPbfPOZc-z0druGIAqrXcgZPrgjFQCZ4sQ"/>
+</div>
+<div>
+<div class="font-semibold text-primary">Liam Chen</div>
+<div class="text-label-sm text-on-surface-variant">ID: #STU-4412</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-2">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-label-sm bg-blue-100 text-blue-700">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600 mr-2"></span>
+                                                    Excused
+                                                </span>
+</td>
+<td class="py-4 px-2">
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1.5 rounded-full border border-outline-variant text-label-sm hover:border-secondary hover:text-secondary transition-all bg-white font-medium">Present</button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant text-label-sm hover:border-secondary hover:text-secondary transition-all bg-white font-medium">Absent</button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant text-label-sm hover:border-secondary hover:text-secondary transition-all bg-white font-medium">Late</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="attendance-row group hover:bg-surface-container transition-colors">
+<td class="py-4 px-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex-shrink-0">
+<img class="w-full h-full rounded-full object-cover" data-alt="Portrait of a male high school student looking at the camera. Soft morning light, contemporary school corridor background, modern professional aesthetic. Color grade is consistent with royal blue and slate grey corporate theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCw_V-nqILMwCOqdJgE9J83Xka_es4Kx8U6moDfogWp8-p6ry0nboeqHs7wdumc9G1M7RnnRZfopIEVWhL6fbVfdHmL5VOR0pdbok0RTOw_fdZABTj0mvUSPeSVpyUc6OaucLKUwFKdZiZvxkL8YGch9ax5dp_jYYKQi2tBWg71Kz7uMyzggK3wr7Texcvk0NA_ZNqikxkMIOI7kGDy0MXhYhreJ2FNz7xYbJ95UAXnlT3ZF3Y1kTdRTQ"/>
+</div>
+<div>
+<div class="font-semibold text-primary">Julian Vance</div>
+<div class="text-label-sm text-on-surface-variant">ID: #STU-5501</div>
+</div>
+</div>
+</td>
+<td class="py-4 px-2">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-label-sm bg-red-100 text-red-700">
+<span class="w-1.5 h-1.5 rounded-full bg-red-600 mr-2"></span>
+                                                    Absent
+                                                </span>
+</td>
+<td class="py-4 px-2">
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1.5 rounded-full border border-outline-variant text-label-sm hover:border-secondary hover:text-secondary transition-all bg-white font-medium">Present</button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant text-label-sm hover:border-secondary hover:text-secondary transition-all bg-white font-medium">Late</button>
+<button class="px-3 py-1.5 rounded-full border-2 border-secondary bg-secondary-container text-on-secondary-container text-label-sm font-bold">Excused</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right Column: Adjustment Details (4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Remarks Form -->
+<div class="rounded-xl bg-white border border-outline-variant custom-shadow p-6">
+<h3 class="font-headline-md text-headline-md text-primary mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">history_edu</span>
+                                Adjustment Audit
+                            </h3>
+<div class="space-y-4">
+<div>
+<label class="block text-label-sm text-outline mb-2 uppercase">Reason for Adjustment</label>
+<select class="w-full bg-surface-container-low border-none border-b-2 border-outline focus:border-secondary rounded-t-lg px-4 py-3 text-body-md transition-all">
+<option>Biometric Failure</option>
+<option>Medical Appointment</option>
+<option>School Event Attendance</option>
+<option>Technical Error (Manual Overwrite)</option>
+<option>Other (Specify in Remarks)</option>
+</select>
+</div>
+<div>
+<label class="block text-label-sm text-outline mb-2 uppercase">Adjustment Remarks</label>
+<textarea class="w-full bg-surface-container-low border-none border-b-2 border-outline focus:border-secondary rounded-t-lg px-4 py-3 text-body-md transition-all resize-none" placeholder="Enter detailed justification for manual override..." rows="4"></textarea>
+</div>
+<div class="p-4 bg-surface-container rounded-lg border-l-4 border-secondary">
+<p class="text-label-sm text-on-secondary-fixed-variant leading-relaxed">
+<span class="material-symbols-outlined text-[16px] mr-1">info</span>
+                                        All manual changes are logged with your user ID (Prof. Jenkins) and timestamped for institutional audit purposes.
+                                    </p>
+</div>
+</div>
+</div>
+<!-- Session Details Card -->
+<div class="rounded-xl glass-panel border border-outline-variant custom-shadow p-6">
+<h3 class="font-headline-md text-headline-md text-primary mb-4">Session Info</h3>
+<div class="space-y-3">
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/30">
+<span class="text-on-surface-variant">Class</span>
+<span class="font-semibold text-primary">Advanced Biology II</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/30">
+<span class="text-on-surface-variant">Session Date</span>
+<span class="font-semibold text-primary">Oct 24, 2023</span>
+</div>
+<div class="flex justify-between items-center py-2">
+<span class="text-on-surface-variant">Time Slot</span>
+<span class="font-semibold text-primary">09:15 AM - 10:45 AM</span>
+</div>
+<div class="mt-4">
+<div class="w-full bg-surface-container-highest rounded-full h-1.5 overflow-hidden">
+<div class="bg-secondary w-4/5 h-full"></div>
+</div>
+<div class="flex justify-between mt-2">
+<span class="text-[11px] text-on-surface-variant font-medium">Session Completeness</span>
+<span class="text-[11px] text-secondary font-bold">82% Scanned</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Scan Status Visualization -->
+<div class="rounded-xl bg-primary-container p-6 text-white custom-shadow relative overflow-hidden group">
+<div class="absolute -right-8 -bottom-8 opacity-10 group-hover:scale-110 transition-transform duration-700">
+<span class="material-symbols-outlined text-[160px]" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+</div>
+<div class="relative z-10">
+<p class="text-label-sm opacity-80 uppercase tracking-widest mb-1">Live Scanner Status</p>
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="w-4 h-4 bg-[#00daf3] rounded-full animate-ping absolute inset-0"></div>
+<div class="w-4 h-4 bg-[#00daf3] rounded-full relative z-10"></div>
+</div>
+<span class="font-headline-md text-white">Biometric Ready</span>
+</div>
+<p class="mt-4 text-body-md opacity-90 leading-snug">Scanner terminal #B-04 is currently active in Hallway C.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Mobile Navigation (Bottom) -->
+<nav class="md:hidden fixed bottom-0 w-full bg-surface-container-highest flex justify-around items-center py-3 px-4 z-50">
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<span class="text-[10px] font-bold">Adjust</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[10px]">Students</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px]">Settings</span>
+</a>
+</nav>
+</main>
+</div>
+<script>
+        // Simple interactivity for the adjustment status buttons
+        document.querySelectorAll('button.rounded-full').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const row = this.closest('.flex-wrap');
+                row.querySelectorAll('button').forEach(b => {
+                    b.className = 'px-3 py-1.5 rounded-full border border-outline-variant text-label-sm hover:border-secondary hover:text-secondary transition-all bg-white font-medium';
+                });
+                this.className = 'px-3 py-1.5 rounded-full border-2 border-secondary bg-secondary-container text-on-secondary-container text-label-sm font-bold shadow-sm';
+                
+                // Visual feedback scale
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => this.style.transform = 'scale(1)', 100);
+            });
+        });
+
+        // Search highlight interaction
+        const searchInput = document.querySelector('input[placeholder="Filter by Name, ID, or Group..."]');
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            document.querySelectorAll('.attendance-row').forEach(row => {
+                const name = row.querySelector('.font-semibold').textContent.toLowerCase();
+                const id = row.querySelector('.text-label-sm').textContent.toLowerCase();
+                if(name.includes(query) || id.includes(query)) {
+                    row.style.display = 'table-row';
+                    row.style.opacity = '1';
+                } else {
+                    row.style.opacity = '0.3';
+                    // We don't hide completely to maintain layout, just dim
+                }
+            });
+        });
+    </script>
+</body></html>

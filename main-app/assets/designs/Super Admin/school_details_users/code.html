@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EduSecure Pro - Users Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .biometric-pulse {
+            box-shadow: 0 0 0 0 rgba(0, 218, 243, 0.4);
+            animation: pulse-ring 2s infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 218, 243, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 218, 243, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 218, 243, 0); }
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbdcee; border-radius: 10px; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#004f58",
+                        "on-primary-container": "#758dd5",
+                        "surface-container-highest": "#d4e4f6",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed": "#00164e",
+                        "on-error-container": "#93000a",
+                        "surface": "#f7f9ff",
+                        "surface-dim": "#cbdcee",
+                        "primary-container": "#002366",
+                        "surface-bright": "#f7f9ff",
+                        "outline-variant": "#c5c6d2",
+                        "on-primary-fixed": "#00174a",
+                        "secondary-container": "#446ce4",
+                        "inverse-surface": "#223240",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#e7f2ff",
+                        "error": "#ba1a1a",
+                        "secondary": "#2552ca",
+                        "surface-tint": "#435b9f",
+                        "on-surface-variant": "#444650",
+                        "tertiary": "#00171b",
+                        "tertiary-container": "#002d33",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#d9eafc",
+                        "primary": "#00113a",
+                        "outline": "#757682",
+                        "tertiary-fixed": "#9cf0ff",
+                        "surface-container-low": "#ecf4ff",
+                        "on-tertiary-fixed": "#001f24",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "primary-fixed": "#dbe1ff",
+                        "on-surface": "#0d1d2a",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#e2efff",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "on-background": "#0d1d2a",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary-fixed-variant": "#2a4386",
+                        "background": "#f7f9ff",
+                        "on-secondary-fixed-variant": "#003baf",
+                        "surface-variant": "#d4e4f6",
+                        "on-tertiary-container": "#009eb0",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#dce1ff",
+                        "tertiary-fixed-dim": "#00daf3",
+                        "inverse-primary": "#b3c5ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "base": "8px",
+                        "mobile-breakpoint": "375px",
+                        "tablet-breakpoint": "768px",
+                        "desktop-max-width": "1280px",
+                        "container-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "button-text": ["Manrope"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "body-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "button-text": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background font-body-md text-on-surface custom-scrollbar">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-16 bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container shadow-sm">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-on-primary dark:text-on-primary-container">EduSecure Pro</span>
+<div class="hidden md:flex items-center ml-8 gap-6 h-full">
+<a class="text-on-primary/80 dark:text-on-primary-container/80 hover:bg-primary-fixed-dim/10 transition-colors h-full flex items-center px-2" href="#">Schools</a>
+<a class="text-on-primary-fixed border-b-2 border-on-primary-fixed pb-1 h-full flex items-center px-2" href="#">Users</a>
+<a class="text-on-primary/80 dark:text-on-primary-container/80 hover:bg-primary-fixed-dim/10 transition-colors h-full flex items-center px-2" href="#">System</a>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative hidden sm:block">
+<input class="bg-primary-container text-on-primary-container rounded-full pl-10 pr-4 py-1.5 border-none focus:ring-2 focus:ring-on-primary-container w-64 text-sm" placeholder="Search..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-primary-container/60">search</span>
+</div>
+<button class="bg-tertiary-fixed-dim text-on-tertiary-fixed-variant px-4 py-2 rounded-full font-button-text text-button-text active:scale-95 transition-transform flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+                Scan Biometric
+            </button>
+<span class="material-symbols-outlined p-2 hover:bg-primary-fixed-dim/10 rounded-full cursor-pointer">notifications</span>
+<span class="material-symbols-outlined p-2 hover:bg-primary-fixed-dim/10 rounded-full cursor-pointer">settings</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional close-up headshot of a middle-aged woman with glasses and a friendly expression, wearing formal academic attire. She is in a brightly lit, modern office with soft-focus books in the background. The aesthetic is clean, professional, and reliable, featuring soft lighting and a crisp, light-mode color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCs83Jfc-WtwWtzaA5nbBHg6ECapBQc_mcNQTdqTVHUjOE8mFPTHjXp18jpCiZ4pwiBEDkcOhRSvJmpvdT3-2_NU5hFnILxxBfytN7Qtult7Ts3Y83lLyw-oOfhTGY3e-4Up-rDPjlZDRC7dM1nAyMkbLglSf9nAOdbvj3FKJ9dRFjuTEYdGZgKcRbNMnCa4CXyiLU5bisskLzkdfgnj6UwrEbaT7tIIx0aebxkuOYANP54iAEYFG_7kQ"/>
+</div>
+</div>
+</header>
+<!-- Side Navigation -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-surface-container-low dark:bg-surface-dim border-r border-outline-variant flex flex-col p-4 z-40 hidden lg:flex">
+<div class="mb-8 px-2">
+<div class="flex items-center gap-3 mb-1">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div>
+<h3 class="font-bold text-on-surface">Main Campus</h3>
+<p class="text-xs text-on-surface-variant">Academic Year 2023-24</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">fingerprint</span>
+                Attendance
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">group</span>
+                Students
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">school</span>
+                Faculty
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">analytics</span>
+                Reports
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shield</span>
+                Security
+            </a>
+</nav>
+<div class="mt-auto pt-4 border-t border-outline-variant">
+<button class="w-full flex items-center gap-3 px-3 py-2 text-error hover:bg-error-container/20 rounded-lg transition-all">
+<span class="material-symbols-outlined">logout</span>
+                Logout
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="lg:ml-64 pt-24 px-gutter pb-8 min-h-screen max-w-[1280px] mx-auto">
+<!-- School Header Block -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant mb-6 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full -mr-16 -mt-16"></div>
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-xl bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-4xl">corporate_fare</span>
+</div>
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Evergreen Academic Institute</h1>
+<div class="flex items-center gap-4 mt-1">
+<span class="flex items-center gap-1 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                                Seattle, Washington
+                            </span>
+<span class="flex items-center gap-1 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+                                256 Active Licenses
+                            </span>
+</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 border border-outline text-on-surface rounded-lg font-button-text flex items-center gap-2 hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">edit</span>
+                        Edit Profile
+                    </button>
+<button class="px-4 py-2 bg-secondary text-on-secondary rounded-lg font-button-text flex items-center gap-2 hover:shadow-lg transition-shadow">
+<span class="material-symbols-outlined">add</span>
+                        New Entry
+                    </button>
+</div>
+</div>
+<!-- Tabbed Navigation -->
+<div class="flex items-center gap-8 mt-8 border-b border-outline-variant">
+<button class="pb-3 text-on-surface-variant hover:text-primary transition-colors border-b-2 border-transparent">Overview</button>
+<button class="pb-3 text-primary font-bold border-b-2 border-primary">Users</button>
+<button class="pb-3 text-on-surface-variant hover:text-primary transition-colors border-b-2 border-transparent">Devices</button>
+<button class="pb-3 text-on-surface-variant hover:text-primary transition-colors border-b-2 border-transparent">Audit Logs</button>
+<button class="pb-3 text-on-surface-variant hover:text-primary transition-colors border-b-2 border-transparent">Settings</button>
+</div>
+</div>
+<!-- Users Management Content -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+<!-- Table Controls -->
+<div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex flex-col md:flex-row gap-4 flex-1">
+<div class="relative max-w-md w-full">
+<input class="w-full bg-surface-container text-on-surface rounded-lg pl-10 pr-4 py-2.5 border-none focus:ring-2 focus:ring-primary text-sm" placeholder="Search by name, email, or role..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+</div>
+<div class="flex gap-2">
+<select class="bg-surface-container text-on-surface rounded-lg px-4 py-2.5 border-none text-sm focus:ring-2 focus:ring-primary">
+<option>All Roles</option>
+<option>Principal</option>
+<option>Registrar</option>
+<option>IT Lead</option>
+</select>
+<select class="bg-surface-container text-on-surface rounded-lg px-4 py-2.5 border-none text-sm focus:ring-2 focus:ring-primary">
+<option>All Status</option>
+<option>Active</option>
+<option>Inactive</option>
+</select>
+</div>
+</div>
+<button class="bg-primary text-on-primary px-5 py-2.5 rounded-lg font-button-text flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all whitespace-nowrap">
+<span class="material-symbols-outlined">person_add</span>
+                    Add User
+                </button>
+</div>
+<!-- Data Table -->
+<div class="overflow-x-auto">
+<table class="w-full border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-left border-y border-outline-variant">
+<th class="px-6 py-4 font-bold text-on-surface-variant text-xs uppercase tracking-wider">Name</th>
+<th class="px-6 py-4 font-bold text-on-surface-variant text-xs uppercase tracking-wider">Role</th>
+<th class="px-6 py-4 font-bold text-on-surface-variant text-xs uppercase tracking-wider">Email</th>
+<th class="px-6 py-4 font-bold text-on-surface-variant text-xs uppercase tracking-wider">Last Login</th>
+<th class="px-6 py-4 font-bold text-on-surface-variant text-xs uppercase tracking-wider">Status</th>
+<th class="px-6 py-4 font-bold text-on-surface-variant text-xs uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container/50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a friendly man in his 40s with short hair and a warm smile. He is wearing a blue button-down shirt and is positioned in a modern educational setting with soft, natural lighting. The image maintains the secure and professional school administration theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2JD9EKWsOUvOIs-MbtJb3ew_s13hCLd2d8mtssiOxadB_r356QU0kTTLuUMbe--of6aPUcWWQQnfl7HECWntSlOKrl8mSYOtVneY1XlBMvn1TW-AuIb6GD6bCMqoBUd6_ovgJnnJlyv6g041GgUoUjbqSLDhsMEMGmIK5_Tr1rp2RySajvE6jY7U3i6it7_WzdMEfu9RwRcA-_kXbtYpp1FWKX68CqhnSb1dKqPQkOYQKinH2d02NrA"/>
+</div>
+<div>
+<div class="font-bold text-on-surface">Dr. Julian Sterling</div>
+<div class="text-xs text-on-surface-variant">Member since 2021</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-tertiary-container text-on-tertiary-container px-2.5 py-1 rounded-full text-xs font-bold">Principal</span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">j.sterling@evergreen.edu</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">2 mins ago</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 text-xs font-bold text-secondary">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                                    Active
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-surface-container-high rounded-full text-on-surface-variant hover:text-primary transition-colors" title="Edit User">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-full text-on-surface-variant hover:text-primary transition-colors" title="Reset Password">
+<span class="material-symbols-outlined">lock_reset</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container/50 transition-colors group bg-primary/5">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a focused woman in her late 20s with glasses, wearing a sleek black blazer. The lighting is crisp and cool, highlighting a professional and tech-focused persona. She is in a high-tech administrative office environment, reflecting an IT Lead role in a secure school system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS5BEdXpOrHL5OdnynAb3IP8iLSgTqSSqYmnS2iedkjyTkkdD3L9hJTwOO7FhKBrSXbmSFScEVNInw-tXJpYHbD8DHKaS7sd3zkA2slrNCN4i_JDFxj97I5yKi_zEZD1a2BTStt49VJ2OdTWGQaoZ3zLZZHS9jiBOs-UqCn8l9gp0jzSsK5TQ7pZyH0u4p5-PS-8l0Tbfe7x_lN3LpDTzkWeiBGz7s77vGHPtB-f8G30OYdVYxEFPH7A"/>
+</div>
+<div>
+<div class="font-bold text-on-surface">Sarah Chen</div>
+<div class="text-xs text-on-surface-variant">Member since 2022</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-secondary-container text-on-secondary-container px-2.5 py-1 rounded-full text-xs font-bold">IT Lead</span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">s.chen@evergreen.edu</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Yesterday, 4:12 PM</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 text-xs font-bold text-secondary">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                                    Active
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-surface-container-high rounded-full text-on-surface-variant hover:text-primary transition-colors" title="Edit User">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-full text-on-surface-variant hover:text-primary transition-colors" title="Reset Password">
+<span class="material-symbols-outlined">lock_reset</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container/50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of an older woman with grey hair in a professional suit, looking calm and authoritative. She is set against a background of a formal school administration office. The visual style is reliable and prestigious, with soft ambient light creating a respectful academic atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXDcvB0AXhV9eg19nVTvlUrUDLKyAw49iFc2GVlqsIPqvsQjnj3--XtU7GRD-uFoLVUfJtH-4cjLu5oEl7Adc_50LMbfELmBacD3j3tmSXOv6w0JNk7C_aA4TA3nR04vvOJPEcP8nspxigjfQnEq3K61Y8kUbYNMWTKNC5ncnnGZI8IZd5IzAeclZkcPyJ0V7RQ2Y_mEbYjU4MOJaFT5PuJY4DNqYyaEPKoBiWHJ2MkFC-NOH3PzuBrw"/>
+</div>
+<div>
+<div class="font-bold text-on-surface">Eleanor Vance</div>
+<div class="text-xs text-on-surface-variant">Member since 2019</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container-highest text-on-surface-variant px-2.5 py-1 rounded-full text-xs font-bold">Registrar</span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">e.vance@evergreen.edu</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">Oct 12, 2023</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 text-xs font-bold text-error">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+                                    Inactive
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-surface-container-high rounded-full text-on-surface-variant hover:text-primary transition-colors" title="Edit User">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-full text-on-surface-variant hover:text-primary transition-colors" title="Reset Password">
+<span class="material-symbols-outlined">lock_reset</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container/50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A close-up of a young professional man in his early 30s with a sharp haircut, wearing a modern polo shirt. He has a friendly, accessible demeanor. The background is a clean, bright school corridor with soft lighting. The look is professional, modern, and approachable, fitting the design system's aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDC_UoVrO1inI8dBwCLkFx7Nng8QC-azj1pcexrT5YeX8G-GoHn1rH97lQFAZxN1NuumOVGZN7IpVyd_zVQSqjg988NTXcP1h0mCDwhs6kb3fsGjRX9BjdoxL5wC9dvArHUSP7fpBhrNAX1xvp6f2mWVyElb-JsNEr_uw6_A0X8F0_TjZcIK-S4j5Z9cB1RWl7P_uTfSb2giS6JJbR5OTmlUFzTqxbKgZ9Xno0M4M2HWEgswyik5BJBQA"/>
+</div>
+<div>
+<div class="font-bold text-on-surface">Marcus Thorne</div>
+<div class="text-xs text-on-surface-variant">Member since 2023</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-secondary-container text-on-secondary-container px-2.5 py-1 rounded-full text-xs font-bold">IT Support</span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">m.thorne@evergreen.edu</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">3 hours ago</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 text-xs font-bold text-secondary">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                                    Active
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-surface-container-high rounded-full text-on-surface-variant hover:text-primary transition-colors" title="Edit User">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-full text-on-surface-variant hover:text-primary transition-colors" title="Reset Password">
+<span class="material-symbols-outlined">lock_reset</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container/50 transition-colors group bg-primary/5">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a confident woman in professional business attire, standing in a brightly lit academic office. She is smiling warmly at the camera. The setting features light oak furniture and soft daylight, projecting a sense of professional peace of mind and institutional security." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2FOqLgIwIsWaCkUtyp-70TzlBPRuY-OYLxD_JMiSZs53xkhxDsjP2XybvaBNnZdM40-E7iR_NKASnQocMv91MXkCDDZU7czYRF5CE9abdxs9iWDpPhdAHBQTVhKAthDy9mOMAds7wLKq3bmhc0aUbAYgLKbaILzEdASEs2sLEwwhn0uYWuxPLJXkOjYCArgRQG0gtqnSzW1F54tADWnqXEfNl9keVpDTo8CwVXJfa8UBOQo4Q2X-H-w"/>
+</div>
+<div>
+<div class="font-bold text-on-surface">Isabella Ross</div>
+<div class="text-xs text-on-surface-variant">Member since 2020</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container-highest text-on-surface-variant px-2.5 py-1 rounded-full text-xs font-bold">Registrar</span>
+</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">i.ross@evergreen.edu</td>
+<td class="px-6 py-4 text-sm text-on-surface-variant">1 hour ago</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 text-xs font-bold text-secondary">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                                    Active
+                                </span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-surface-container-high rounded-full text-on-surface-variant hover:text-primary transition-colors" title="Edit User">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-full text-on-surface-variant hover:text-primary transition-colors" title="Reset Password">
+<span class="material-symbols-outlined">lock_reset</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 flex items-center justify-between border-t border-outline-variant bg-surface-container-low/30">
+<p class="text-xs text-on-surface-variant font-medium">Showing 1 to 5 of 42 users</p>
+<div class="flex gap-2">
+<button class="p-2 border border-outline-variant rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="px-3 py-1 bg-primary text-on-primary rounded-lg text-sm font-bold">1</button>
+<button class="px-3 py-1 text-on-surface hover:bg-surface-container rounded-lg text-sm transition-colors">2</button>
+<button class="px-3 py-1 text-on-surface hover:bg-surface-container rounded-lg text-sm transition-colors">3</button>
+<button class="p-2 border border-outline-variant rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Biometric Overlay (Hidden by default, triggered by scan) -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center p-6 hidden" id="biometric-modal">
+<div class="absolute inset-0 bg-primary/20 backdrop-blur-md"></div>
+<div class="bg-surface-container-lowest w-full max-w-md rounded-2xl p-8 shadow-2xl relative z-10 border border-outline-variant text-center">
+<button class="absolute top-4 right-4 p-2 hover:bg-surface-container rounded-full text-on-surface-variant" onclick="toggleModal()">
+<span class="material-symbols-outlined">close</span>
+</button>
+<div class="w-24 h-24 bg-tertiary-fixed-dim/20 biometric-pulse rounded-full flex items-center justify-center mx-auto mb-6">
+<span class="material-symbols-outlined text-5xl text-on-tertiary-container animate-pulse" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-2">Waiting for Biometric Scan</h2>
+<p class="text-on-surface-variant mb-8">Place your registered finger on the scanner to authorize this action.</p>
+<div class="flex flex-col gap-3">
+<button class="w-full py-3 bg-primary text-on-primary rounded-xl font-bold hover:shadow-lg transition-shadow">Simulate Success</button>
+<button class="w-full py-3 border border-outline text-on-surface rounded-xl font-bold hover:bg-surface-container transition-colors" onclick="toggleModal()">Cancel Authorization</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Mobile Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full bg-surface border-t border-outline-variant flex justify-around items-center h-16 md:hidden z-50 shadow-lg">
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="text-[10px] font-bold">Users</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">shield</span>
+<span class="text-[10px] font-bold">Security</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold">Settings</span>
+</button>
+</nav>
+<script>
+        function toggleModal() {
+            const modal = document.getElementById('biometric-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        // Add event listener to the Scan Biometric button
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.innerText.includes('Scan Biometric')) {
+                btn.onclick = toggleModal;
+            }
+        });
+    </script>
+</body></html>

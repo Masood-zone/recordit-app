@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Teacher Reports | EduVerify Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#2a4386",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#435b9f",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container": "#e2efff",
+                    "on-primary-container": "#758dd5",
+                    "inverse-on-surface": "#e7f2ff",
+                    "secondary-container": "#446ce4",
+                    "primary": "#00113a",
+                    "on-primary-fixed": "#00174a",
+                    "secondary": "#2552ca",
+                    "surface-variant": "#d4e4f6",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "on-surface-variant": "#444650",
+                    "surface-container-low": "#ecf4ff",
+                    "primary-fixed": "#dbe1ff",
+                    "on-primary": "#ffffff",
+                    "surface": "#f7f9ff",
+                    "background": "#f7f9ff",
+                    "on-surface": "#0d1d2a",
+                    "on-secondary-fixed-variant": "#003baf",
+                    "on-background": "#0d1d2a",
+                    "on-tertiary-container": "#009eb0",
+                    "error-container": "#ffdad6",
+                    "on-error": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "tertiary-container": "#002d33",
+                    "surface-container-high": "#d9eafc",
+                    "surface-dim": "#cbdcee",
+                    "inverse-surface": "#223240",
+                    "secondary-fixed-dim": "#b6c4ff",
+                    "outline": "#757682",
+                    "tertiary-fixed": "#9cf0ff",
+                    "tertiary": "#00171b",
+                    "secondary-fixed": "#dce1ff",
+                    "outline-variant": "#c5c6d2",
+                    "on-tertiary": "#ffffff",
+                    "primary-container": "#002366",
+                    "on-secondary-fixed": "#00164e",
+                    "tertiary-fixed-dim": "#00daf3",
+                    "surface-container-highest": "#d4e4f6",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "inverse-primary": "#b3c5ff",
+                    "on-secondary-container": "#fffbff",
+                    "surface-bright": "#f7f9ff",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#001f24"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "desktop-max-width": "1280px",
+                    "gutter": "16px",
+                    "container-padding": "24px",
+                    "base": "8px",
+                    "tablet-breakpoint": "768px",
+                    "mobile-breakpoint": "375px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Manrope"],
+                    "button-text": ["Manrope"],
+                    "body-md": ["Manrope"],
+                    "body-lg": ["Manrope"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "label-sm": ["JetBrains Mono"],
+                    "headline-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .soft-shadow { box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05); }
+        .raised-shadow:hover { box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12); }
+        .glass-overlay { backdrop-filter: blur(12px); background: rgba(255, 255, 255, 0.8); }
+        body { background-color: #f7f9ff; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbdcee; border-radius: 10px; }
+        .biometric-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .7; transform: scale(1.05); } }
+    </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- TopNavBar Shell Implementation -->
+<header class="flex justify-between items-center w-full px-gutter h-16 sticky top-0 z-50 bg-surface-container-highest shadow-sm">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary">EduVerify Pro</span>
+<div class="hidden md:flex gap-6 ml-8">
+<a class="text-on-surface-variant font-body-md hover:bg-surface-variant transition-colors px-3 py-1 rounded-lg" href="#">Dashboard</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 text-body-md" href="#">Analytics Reports</a>
+<a class="text-on-surface-variant font-body-md hover:bg-surface-variant transition-colors px-3 py-1 rounded-lg" href="#">Attendance</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group cursor-pointer p-2 rounded-full hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-primary">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</div>
+<div class="relative group cursor-pointer p-2 rounded-full hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-primary">settings</span>
+</div>
+<div class="flex items-center gap-2 pl-4 border-l border-outline-variant">
+<img class="w-8 h-8 rounded-full border border-primary" data-alt="A professional headshot of a female teacher in a modern, brightly lit university office. She is smiling warmly, wearing a smart navy blazer. The background is softly blurred with bookshelves and a window showing a green campus. The lighting is clean and institutional, matching a corporate academic aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPL7rHOIDDRZNsUaY7VNXOBp5HX8D07fG3xcSDkbg2lQAxf9sumZ_COmKX49TgSR5tKjj4tFNYcGUbdlzuLZ9JF84M3IFABDKY_-3RIjbwZidtrgheXdLiSfowmDojxRaGAXl_YLK2yVsLNISDedB8H3veIk9E1pRWIWL3GSTGXAYrrXskZT35AfgZsATsz0mTLy_o7tHB8ECRH_d1cG5wrZyNsus_l7gqRYBus7eTxBKwu8rjti92NA"/>
+<span class="hidden lg:block font-button-text text-button-text text-primary">Dr. Sarah Jenkins</span>
+</div>
+</div>
+</header>
+<div class="flex min-h-screen">
+<!-- SideNavBar Shell Implementation -->
+<aside class="hidden md:flex flex-col h-full p-4 gap-2 fixed left-0 w-64 bg-surface-container-low border-r border-outline-variant">
+<div class="flex items-center gap-3 mb-8 px-2">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">school</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md font-extrabold text-primary leading-tight">North Academy</h2>
+<p class="text-body-md text-on-surface-variant opacity-75">Faculty Portal</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">fingerprint</span>
+<span class="font-body-md">Class Attendance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">group_add</span>
+<span class="font-body-md">Biometric Registry</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container font-semibold rounded-lg transition-all active:translate-x-1 shadow-sm" href="#">
+<span class="material-symbols-outlined">insert_chart</span>
+<span class="font-body-md">Analytics Reports</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md">Academic Calendar</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 border-t border-outline-variant pt-4">
+<button class="w-full flex items-center justify-center gap-2 bg-secondary text-on-secondary py-3 rounded-xl font-button-text hover:bg-on-secondary-fixed-variant transition-colors shadow-md biometric-pulse mb-4">
+<span class="material-symbols-outlined">sensors</span>
+<span>Start Biometric Session</span>
+</button>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 p-6 lg:p-8 max-w-screen-2xl mx-auto w-full">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary">Attendance Analytics</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Generate detailed student participation and biometric verification reports.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border-2 border-outline-variant rounded-xl text-primary font-button-text hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined text-base">description</span> Export PDF
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 border-2 border-outline-variant rounded-xl text-primary font-button-text hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined text-base">table_view</span> Export Excel
+                    </button>
+<button class="flex items-center gap-2 px-6 py-2 bg-primary text-on-primary rounded-xl font-button-text hover:shadow-lg transition-all active:scale-95">
+<span class="material-symbols-outlined text-base">auto_awesome</span> Generate Report
+                    </button>
+</div>
+</div>
+<!-- Bento Filter Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+<div class="bg-surface-container-lowest p-4 rounded-xl soft-shadow border border-outline-variant">
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-2">Class</label>
+<select class="w-full bg-surface border-none rounded-lg font-body-md focus:ring-2 focus:ring-secondary transition-all">
+<option>Computer Science 201-A</option>
+<option>Advanced Mathematics B</option>
+<option>Digital Ethics 102</option>
+</select>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl soft-shadow border border-outline-variant">
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-2">Date Range</label>
+<div class="flex items-center gap-2 bg-surface p-2 rounded-lg">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">calendar_month</span>
+<input class="w-full bg-transparent border-none p-0 focus:ring-0 font-body-md" type="text" value="Oct 01 - Oct 31, 2023"/>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl soft-shadow border border-outline-variant">
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-2">Term</label>
+<select class="w-full bg-surface border-none rounded-lg font-body-md focus:ring-2 focus:ring-secondary transition-all">
+<option>Fall Semester 2023</option>
+<option>Winter Intensive</option>
+<option>Spring Semester 2024</option>
+</select>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl soft-shadow border border-outline-variant">
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-2">Status</label>
+<div class="flex gap-2">
+<span class="flex-1 text-center py-1 bg-secondary-container text-on-secondary-container rounded-md text-sm font-medium cursor-pointer">All</span>
+<span class="flex-1 text-center py-1 hover:bg-surface transition-colors rounded-md text-sm font-medium cursor-pointer">Verified</span>
+<span class="flex-1 text-center py-1 hover:bg-surface transition-colors rounded-md text-sm font-medium cursor-pointer">Flagged</span>
+</div>
+</div>
+</div>
+<!-- Summary Insight Cards -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+<!-- Daily Attendance Card -->
+<div class="bg-surface-container-lowest p-6 rounded-xl soft-shadow raised-shadow border border-outline-variant flex flex-col relative overflow-hidden group transition-all">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-primary">today</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-1">Daily Attendance</h3>
+<p class="text-label-sm text-on-surface-variant mb-6 uppercase tracking-wider">Today, Oct 24</p>
+<div class="flex items-end gap-2 mb-4">
+<span class="text-4xl font-bold text-primary">94.2%</span>
+<span class="text-on-tertiary-container font-medium text-sm flex items-center mb-1">
+<span class="material-symbols-outlined text-sm">arrow_upward</span> 2.1%
+                        </span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 94.2%"></div>
+</div>
+<p class="mt-4 text-body-md text-on-surface-variant">412 Students present out of 438 total.</p>
+</div>
+<!-- Weekly Trends Card -->
+<div class="bg-surface-container-lowest p-6 rounded-xl soft-shadow raised-shadow border border-outline-variant flex flex-col relative overflow-hidden group transition-all">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-secondary">trending_up</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-1">Weekly Trends</h3>
+<p class="text-label-sm text-on-surface-variant mb-6 uppercase tracking-wider">Last 7 Working Days</p>
+<div class="flex items-end gap-4 h-16 mb-4">
+<div class="flex-1 bg-surface-container-high rounded-t-sm h-4/5"></div>
+<div class="flex-1 bg-surface-container-high rounded-t-sm h-3/5"></div>
+<div class="flex-1 bg-secondary rounded-t-sm h-full"></div>
+<div class="flex-1 bg-surface-container-high rounded-t-sm h-4/5"></div>
+<div class="flex-1 bg-surface-container-high rounded-t-sm h-5/6"></div>
+<div class="flex-1 bg-surface-container-high rounded-t-sm h-2/3"></div>
+<div class="flex-1 bg-surface-container-high rounded-t-sm h-3/4"></div>
+</div>
+<p class="text-body-md text-on-surface-variant">Highest engagement recorded on Wednesday during biometric verification phase.</p>
+</div>
+<!-- Monthly Summary Card -->
+<div class="bg-primary-container p-6 rounded-xl soft-shadow raised-shadow border border-primary text-white flex flex-col relative overflow-hidden group transition-all">
+<div class="absolute inset-0 opacity-20 pointer-events-none">
+
+</div>
+<h3 class="font-headline-md text-headline-md text-on-primary-container mb-1">Monthly Summary</h3>
+<p class="text-label-sm text-on-primary-container mb-6 opacity-70 uppercase tracking-wider">Academic Term Fall '23</p>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<span class="block text-2xl font-bold">12,480</span>
+<span class="text-xs opacity-75">Total Scans</span>
+</div>
+<div>
+<span class="block text-2xl font-bold">98.4%</span>
+<span class="text-xs opacity-75">Success Rate</span>
+</div>
+</div>
+<button class="mt-auto w-full py-2 bg-on-primary-fixed text-primary font-button-text rounded-lg hover:bg-white transition-colors">
+                        Detailed Audit Trail
+                    </button>
+</div>
+</div>
+<!-- Attendance Records Table -->
+<div class="bg-surface-container-lowest rounded-xl soft-shadow border border-outline-variant overflow-hidden">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center bg-white">
+<h2 class="font-headline-md text-headline-md text-primary">Student Records</h2>
+<div class="flex gap-2">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-base">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface rounded-lg border-none focus:ring-2 focus:ring-primary text-sm w-64" placeholder="Search student name or ID..." type="text"/>
+</div>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant">Student Name</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant">Student ID</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant">Session Date</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant">Biometric Verified</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant">Status</th>
+<th class="px-6 py-4 font-label-sm text-label-sm text-on-surface-variant text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Table Row 1 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container text-white flex items-center justify-center font-bold text-xs">AJ</div>
+<span class="font-body-md text-primary font-semibold">Alexander James</span>
+</div>
+</td>
+<td class="px-6 py-4 font-label-sm text-on-surface-variant">#CS-2023-0041</td>
+<td class="px-6 py-4 text-body-md">Oct 24, 2023 - 09:15 AM</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-on-tertiary-container">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<span class="text-sm font-medium">Verified Scan</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-block px-3 py-1 rounded-full bg-[#E2F9F1] text-[#008A5E] text-xs font-bold uppercase tracking-wide">Present</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 hover:bg-white rounded-lg transition-colors"><span class="material-symbols-outlined text-on-surface-variant">more_vert</span></button>
+</td>
+</tr>
+<!-- Table Row 2 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-white flex items-center justify-center font-bold text-xs">BT</div>
+<span class="font-body-md text-primary font-semibold">Beatrice Taylor</span>
+</div>
+</td>
+<td class="px-6 py-4 font-label-sm text-on-surface-variant">#CS-2023-0112</td>
+<td class="px-6 py-4 text-body-md">Oct 24, 2023 - 09:12 AM</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-on-tertiary-container">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<span class="text-sm font-medium">Verified Scan</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-block px-3 py-1 rounded-full bg-[#E2F9F1] text-[#008A5E] text-xs font-bold uppercase tracking-wide">Present</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 hover:bg-white rounded-lg transition-colors"><span class="material-symbols-outlined text-on-surface-variant">more_vert</span></button>
+</td>
+</tr>
+<!-- Table Row 3 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-outline-variant text-white flex items-center justify-center font-bold text-xs">CH</div>
+<span class="font-body-md text-primary font-semibold">Caleb Henderson</span>
+</div>
+</td>
+<td class="px-6 py-4 font-label-sm text-on-surface-variant">#CS-2023-0098</td>
+<td class="px-6 py-4 text-body-md">Oct 24, 2023 - --:--</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-error">
+<span class="material-symbols-outlined text-sm">warning</span>
+<span class="text-sm font-medium">No Verification</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-block px-3 py-1 rounded-full bg-[#FEE2E2] text-[#B91C1C] text-xs font-bold uppercase tracking-wide">Absent</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 hover:bg-white rounded-lg transition-colors"><span class="material-symbols-outlined text-on-surface-variant">more_vert</span></button>
+</td>
+</tr>
+<!-- Table Row 4 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-on-tertiary-container text-white flex items-center justify-center font-bold text-xs">DM</div>
+<span class="font-body-md text-primary font-semibold">Daniel Miller</span>
+</div>
+</td>
+<td class="px-6 py-4 font-label-sm text-on-surface-variant">#CS-2023-0155</td>
+<td class="px-6 py-4 text-body-md">Oct 24, 2023 - 09:42 AM</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-on-tertiary-container">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<span class="text-sm font-medium">Verified Scan</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-block px-3 py-1 rounded-full bg-[#FEF3C7] text-[#92400E] text-xs font-bold uppercase tracking-wide">Late</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 hover:bg-white rounded-lg transition-colors"><span class="material-symbols-outlined text-on-surface-variant">more_vert</span></button>
+</td>
+</tr>
+<!-- Table Row 5 (Subtle Tinting Logic) -->
+<tr class="bg-surface-container transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs">EL</div>
+<span class="font-body-md text-primary font-semibold">Emma Lawrence</span>
+</div>
+</td>
+<td class="px-6 py-4 font-label-sm text-on-surface-variant">#CS-2023-0022</td>
+<td class="px-6 py-4 text-body-md">Oct 24, 2023 - 09:05 AM</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-on-tertiary-container">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<span class="text-sm font-medium">Verified Scan</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-block px-3 py-1 rounded-full bg-[#E2F9F1] text-[#008A5E] text-xs font-bold uppercase tracking-wide">Present</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 hover:bg-white rounded-lg transition-colors"><span class="material-symbols-outlined text-on-surface-variant">more_vert</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-6 border-t border-outline-variant flex items-center justify-between bg-white text-sm text-on-surface-variant">
+<span>Showing 1 to 5 of 438 entries</span>
+<div class="flex gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface transition-colors">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-white">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface transition-colors">3</button>
+<span class="px-2 self-end">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-surface transition-colors">88</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Micro-interaction Scripts -->
+<script>
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.transform = 'translateX(4px)';
+                row.style.transition = 'all 0.2s ease-out';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.transform = 'translateX(0)';
+            });
+        });
+
+        // Simple export simulation
+        const exportBtns = document.querySelectorAll('button:contains("Export")');
+        exportBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.innerHTML = `<span class="material-symbols-outlined text-base animate-spin">sync</span> Processing...`;
+                setTimeout(() => {
+                    const originalContent = btn.textContent.includes('PDF') ? 'Export PDF' : 'Export Excel';
+                    const icon = btn.textContent.includes('PDF') ? 'description' : 'table_view';
+                    btn.innerHTML = `<span class="material-symbols-outlined text-base">${icon}</span> ${originalContent}`;
+                }, 1500);
+            });
+        });
+    </script>
+</body></html>

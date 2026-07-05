@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register Student - RecordIT</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error": "#ba1a1a",
+                    "on-surface": "#0d1d2a",
+                    "on-secondary-fixed-variant": "#003baf",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed": "#dce1ff",
+                    "primary": "#00113a",
+                    "tertiary": "#00171b",
+                    "secondary-container": "#446ce4",
+                    "on-secondary": "#ffffff",
+                    "outline": "#757682",
+                    "on-primary-fixed": "#00174a",
+                    "primary-fixed": "#dbe1ff",
+                    "on-primary-fixed-variant": "#2a4386",
+                    "on-primary-container": "#758dd5",
+                    "inverse-on-surface": "#e7f2ff",
+                    "background": "#f7f9ff",
+                    "on-tertiary-container": "#009eb0",
+                    "on-secondary-fixed": "#00164e",
+                    "inverse-surface": "#223240",
+                    "on-error": "#ffffff",
+                    "surface-tint": "#435b9f",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "tertiary-container": "#002d33",
+                    "secondary-fixed-dim": "#b6c4ff",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed": "#001f24",
+                    "outline-variant": "#c5c6d2",
+                    "primary-container": "#002366",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-high": "#d9eafc",
+                    "surface-container": "#e2efff",
+                    "surface-variant": "#d4e4f6",
+                    "surface-bright": "#f7f9ff",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "inverse-primary": "#b3c5ff",
+                    "secondary": "#2552ca",
+                    "on-primary": "#ffffff",
+                    "on-background": "#0d1d2a",
+                    "surface-dim": "#cbdcee",
+                    "surface-container-highest": "#d4e4f6",
+                    "on-surface-variant": "#444650",
+                    "surface-container-low": "#ecf4ff",
+                    "surface": "#f7f9ff",
+                    "on-secondary-container": "#fffbff",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#00daf3",
+                    "tertiary-fixed": "#9cf0ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "tablet-breakpoint": "768px",
+                    "mobile-breakpoint": "375px",
+                    "gutter": "16px",
+                    "base": "8px",
+                    "desktop-max-width": "1280px",
+                    "container-padding": "24px"
+            },
+            "fontFamily": {
+                    "button-text": ["Manrope"],
+                    "headline-md": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "label-sm": ["JetBrains Mono"],
+                    "body-md": ["Manrope"],
+                    "body-lg": ["Manrope"]
+            },
+            "fontSize": {
+                    "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #f7f9ff;
+            color: #0d1d2a;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .custom-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .custom-shadow:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+        .input-focus-glow:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px #EAF8FF;
+            border-bottom-color: #2552ca;
+        }
+        .stepper-line {
+            height: 2px;
+            background-color: #c5c6d2;
+            flex-grow: 1;
+            margin: 0 16px;
+        }
+        .stepper-line.active {
+            background-color: #2552ca;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md flex min-h-screen">
+<!-- SideNavBar (As defined in JSON) -->
+<aside class="hidden md:flex flex-col border-r border-outline-variant/20 h-screen w-64 fixed left-0 top-0 bg-surface-container-low dark:bg-surface-container-lowest z-50">
+<div class="p-6 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">RecordIT</h1>
+<p class="text-[10px] uppercase tracking-wider text-outline">Central High School</p>
+</div>
+</div>
+<nav class="flex-1 mt-4 space-y-1">
+<!-- Active Tab: Students (Step 1 of Register Student is within Students context) -->
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-button-text text-button-text">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+<span class="font-button-text text-button-text">Academic Setup</span>
+</a>
+<a class="flex items-center gap-3 bg-secondary-container text-on-secondary-container rounded-lg px-4 py-3 mx-2 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="group" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="font-button-text text-button-text">Students</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="badge">badge</span>
+<span class="font-button-text text-button-text">Teachers</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="family_restroom">family_restroom</span>
+<span class="font-button-text text-button-text">Parents/Guardians</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="door_open">door_open</span>
+<span class="font-button-text text-button-text">Classes</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="fingerprint">fingerprint</span>
+<span class="font-button-text text-button-text">Attendance</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-button-text text-button-text">Reports</span>
+</a>
+<div class="pt-4 mt-4 border-t border-outline-variant/10">
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="biometric_setup">phonelink_setup</span>
+<span class="font-button-text text-button-text">Device Settings</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 mx-2 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-button-text text-button-text">Settings</span>
+</a>
+</div>
+</nav>
+<div class="p-4 m-4 rounded-xl bg-primary-container text-on-primary-container">
+<p class="font-label-sm text-label-sm opacity-80 mb-1">System Health</p>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-pulse"></span>
+<span class="font-button-text text-button-text">Active &amp; Secure</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col md:ml-64 relative bg-background min-h-screen">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-40 flex items-center justify-between px-gutter w-full h-16 backdrop-blur-xl border-b border-outline-variant/30 bg-surface/80 dark:bg-surface-container-highest/80 shadow-sm">
+<div class="flex items-center gap-4">
+<button class="md:hidden p-2 hover:bg-secondary-container/10 rounded-full transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<nav class="flex items-center gap-2">
+<span class="text-on-surface-variant">Students</span>
+<span class="material-symbols-outlined text-outline text-sm">chevron_right</span>
+<span class="font-bold text-primary border-b-2 border-primary">Register Student</span>
+</nav>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative hidden sm:block">
+<input class="bg-surface-container-low border-none rounded-full px-4 py-1.5 text-sm w-64 focus:ring-2 focus:ring-secondary/20" placeholder="Quick Search..." type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-secondary-container/10 rounded-full transition-colors cursor-pointer active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 hover:bg-secondary-container/10 rounded-full transition-colors cursor-pointer active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center border border-secondary/20 ml-2">
+<span class="material-symbols-outlined text-secondary text-base">person</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<div class="p-6 md:p-8 max-w-5xl mx-auto w-full">
+<!-- Header Section -->
+<div class="mb-8">
+<h2 class="font-headline-lg text-headline-lg text-primary">Register Student</h2>
+<p class="text-on-surface-variant mt-1">Enroll a new student into the biometric attendance system.</p>
+</div>
+<!-- Multi-step Stepper -->
+<div class="mb-10 relative">
+<div class="flex items-center justify-between w-full">
+<!-- Step 1: Active -->
+<div class="flex flex-col items-center z-10">
+<div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold shadow-md">1</div>
+<span class="mt-2 font-button-text text-button-text text-secondary">Student Info</span>
+</div>
+<div class="stepper-line"></div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center z-10">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-outline flex items-center justify-center font-bold border border-outline-variant/30">2</div>
+<span class="mt-2 font-button-text text-button-text text-outline">Class Assignment</span>
+</div>
+<div class="stepper-line"></div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center z-10">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-outline flex items-center justify-center font-bold border border-outline-variant/30">3</div>
+<span class="mt-2 font-button-text text-button-text text-outline">Parent Link</span>
+</div>
+<div class="stepper-line"></div>
+<!-- Step 4 -->
+<div class="flex flex-col items-center z-10">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-outline flex items-center justify-center font-bold border border-outline-variant/30">4</div>
+<span class="mt-2 font-button-text text-button-text text-outline">Biometric</span>
+</div>
+</div>
+</div>
+<!-- Form Content -->
+<div class="glass-card custom-shadow rounded-xl p-8 mb-8">
+<div class="flex flex-col md:flex-row gap-12">
+<!-- Left: Photo Upload Area -->
+<div class="flex flex-col items-center gap-4 w-full md:w-1/3">
+<div class="group relative w-48 h-48 rounded-2xl bg-surface-container-low border-2 border-dashed border-outline-variant flex flex-col items-center justify-center overflow-hidden hover:border-secondary transition-colors cursor-pointer">
+<div class="absolute inset-0 bg-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="material-symbols-outlined text-4xl text-outline mb-2 group-hover:text-secondary">add_a_photo</span>
+<p class="text-xs text-center px-4 text-outline-variant font-medium group-hover:text-secondary">Upload Student Portrait<br/>(JPG or PNG)</p>
+<!-- Image Placeholder Logic if one was present, but this is a dynamic upload area -->
+<img class="hidden object-cover w-full h-full" data-alt="A clean professional headshot of a student against a neutral studio background, high quality academic lighting, sharp focus, 8k resolution, modern corporate portrait style with soft shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUzKiG3TAClKafDGNJbkVVIxnepxxyQ5CiEH0sAmGgG6ToVJt1NpMcEnxzoIWhDh-j6XAaP--qro6uw0peBW86dLsh_R6xNoq5ZKNiuYvbz7H6Z1QXY4prPwMKLEWvTiiJjIFc7eqj2Ys0yFbNX45pM9qcZO0ab8Va8UEILY6b7WySxOhPuheSdPn4cPC6TjbM2iECeRfQsb6GH0E-MfBBqyiMXdBIWxJK-pLgngI6spH9V28XY8fQ7Q"/>
+</div>
+<p class="text-xs text-on-surface-variant italic text-center">Formal portrait required for institutional security identification cards.</p>
+</div>
+<!-- Right: Form Fields -->
+<div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="font-button-text text-button-text text-on-surface-variant px-1">First Name</label>
+<input class="bg-surface-container-lowest border-0 border-b-2 border-outline-variant p-3 input-focus-glow rounded-t-lg transition-all" placeholder="e.g. Michael" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-button-text text-button-text text-on-surface-variant px-1">Last Name</label>
+<input class="bg-surface-container-lowest border-0 border-b-2 border-outline-variant p-3 input-focus-glow rounded-t-lg transition-all" placeholder="e.g. Thompson" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-button-text text-button-text text-on-surface-variant px-1">Other Name (Optional)</label>
+<input class="bg-surface-container-lowest border-0 border-b-2 border-outline-variant p-3 input-focus-glow rounded-t-lg transition-all" placeholder="Middle or nicknames" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-button-text text-button-text text-on-surface-variant px-1">Student ID Number</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-0 border-b-2 border-outline-variant p-3 input-focus-glow rounded-t-lg transition-all" placeholder="CH-2024-0001" type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline text-sm">lock</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-button-text text-button-text text-on-surface-variant px-1">Gender</label>
+<select class="bg-surface-container-lowest border-0 border-b-2 border-outline-variant p-3 input-focus-glow rounded-t-lg transition-all appearance-none cursor-pointer">
+<option disabled="" selected="" value="">Select Gender</option>
+<option value="male">Male</option>
+<option value="female">Female</option>
+<option value="other">Other</option>
+<option value="prefer_not">Prefer not to say</option>
+</select>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-button-text text-button-text text-on-surface-variant px-1">Date of Birth</label>
+<input class="bg-surface-container-lowest border-0 border-b-2 border-outline-variant p-3 input-focus-glow rounded-t-lg transition-all cursor-pointer" type="date"/>
+</div>
+<div class="md:col-span-2 p-4 bg-secondary-container/5 rounded-lg border border-secondary-container/20 flex gap-3 items-start mt-2">
+<span class="material-symbols-outlined text-secondary">verified_user</span>
+<div class="text-sm">
+<p class="font-bold text-on-primary-fixed-variant">Identity Verification</p>
+<p class="text-on-surface-variant leading-relaxed">Ensure all data matches the student's legal documents. This information will be used to generate the unique biometric hash.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Form Navigation -->
+<div class="flex items-center justify-between mt-12">
+<button class="px-6 py-2.5 font-button-text text-button-text text-on-surface-variant hover:text-error transition-all opacity-80 hover:opacity-100 flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">close</span>
+                    Cancel Registration
+                </button>
+<div class="flex gap-4">
+<button class="px-8 py-3 bg-secondary text-on-secondary rounded-lg font-button-text text-button-text shadow-md hover:bg-primary transition-all active:scale-95 flex items-center gap-2">
+                        Next: Class Assignment
+                        <span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="w-full py-6 mt-auto border-t border-outline-variant/10 bg-surface dark:bg-surface-dim">
+<div class="flex flex-col md:flex-row justify-between items-center px-gutter max-w-desktop-max-width mx-auto">
+<div class="flex items-center gap-2 mb-4 md:mb-0">
+<span class="font-button-text text-button-text font-semibold text-on-surface-variant">RecordIT Admin Console</span>
+<span class="text-outline-variant">|</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 RecordIT Biometric Systems. All Rights Reserved.</p>
+</div>
+<div class="flex gap-6">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary underline transition-all" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary underline transition-all" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary underline transition-all" href="#">Security Whitepaper</a>
+</div>
+</div>
+</footer>
+</main>
+<script>
+        // Simple Interaction logic
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('focus', function() {
+                this.parentElement.querySelector('label').classList.add('text-secondary');
+            });
+            element.addEventListener('blur', function() {
+                this.parentElement.querySelector('label').classList.remove('text-secondary');
+            });
+        });
+
+        // Mock Next Step function
+        const nextBtn = document.querySelector('button.bg-secondary');
+        nextBtn.addEventListener('click', () => {
+            // Visual feedback
+            nextBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Processing...';
+            setTimeout(() => {
+                alert('Moving to Step 2: Class Assignment');
+                nextBtn.innerHTML = 'Next: Class Assignment <span class="material-symbols-outlined text-lg">arrow_forward</span>';
+            }, 800);
+        });
+    </script>
+</body></html>

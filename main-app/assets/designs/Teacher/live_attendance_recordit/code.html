@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Live Biometric Attendance | EduVerify Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-primary-fixed-variant": "#2a4386",
+                "on-error-container": "#93000a",
+                "surface-tint": "#435b9f",
+                "surface-container-lowest": "#ffffff",
+                "surface-container": "#e2efff",
+                "on-primary-container": "#758dd5",
+                "inverse-on-surface": "#e7f2ff",
+                "secondary-container": "#446ce4",
+                "primary": "#00113a",
+                "on-primary-fixed": "#00174a",
+                "secondary": "#2552ca",
+                "surface-variant": "#d4e4f6",
+                "primary-fixed-dim": "#b3c5ff",
+                "on-surface-variant": "#444650",
+                "surface-container-low": "#ecf4ff",
+                "primary-fixed": "#dbe1ff",
+                "on-primary": "#ffffff",
+                "surface": "#f7f9ff",
+                "background": "#f7f9ff",
+                "on-surface": "#0d1d2a",
+                "on-secondary-fixed-variant": "#003baf",
+                "on-background": "#0d1d2a",
+                "on-tertiary-container": "#009eb0",
+                "error-container": "#ffdad6",
+                "on-error": "#ffffff",
+                "on-secondary": "#ffffff",
+                "tertiary-container": "#002d33",
+                "surface-container-high": "#d9eafc",
+                "surface-dim": "#cbdcee",
+                "inverse-surface": "#223240",
+                "secondary-fixed-dim": "#b6c4ff",
+                "outline": "#757682",
+                "tertiary-fixed": "#9cf0ff",
+                "tertiary": "#00171b",
+                "secondary-fixed": "#dce1ff",
+                "outline-variant": "#c5c6d2",
+                "on-tertiary": "#ffffff",
+                "primary-container": "#002366",
+                "on-secondary-fixed": "#00164e",
+                "tertiary-fixed-dim": "#00daf3",
+                "surface-container-highest": "#d4e4f6",
+                "on-tertiary-fixed-variant": "#004f58",
+                "inverse-primary": "#b3c5ff",
+                "on-secondary-container": "#fffbff",
+                "surface-bright": "#f7f9ff",
+                "error": "#ba1a1a",
+                "on-tertiary-fixed": "#001f24"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "fontFamily": {
+                "headline-lg": ["Manrope"],
+                "button-text": ["Manrope"],
+                "body-md": ["Manrope"],
+                "body-lg": ["Manrope"],
+                "headline-md": ["Manrope"],
+                "label-sm": ["JetBrains Mono"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      
+      .biometric-pulse {
+        animation: pulse-cyan 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+
+      @keyframes pulse-cyan {
+        0%, 100% { opacity: 1; transform: scale(1); border-color: rgba(0, 218, 243, 0.8); box-shadow: 0 0 0 0 rgba(0, 218, 243, 0.4); }
+        50% { opacity: 0.6; transform: scale(1.05); border-color: rgba(0, 218, 243, 0.3); box-shadow: 0 0 20px 10px rgba(0, 218, 243, 0); }
+      }
+
+      .glass-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      .soft-shadow {
+        box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+      }
+      
+      .hover-shadow:hover {
+        box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+      }
+
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #cbdcee;
+        border-radius: 10px;
+      }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden h-screen flex flex-col">
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-surface-container-highest dark:bg-surface-container-highest shadow-sm flex justify-between items-center w-full px-6 h-16 sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">EduVerify Pro</span>
+<div class="h-6 w-px bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container rounded-full border border-outline-variant">
+<span class="material-symbols-outlined text-on-tertiary-container text-[18px]">sensors</span>
+<span class="font-label-sm text-on-surface-variant">ZKTeco ZK9500:</span>
+<span class="font-label-sm text-on-tertiary-container font-bold">CONNECTED</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary p-2 hover:bg-surface-variant transition-colors rounded-full cursor-pointer">notifications</button>
+<button class="material-symbols-outlined text-primary p-2 hover:bg-surface-variant transition-colors rounded-full cursor-pointer">settings</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary">
+<img class="w-full h-full object-cover" data-alt="A professional close-up portrait of a female school administrator in a bright, modern educational setting. She is wearing a smart blazer, and the background is a soft-focus clean academic office with neutral blue and white tones. Professional studio lighting, sharp focus, institutional security aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTugrdYpBYpcuAytQJPlD0AWt80v4c1Zn0j5fa3H8tZXz17qvtGlLpJu011iezwM8C3VvY5YCvETkzUq4hP6SZC2ebuzo1Bg-fXzL5n_1S0fa9ObJlBWHvApjALYJu8Tvbv8hjNZKCpuKCJrN2eNReIom10GrWaHJB8Isv921fQdqpX0Scz5KrP6hLI1ldhzqA8gvIPOdqXKRcx7bHBI2MLp8xegxdyyMteF4MEMVrzqWlo3DKripVtQ"/>
+</div>
+</div>
+</header>
+<main class="flex-1 flex overflow-hidden">
+<!-- SideNavBar (Shared Component) -->
+<nav class="hidden md:flex flex-col h-full w-64 bg-surface-container-low border-r border-outline-variant p-4 gap-2">
+<div class="flex items-center gap-3 mb-6 px-2">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">school</span>
+</div>
+<div>
+<p class="font-headline-md text-[18px] font-extrabold text-primary leading-tight">North Academy</p>
+<p class="text-[12px] text-on-surface-variant">Faculty Portal</p>
+</div>
+</div>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-secondary-container text-on-secondary-container font-semibold rounded-lg active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">fingerprint</span>
+<span class="font-body-md">Class Attendance</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">group_add</span>
+<span class="font-body-md">Biometric Registry</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">insert_chart</span>
+<span class="font-body-md">Analytics Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg active:translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md">Academic Calendar</span>
+</a>
+</div>
+<div class="mt-auto border-t border-outline-variant pt-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg text-error" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md">Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Workspace -->
+<div class="flex-1 flex flex-col md:flex-row p-6 gap-6 overflow-hidden">
+<!-- Central Scanning Area -->
+<div class="flex-1 flex flex-col gap-6 h-full">
+<!-- Session Header Info -->
+<div class="bg-surface-container-lowest p-6 rounded-xl soft-shadow flex flex-wrap items-center justify-between gap-4 border border-outline-variant">
+<div class="flex gap-8">
+<div class="space-y-1">
+<p class="text-[12px] uppercase tracking-wider text-outline font-bold">Class Session</p>
+<p class="font-headline-md text-primary">Grade 10-A (Honors)</p>
+</div>
+<div class="space-y-1">
+<p class="text-[12px] uppercase tracking-wider text-outline font-bold">Faculty</p>
+<p class="font-body-lg text-on-surface font-semibold">Dr. Julian Vance</p>
+</div>
+<div class="space-y-1">
+<p class="text-[12px] uppercase tracking-wider text-outline font-bold">Period</p>
+<p class="font-body-lg text-on-surface font-semibold">Morning Core / 08:30 AM</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="text-center px-4 py-2 bg-surface-container rounded-lg border border-primary/10">
+<p class="text-[12px] text-outline font-bold">PRESENT</p>
+<p class="text-2xl font-bold text-secondary">22<span class="text-on-surface-variant/40 text-lg">/30</span></p>
+</div>
+<div class="text-center px-4 py-2 bg-error-container rounded-lg border border-error/10">
+<p class="text-[12px] text-error font-bold">ABSENT</p>
+<p class="text-2xl font-bold text-error">8</p>
+</div>
+<div class="text-center px-4 py-2 bg-surface-variant rounded-lg border border-outline-variant">
+<p class="text-[12px] text-outline font-bold">LATE</p>
+<p class="text-2xl font-bold text-on-surface">0</p>
+</div>
+</div>
+</div>
+<!-- Live Scanner -->
+<div class="flex-1 relative flex flex-col items-center justify-center bg-surface-container-lowest rounded-xl border border-outline-variant soft-shadow overflow-hidden">
+<!-- Scanning HUD -->
+<div class="absolute inset-0 opacity-10 pointer-events-none">
+<div class="absolute top-0 left-0 w-32 h-32 border-t-4 border-l-4 border-secondary rounded-tl-3xl"></div>
+<div class="absolute top-0 right-0 w-32 h-32 border-t-4 border-r-4 border-secondary rounded-tr-3xl"></div>
+<div class="absolute bottom-0 left-0 w-32 h-32 border-b-4 border-l-4 border-secondary rounded-bl-3xl"></div>
+<div class="absolute bottom-0 right-0 w-32 h-32 border-b-4 border-r-4 border-secondary rounded-br-3xl"></div>
+</div>
+<div class="relative flex flex-col items-center gap-8 z-10">
+<div class="w-64 h-64 rounded-full border-4 border-tertiary-fixed-dim biometric-pulse flex items-center justify-center bg-surface-container transition-all duration-500" id="biometric-indicator">
+<span class="material-symbols-outlined text-[120px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+</div>
+<div class="text-center space-y-2">
+<h2 class="font-headline-lg text-primary" id="status-text">Waiting for Student</h2>
+<p class="text-on-surface-variant font-body-lg">Please place your finger on the ZK9500 reader</p>
+</div>
+</div>
+<!-- Bottom Action Controls -->
+<div class="absolute bottom-6 flex gap-4">
+<button class="px-6 py-3 bg-surface-variant text-on-surface-variant font-button-text rounded-full hover:bg-outline-variant transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">history</span>
+                            Retry Scan
+                        </button>
+<button class="px-6 py-3 bg-secondary text-white font-button-text rounded-full hover:bg-primary transition-all flex items-center gap-2 shadow-lg active:scale-95">
+<span class="material-symbols-outlined text-[18px]">edit_note</span>
+                            Mark Late
+                        </button>
+<button class="px-6 py-3 border-2 border-outline text-on-surface-variant font-button-text rounded-full hover:bg-surface-variant transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">event_busy</span>
+                            Mark Excused
+                        </button>
+</div>
+</div>
+</div>
+<!-- Side Panel: Recent Scans -->
+<div class="w-full md:w-80 h-full flex flex-col bg-surface-container-low rounded-xl border border-outline-variant overflow-hidden soft-shadow">
+<div class="p-4 border-b border-outline-variant flex items-center justify-between bg-surface-container-lowest">
+<h3 class="font-headline-md text-[18px] text-primary">Recent Scans</h3>
+<span class="font-label-sm text-secondary bg-secondary-container px-2 py-0.5 rounded-full">LIVE</span>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+<!-- Scan Item 1 -->
+<div class="glass-card p-3 rounded-lg border border-outline-variant hover-shadow transition-all flex items-center gap-3">
+<div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Close up student portrait of a teenage boy in a white school uniform. Bright studio lighting, blurred library background. Clean and academic visual style for an educational interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYEdpOtnIbZCTDzsDtUfqipVdRm-lceOz--0Xq9fYxPOY5qL2LJp1qeRLkS9DpSK9UVkIG7RL36wPnLBhXFREfmkt8UJrwHxzfuW7_TmrBOO8WjyTulc7icVFkOXJeglNtLK9m2S9vEUcx0M2mpYf9zx7j8i52t9Go7lw62lHRCsL98RLJv_JRZjq0eYqibT4G29mAai7I5DJhK0Yp2tDi6gQgOcrJ99Bwl4fzXCUoj-tl1cCuhB5VGQ"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-md font-bold text-on-surface truncate">Ethan Richards</p>
+<p class="text-[12px] text-on-surface-variant">08:24:12 AM</p>
+</div>
+<span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full">PRESENT</span>
+</div>
+<!-- Scan Item 2 -->
+<div class="glass-card p-3 rounded-lg border border-outline-variant hover-shadow transition-all flex items-center gap-3">
+<div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Portrait of a teenage girl student with glasses in a formal school sweater. Soft window light, modern classroom setting in background. High-legibility professional photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiFukRhx0NYlTftTYVeDlHRmCnDhtx8t2wq7CyzyoEASiLyg3Mdm5S8p-fQDoy79foGh_zTqz1h4q9NOlHj2EJKCH0eQ51k9Ep6ErNHM7UKUeAjqs8kgw1FLXXb_XrajzghVtPyhdc8nsJuf46FP8TYMUk-5BynAqo1AX_r5ivO8iQZoWtjfQ8uah0WTsymFdX7Kjcc1wbSGuA4TugBjFGbWLBsEJzcbBcyL5A8_PtJ_fJEUW698UESw"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-md font-bold text-on-surface truncate">Maya Sterling</p>
+<p class="text-[12px] text-on-surface-variant">08:23:45 AM</p>
+</div>
+<span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full">PRESENT</span>
+</div>
+<!-- Scan Item 3 (Alternate row tint) -->
+<div class="bg-surface-container p-3 rounded-lg border border-outline-variant hover-shadow transition-all flex items-center gap-3">
+<div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Student identification photo of a young male student. Neutral expression, clean white background, soft overhead lighting. Institutional school photo style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeWrRjTatdU6rgDWt9BO5vIhOs4DYWfK8J6a24XYlulPVHj-ZmtVD5e0ckkOvMKTz-T40VBVt_UBIFVdgEAUsPbVWuTjRe8MPvuJlVrqo20nHF0ovHB26h294bhOYlgJB_w3Uu9CdjH5cfMNA4O2b_VIsUCiwmg5BgUg1geAsq7CfJ5qTPceTUc7OGQKKibRmIGw5lkKY7WhX4ndZy9rAt9NYAxG_7ZuyQUq3ftj7VfDVWMdeZeWOqmw"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-md font-bold text-on-surface truncate">Marcus Chen</p>
+<p class="text-[12px] text-on-surface-variant">08:22:10 AM</p>
+</div>
+<span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full">PRESENT</span>
+</div>
+<!-- List divider/More records indicator -->
+<div class="py-2 flex items-center justify-center">
+<div class="h-px bg-outline-variant flex-1"></div>
+<span class="px-3 text-[10px] font-bold text-outline uppercase tracking-widest">Previous Activity</span>
+<div class="h-px bg-outline-variant flex-1"></div>
+</div>
+<!-- Scan Item 4 -->
+<div class="glass-card p-3 rounded-lg border border-outline-variant hover-shadow transition-all flex items-center gap-3 opacity-70">
+<div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant flex-shrink-0 grayscale">
+<img class="w-full h-full object-cover" data-alt="Student photo of a teenage girl in a blue school polo shirt. Simple composition, neutral lighting. Clean corporate educational aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9VdEYDgoCSx91ywZU6_7Ol_SSJUckMebOyLnIu6xweY8ImYvNlJCqc3W7_7jG0Sbi0P_dj_br7STBHGWhlRlt2t6QwwyrJVsfHKYbFr2XVcd-xekomZ2nqtMp8ESlOzYxNLpTyaKrA1NjhKPwHWk7v07OM1Old0kpx51jaa3iPzP_uCjqnHeVMV4AFvL3Vcxnfh7omaVn4RyuS_t0dOBmrQGTfVCmaOh0zqEBxw-qVdGZTVln-xfMfQ"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-md font-bold text-on-surface truncate">Sarah Jenkins</p>
+<p class="text-[12px] text-on-surface-variant">08:21:05 AM</p>
+</div>
+<span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full">PRESENT</span>
+</div>
+</div>
+<!-- Bottom Footer Panel Actions -->
+<div class="p-4 bg-surface-container-lowest border-t border-outline-variant flex flex-col gap-2">
+<button class="w-full py-3 bg-primary text-white font-button-text rounded-xl hover:bg-primary-container transition-all flex items-center justify-center gap-2 shadow-md">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+                        Close Session
+                    </button>
+<p class="text-[11px] text-center text-on-surface-variant italic">Data synced to Central Server North-02</p>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Simulated UI interaction for demonstration
+        const indicator = document.getElementById('biometric-indicator');
+        const statusText = document.getElementById('status-text');
+        
+        // Randomly simulate a scan every 8 seconds for visual flair
+        setInterval(() => {
+            // Verifying State
+            indicator.style.borderColor = "#2552ca";
+            indicator.style.backgroundColor = "#dbe1ff";
+            statusText.innerText = "Verifying Student...";
+            statusText.classList.add('text-secondary');
+            
+            setTimeout(() => {
+                // Success State
+                indicator.style.borderColor = "#009eb0";
+                indicator.style.backgroundColor = "#e2efff";
+                statusText.innerText = "Verified: Liam O'Connor";
+                statusText.classList.remove('text-secondary');
+                statusText.classList.add('text-on-tertiary-container');
+                
+                setTimeout(() => {
+                    // Reset to Waiting
+                    indicator.style.borderColor = "";
+                    indicator.style.backgroundColor = "";
+                    statusText.innerText = "Waiting for Student";
+                    statusText.classList.remove('text-on-tertiary-container');
+                    statusText.classList.add('text-primary');
+                }, 1500);
+            }, 1000);
+        }, 8000);
+    </script>
+</body></html>
