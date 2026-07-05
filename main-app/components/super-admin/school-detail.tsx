@@ -81,6 +81,8 @@ export function SchoolDetail({
       toast.error(err instanceof Error ? err.message : "Action failed")
     }
   }
+  const statusPending =
+    approve.isPending || suspend.isPending || reactivate.isPending
 
   return (
     <div className="grid gap-6">
@@ -92,19 +94,28 @@ export function SchoolDetail({
           <>
             <StatusBadge status={school.status} />
             {school.status === "PENDING" ? (
-              <Button onClick={() => runStatus("approve")}>Approve</Button>
+              <Button
+                disabled={statusPending}
+                onClick={() => runStatus("approve")}
+              >
+                {approve.isPending ? "Approving..." : "Approve"}
+              </Button>
             ) : null}
             {school.status === "ACTIVE" ? (
               <Button
+                disabled={statusPending}
                 variant="destructive"
                 onClick={() => runStatus("suspend")}
               >
-                Suspend
+                {suspend.isPending ? "Suspending..." : "Suspend"}
               </Button>
             ) : null}
             {school.status === "SUSPENDED" ? (
-              <Button onClick={() => runStatus("reactivate")}>
-                Reactivate
+              <Button
+                disabled={statusPending}
+                onClick={() => runStatus("reactivate")}
+              >
+                {reactivate.isPending ? "Reactivating..." : "Reactivate"}
               </Button>
             ) : null}
           </>
@@ -186,8 +197,8 @@ function OverviewTab({
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
-      <section className="grid gap-4 md:grid-cols-4">
+    <div className="grid gap-6">
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatTile
           icon="groups"
           label="Students"
@@ -206,54 +217,139 @@ function OverviewTab({
         />
       </section>
 
-      <form onSubmit={handleSubmit} className="recordit-card p-6 xl:col-span-1">
-        <h2 className="text-xl font-bold text-primary">Core Profile</h2>
-        <div className="mt-5 grid gap-4 md:grid-cols-2">
-          {[
-            ["name", "School Name"],
-            ["email", "School Email"],
-            ["phone", "School Phone"],
-            ["region", "Region"],
-            ["city", "City"],
-            ["contactName", "Contact Name"],
-            ["contactRole", "Contact Role"],
-            ["contactPhone", "Contact Phone"],
-            ["contactEmail", "Contact Email"],
-            ["adminName", "Admin Name"],
-            ["adminEmail", "Admin Email"],
-            ["adminPhone", "Admin Phone"],
-          ].map(([field, label]) => (
-            <label
-              key={field}
-              className="grid gap-2 text-sm font-semibold text-on-surface-variant"
-            >
-              {label}
-              <Input
-                value={form[field as keyof typeof form]}
-                onChange={(event) =>
-                  updateField(field as keyof typeof form, event.target.value)
-                }
-              />
-            </label>
-          ))}
-        </div>
-        <Button type="submit" className="mt-5" disabled={isSaving}>
-          {isSaving ? "Saving..." : "Save Changes"}
-        </Button>
-      </form>
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
+        <form onSubmit={handleSubmit} className="recordit-card p-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-bold text-primary">
+                Core Profile
+              </h2>
+              <p className="mt-1 text-sm text-on-surface-variant">
+                School identity, location, and direct contact channels.
+              </p>
+            </div>
+            <Button type="submit" disabled={isSaving}>
+              {isSaving ? "Saving..." : "Save Changes"}
+            </Button>
+          </div>
 
-      <aside className="recordit-card h-fit p-6">
-        <h2 className="text-xl font-bold text-primary">System Health</h2>
-        <div className="mt-5 grid gap-3 text-sm">
-          <Info label="Users" value={school._count.users} />
-          <Info
-            label="Attendance Records"
-            value={school._count.attendanceRecords}
-          />
-          <Info label="Reports" value={school._count.reports} />
-          <Info label="Country" value={school.country} />
-        </div>
-      </aside>
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            {[
+              ["name", "School Name"],
+              ["email", "School Email"],
+              ["phone", "School Phone"],
+              ["region", "Region"],
+              ["city", "City"],
+            ].map(([field, label]) => (
+              <label
+                key={field}
+                className="grid gap-2 text-sm font-semibold text-on-surface-variant"
+              >
+                {label}
+                <Input
+                  value={form[field as keyof typeof form]}
+                  onChange={(event) =>
+                    updateField(field as keyof typeof form, event.target.value)
+                  }
+                />
+              </label>
+            ))}
+          </div>
+
+          <div className="mt-8 grid gap-6 lg:grid-cols-2">
+            <section>
+              <h3 className="text-sm font-bold uppercase tracking-[0.18em] text-on-surface-variant">
+                Primary Contact
+              </h3>
+              <div className="mt-4 grid gap-4">
+                {[
+                  ["contactName", "Contact Name"],
+                  ["contactRole", "Contact Role"],
+                  ["contactPhone", "Contact Phone"],
+                  ["contactEmail", "Contact Email"],
+                ].map(([field, label]) => (
+                  <label
+                    key={field}
+                    className="grid gap-2 text-sm font-semibold text-on-surface-variant"
+                  >
+                    {label}
+                    <Input
+                      value={form[field as keyof typeof form]}
+                      onChange={(event) =>
+                        updateField(
+                          field as keyof typeof form,
+                          event.target.value
+                        )
+                      }
+                    />
+                  </label>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <h3 className="text-sm font-bold uppercase tracking-[0.18em] text-on-surface-variant">
+                Admin Profile
+              </h3>
+              <div className="mt-4 grid gap-4">
+                {[
+                  ["adminName", "Admin Name"],
+                  ["adminEmail", "Admin Email"],
+                  ["adminPhone", "Admin Phone"],
+                ].map(([field, label]) => (
+                  <label
+                    key={field}
+                    className="grid gap-2 text-sm font-semibold text-on-surface-variant"
+                  >
+                    {label}
+                    <Input
+                      value={form[field as keyof typeof form]}
+                      onChange={(event) =>
+                        updateField(
+                          field as keyof typeof form,
+                          event.target.value
+                        )
+                      }
+                    />
+                  </label>
+                ))}
+              </div>
+            </section>
+          </div>
+        </form>
+
+        <aside className="grid gap-6">
+          <section className="recordit-card p-6">
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="text-xl font-bold text-primary">
+                Account Owner
+              </h2>
+              {school.admin?.status ? (
+                <StatusBadge status={school.admin.status} />
+              ) : null}
+            </div>
+            <div className="mt-5 grid gap-3 text-sm">
+              <Info label="Admin Name" value={school.admin?.name || "Not assigned"} />
+              <Info label="Admin Email" value={school.admin?.email || "-"} />
+              <Info label="Admin Phone" value={school.admin?.phone || "-"} />
+              <Info label="School Code" value={school.code} />
+            </div>
+          </section>
+
+          <section className="recordit-card p-6">
+            <h2 className="text-xl font-bold text-primary">System Snapshot</h2>
+            <div className="mt-5 grid gap-3 text-sm">
+              <Info label="Users" value={school._count.users} />
+              <Info
+                label="Attendance Records"
+                value={school._count.attendanceRecords}
+              />
+              <Info label="Reports" value={school._count.reports} />
+              <Info label="Country" value={school.country} />
+            </div>
+          </section>
+        </aside>
+      </div>
     </div>
   )
 }

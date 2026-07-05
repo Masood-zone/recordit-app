@@ -71,6 +71,30 @@ function toUserStatus(value: unknown) {
   return UserStatus.ACTIVE
 }
 
+function accountStatusMessage(status: UserStatus) {
+  if (status === UserStatus.SUSPENDED) {
+    return {
+      subject: "Your RecordIT account has been suspended",
+      message:
+        "Your RecordIT account has been suspended by your school administrator. Please contact your school for assistance.",
+    }
+  }
+
+  if (status === UserStatus.INACTIVE) {
+    return {
+      subject: "Your RecordIT account is inactive",
+      message:
+        "Your RecordIT account has been marked inactive by your school administrator. Please contact your school for assistance.",
+    }
+  }
+
+  return {
+    subject: "Your RecordIT account is active",
+    message:
+      "Your RecordIT account has been reactivated by your school administrator. You can sign in to RecordIT again.",
+  }
+}
+
 const classSelect = {
   academicYear: { select: { id: true, name: true } },
   academicYearId: true,
@@ -487,9 +511,13 @@ async function createTeacher(auth: Authed, input: Record<string, unknown>) {
 
 async function updateTeacher(auth: Authed, teacherId: string, input: Record<string, unknown>) {
   const schoolId = auth.schoolId!
-  const teacher = await prisma.teacher.findFirst({ where: { id: teacherId, schoolId }, select: { id: true, userId: true } })
+  const teacher = await prisma.teacher.findFirst({
+    where: { id: teacherId, schoolId },
+    select: { id: true, user: { select: userSelect }, userId: true },
+  })
   if (!teacher) return apiError("Teacher not found", 404, "NOT_FOUND")
   const staffNumber = optionalClean(input.staffNumber)
+  const nextStatus = input.status ? toUserStatus(input.status) : teacher.user.status
 
   if (staffNumber) {
     const existingStaff = await prisma.teacher.findFirst({
@@ -518,7 +546,7 @@ async function updateTeacher(auth: Authed, teacherId: string, input: Record<stri
         ...(input.firstName ? { firstName: clean(input.firstName) } : {}),
         ...(input.lastName ? { lastName: clean(input.lastName) } : {}),
         ...(input.phone !== undefined ? { phone: optionalClean(input.phone) } : {}),
-        ...(input.status ? { status: toUserStatus(input.status) } : {}),
+        ...(input.status ? { status: nextStatus } : {}),
         ...(input.firstName || input.lastName
           ? { name: `${clean(input.firstName) || ""} ${clean(input.lastName) || ""}`.trim() }
           : {}),
@@ -543,6 +571,18 @@ async function updateTeacher(auth: Authed, teacherId: string, input: Record<stri
       },
     })
   })
+
+  if (input.status && nextStatus !== teacher.user.status) {
+    const statusMessage = accountStatusMessage(nextStatus)
+    await notifyUser({
+      email: teacher.user.email,
+      message: statusMessage.message,
+      phone: teacher.user.phone,
+      schoolId,
+      subject: statusMessage.subject,
+      userId: teacher.userId,
+    })
+  }
 
   return ok({ teacher: await getTeacher(schoolId, teacherId) }, "Teacher updated")
 }
@@ -631,8 +671,12 @@ async function createGuardian(auth: Authed, input: Record<string, unknown>) {
 
 async function updateGuardian(auth: Authed, guardianId: string, input: Record<string, unknown>) {
   const schoolId = auth.schoolId!
-  const guardian = await prisma.parentGuardian.findFirst({ where: { id: guardianId, schoolId }, select: { id: true, userId: true } })
+  const guardian = await prisma.parentGuardian.findFirst({
+    where: { id: guardianId, schoolId },
+    select: { id: true, user: { select: userSelect }, userId: true },
+  })
   if (!guardian) return apiError("Parent/guardian not found", 404, "NOT_FOUND")
+  const nextStatus = input.status ? toUserStatus(input.status) : guardian.user.status
 
   await prisma.$transaction(async (tx) => {
     await tx.parentGuardian.update({
@@ -650,7 +694,7 @@ async function updateGuardian(auth: Authed, guardianId: string, input: Record<st
         ...(input.firstName ? { firstName: clean(input.firstName) } : {}),
         ...(input.lastName ? { lastName: clean(input.lastName) } : {}),
         ...(input.phone !== undefined ? { phone: optionalClean(input.phone) } : {}),
-        ...(input.status ? { status: toUserStatus(input.status) } : {}),
+        ...(input.status ? { status: nextStatus } : {}),
       },
     })
     const linkedStudentId = optionalClean(input.linkedStudentId)
@@ -677,6 +721,18 @@ async function updateGuardian(auth: Authed, guardianId: string, input: Record<st
       },
     })
   })
+
+  if (input.status && nextStatus !== guardian.user.status) {
+    const statusMessage = accountStatusMessage(nextStatus)
+    await notifyUser({
+      email: guardian.user.email,
+      message: statusMessage.message,
+      phone: guardian.user.phone,
+      schoolId,
+      subject: statusMessage.subject,
+      userId: guardian.userId,
+    })
+  }
 
   return ok({ guardian: await getGuardian(schoolId, guardianId) }, "Parent/guardian updated")
 }
@@ -1024,11 +1080,22 @@ export async function PATCH(request: Request, context: Context) {
     const status = toUserStatus(input.status)
     const existing = await prisma.user.findFirst({
       where: { id: path[1], schoolId },
-      select: { id: true },
+      select: userSelect,
     })
     if (!existing) return apiError("User not found", 404, "NOT_FOUND")
     const user = await prisma.user.update({ where: { id: path[1] }, data: { status }, select: userSelect })
     await recordAudit({ action: AuditAction.UPDATE, description: `Updated ${user.name} status to ${status}.`, entity: "User", entityId: user.id, schoolId, userId: auth.user!.id })
+    if (status !== existing.status) {
+      const statusMessage = accountStatusMessage(status)
+      await notifyUser({
+        email: user.email,
+        message: statusMessage.message,
+        phone: user.phone,
+        schoolId,
+        subject: statusMessage.subject,
+        userId: user.id,
+      })
+    }
     return ok({ user }, "User updated")
   }
   if (path[0] === "academic-years" && path[1]) {

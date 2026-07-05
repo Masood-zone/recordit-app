@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { useState } from "react"
 
 import { MaterialSymbol } from "@/components/common/MaterialSymbol"
 import {
@@ -20,6 +21,7 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { authClient } from "@/lib/auth-client"
 
 const navItems = [
   { href: "/super-admin/dashboard", icon: "dashboard", label: "Dashboard" },
@@ -34,6 +36,19 @@ export function SuperAdminShell({
   userName: string
 }) {
   const pathname = usePathname()
+  const router = useRouter()
+  const [signingOut, setSigningOut] = useState(false)
+
+  async function signOut() {
+    if (signingOut) return
+    setSigningOut(true)
+    try {
+      await authClient.signOut()
+      router.push("/login")
+    } finally {
+      setSigningOut(false)
+    }
+  }
 
   return (
     <SidebarProvider>
@@ -84,6 +99,21 @@ export function SuperAdminShell({
 
         <SidebarFooter className="border-t border-sidebar-border">
           <SidebarGroupLabel>User</SidebarGroupLabel>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={signOut}
+                disabled={signingOut}
+                className="text-red-200 hover:text-white"
+              >
+                <MaterialSymbol
+                  icon={signingOut ? "progress_activity" : "logout"}
+                  className={signingOut ? "animate-spin" : ""}
+                />
+                <span>{signingOut ? "Logging out..." : "Logout"}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
           <div className="flex min-w-0 items-center gap-3 rounded-lg bg-white/10 p-3 group-data-[collapsible=icon]/sidebar:justify-center group-data-[collapsible=icon]/sidebar:p-2">
             <span className="grid size-10 shrink-0 place-items-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
               <MaterialSymbol icon="person" />
