@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Device Logs | RecordIT Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#f7f9ff",
+                    "primary-fixed": "#dbe1ff",
+                    "primary": "#00113a",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "tertiary-fixed": "#9cf0ff",
+                    "error-container": "#ffdad6",
+                    "background": "#f7f9ff",
+                    "on-tertiary": "#ffffff",
+                    "on-surface-variant": "#444650",
+                    "on-primary-container": "#758dd5",
+                    "inverse-on-surface": "#e7f2ff",
+                    "inverse-surface": "#223240",
+                    "on-secondary": "#ffffff",
+                    "primary-container": "#002366",
+                    "on-primary-fixed-variant": "#2a4386",
+                    "inverse-primary": "#b3c5ff",
+                    "surface": "#f7f9ff",
+                    "on-tertiary-fixed": "#001f24",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#b6c4ff",
+                    "secondary": "#2552ca",
+                    "surface-dim": "#cbdcee",
+                    "on-surface": "#0d1d2a",
+                    "secondary-container": "#446ce4",
+                    "on-secondary-fixed-variant": "#003baf",
+                    "surface-tint": "#435b9f",
+                    "on-tertiary-container": "#009eb0",
+                    "tertiary": "#00171b",
+                    "surface-container": "#e2efff",
+                    "on-secondary-container": "#fffbff",
+                    "on-primary-fixed": "#00174a",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "surface-container-highest": "#d4e4f6",
+                    "surface-container-high": "#d9eafc",
+                    "surface-variant": "#d4e4f6",
+                    "surface-container-low": "#ecf4ff",
+                    "tertiary-container": "#002d33",
+                    "outline": "#757682",
+                    "on-background": "#0d1d2a",
+                    "tertiary-fixed-dim": "#00daf3",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#00164e",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#dce1ff",
+                    "outline-variant": "#c5c6d2"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "desktop-max-width": "1280px",
+                    "tablet-breakpoint": "768px",
+                    "base": "8px",
+                    "gutter": "16px",
+                    "container-padding": "24px",
+                    "mobile-breakpoint": "375px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Manrope"],
+                    "body-lg": ["Manrope"],
+                    "button-text": ["Manrope"],
+                    "body-md": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "label-sm": ["JetBrains Mono"],
+                    "headline-lg-mobile": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #f7f9ff;
+            color: #0d1d2a;
+            font-family: 'Manrope', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid #E2E8F0;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-surface-bright min-h-screen overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="w-full sticky top-0 z-50 bg-surface-bright border-b border-outline-variant shadow-sm">
+<div class="flex justify-between items-center px-container-padding py-base w-full max-w-desktop-max-width mx-auto">
+<div class="flex items-center gap-4">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">RecordIT</span>
+<div class="hidden md:flex items-center ml-8 gap-6">
+<a class="font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 px-3 py-1 rounded-lg" href="#">Home</a>
+<a class="font-body-md text-body-md text-secondary font-bold border-b-2 border-secondary px-3 py-1" href="#">Device Logs</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 px-3 py-1 rounded-lg" href="#">Status</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex bg-surface-container-low rounded-full px-4 py-2 border border-outline-variant items-center gap-2">
+<span class="material-symbols-outlined text-outline">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-48 lg:w-64" placeholder="Search system logs..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors"><span class="material-symbols-outlined text-on-surface-variant">notifications</span></button>
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors"><span class="material-symbols-outlined text-on-surface-variant">help</span></button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant ml-2">
+<img class="object-cover w-full h-full" data-alt="Close-up professional headshot of a school administrator in a clean office setting, featuring soft natural lighting and a high-end corporate aesthetic with a blue color palette to match the institutional branding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmLqjslkrxvF4UZnPdz-DxlLm9_BTUroIJ4dXoWMyK5XyqnWrIyDY-I1MaqEPvHQuQ1CY-JHh3QsCCiw9BDXvPRqodU__OgDsXMLnAN_5D6SOnTC8C--z_FUZWsvxDDeCcX45_Bi68PXIdfwoqxx0pG2kiXyG1grT0cQDSgtalr6BGECuVwqQ-_n2nTWsRlR0_68uoGYr74Wla4hhi_Le-PG5F2XkhdEcPe0U1Q3mlGZwFihSURPPULA"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<div class="flex min-h-[calc(100vh-64px)]">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 overflow-y-auto bg-primary-container hidden md:flex flex-col p-gutter space-y-2 shadow-md z-40 mt-16 pb-24">
+<div class="mb-6 px-2">
+<span class="font-headline-md text-headline-md font-extrabold text-on-primary-container block">RecordIT</span>
+<span class="font-button-text text-button-text text-on-primary-container opacity-70">Admin Portal</span>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:bg-primary transition-all duration-150 hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-button-text text-button-text">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:bg-primary transition-all duration-150 hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-button-text text-button-text">Academic Setup</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:bg-primary transition-all duration-150 hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-button-text text-button-text">Students</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:bg-primary transition-all duration-150 hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">person_4</span>
+<span class="font-button-text text-button-text">Teachers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container font-bold rounded-lg translate-x-1 shadow-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings_remote</span>
+<span class="font-button-text text-button-text">Device Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:bg-primary transition-all duration-150 hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-button-text text-button-text">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:bg-primary transition-all duration-150 hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-button-text text-button-text">Settings</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 p-gutter max-w-desktop-max-width mx-auto pb-24">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary mb-1">Hardware Activity Logs</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Monitor real-time biometric terminal operations and system health.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 bg-surface-container-highest text-primary font-button-text px-4 py-2 rounded-lg soft-shadow hover:bg-surface-container-high transition-all active:scale-95">
+<span class="material-symbols-outlined">refresh</span> Refresh
+                    </button>
+<button class="flex items-center gap-2 bg-surface-container-highest text-primary font-button-text px-4 py-2 rounded-lg soft-shadow hover:bg-surface-container-high transition-all active:scale-95">
+<span class="material-symbols-outlined">download</span> Export
+                    </button>
+<button class="flex items-center gap-2 bg-error-container text-on-error-container font-button-text px-4 py-2 rounded-lg soft-shadow hover:opacity-90 transition-all active:scale-95">
+<span class="material-symbols-outlined">delete_sweep</span> Clear Logs
+                    </button>
+</div>
+</div>
+<!-- Dashboard Stats Bar -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter mb-8">
+<div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant flex items-center gap-4">
+<div class="h-12 w-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-wider">Total Events</p>
+<p class="text-headline-md font-headline-md text-primary">12,842</p>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant flex items-center gap-4">
+<div class="h-12 w-12 rounded-full bg-on-tertiary-container/10 flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-wider">Successful Scans</p>
+<p class="text-headline-md font-headline-md text-primary">11,209</p>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant flex items-center gap-4">
+<div class="h-12 w-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">sync</span>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-wider">Active Syncs</p>
+<p class="text-headline-md font-headline-md text-primary">14</p>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant flex items-center gap-4">
+<div class="h-12 w-12 rounded-full bg-error/10 flex items-center justify-center text-error">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-wider">System Errors</p>
+<p class="text-headline-md font-headline-md text-primary">23</p>
+</div>
+</div>
+</div>
+<!-- Table & Filters Shell -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant soft-shadow overflow-hidden">
+<!-- Filters Section -->
+<div class="p-gutter border-b border-outline-variant bg-surface-container-low/50">
+<div class="flex flex-wrap items-center gap-4">
+<div class="flex-1 min-w-[240px] relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-outline-variant bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all text-body-md" placeholder="Search by User, Device ID, or Message..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<select class="px-4 py-2.5 rounded-lg border border-outline-variant bg-white text-body-md focus:border-secondary transition-all">
+<option value="">Action Type</option>
+<option value="scan">Biometric Scan</option>
+<option value="sync">Data Sync</option>
+<option value="error">System Error</option>
+<option value="login">Device Login</option>
+</select>
+<select class="px-4 py-2.5 rounded-lg border border-outline-variant bg-white text-body-md focus:border-secondary transition-all">
+<option value="">All Statuses</option>
+<option value="success">Success</option>
+<option value="warning">Warning</option>
+<option value="critical">Critical</option>
+</select>
+<input class="px-4 py-2.5 rounded-lg border border-outline-variant bg-white text-body-md focus:border-secondary transition-all" type="date"/>
+</div>
+</div>
+</div>
+<!-- Logs Table -->
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse min-w-[1000px]">
+<thead>
+<tr class="bg-surface-container-high/50 text-outline border-b border-outline-variant">
+<th class="px-6 py-4 font-label-sm text-label-sm uppercase tracking-wider">Date/Time</th>
+<th class="px-6 py-4 font-label-sm text-label-sm uppercase tracking-wider">Status</th>
+<th class="px-6 py-4 font-label-sm text-label-sm uppercase tracking-wider">Device</th>
+<th class="px-6 py-4 font-label-sm text-label-sm uppercase tracking-wider">Action</th>
+<th class="px-6 py-4 font-label-sm text-label-sm uppercase tracking-wider">User/Entity</th>
+<th class="px-6 py-4 font-label-sm text-label-sm uppercase tracking-wider">Message</th>
+<th class="px-6 py-4 font-label-sm text-label-sm uppercase tracking-wider">ID</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<p class="font-body-md text-on-surface">Oct 24, 2024</p>
+<p class="text-label-sm font-label-sm text-outline">10:45:12 AM</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-on-tertiary-container/10 text-on-tertiary-container text-label-sm font-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span> Success
+                                    </span>
+</td>
+<td class="px-6 py-4 font-label-sm text-label-sm text-primary">TERM-MAIN-01</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">fingerprint</span>
+<span class="text-body-md">Scan</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="h-6 w-6 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a young male student in a school uniform, high resolution, soft studio lighting with professional academic photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYigVWIa-uMBqWCTtsIjv6XGim3fDcYf8Ctp6lqDnMlnbFA8VO-AZMyS690yc6dPTLDiaYioGHcaDKjaClIaqaj6wj89tOyi1aD88_hH1PcFAjlJtOImZVsJnDwilf8a0EuauqiglUoWcrs3b3tyGdv_kGri32Q_tY_DAl73h2DXupOjgh0MnAQ0XMzJDzHGNILleEXq9bniUjpWmhaJWHIfzC1M2mVwUVbFAWk2DmgufR0byTtbE05w"/>
+</div>
+<span class="text-body-md font-medium">David Miller</span>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant max-w-xs truncate">Identity verified successfully. Attendance marked.</td>
+<td class="px-6 py-4 font-label-sm text-label-sm text-outline">#LOG-78291</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<p class="font-body-md text-on-surface">Oct 24, 2024</p>
+<p class="text-label-sm font-label-sm text-outline">10:42:05 AM</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-700 text-label-sm font-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Warning
+                                    </span>
+</td>
+<td class="px-6 py-4 font-label-sm text-label-sm text-primary">TERM-HALL-B</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-600 text-[18px]">sync</span>
+<span class="text-body-md">Sync</span>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant italic">System-Automated</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant max-w-xs truncate">Database latency detected during record upload.</td>
+<td class="px-6 py-4 font-label-sm text-label-sm text-outline">#LOG-78288</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<p class="font-body-md text-on-surface">Oct 24, 2024</p>
+<p class="text-label-sm font-label-sm text-outline">10:38:44 AM</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-error/10 text-error text-label-sm font-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> Critical
+                                    </span>
+</td>
+<td class="px-6 py-4 font-label-sm text-label-sm text-primary">TERM-GYM-04</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-error text-[18px]">report</span>
+<span class="text-body-md">Error</span>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant italic">N/A</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant max-w-xs truncate">Hardware sensor failure: Camera module disconnected.</td>
+<td class="px-6 py-4 font-label-sm text-label-sm text-outline">#LOG-78285</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<p class="font-body-md text-on-surface">Oct 24, 2024</p>
+<p class="text-label-sm font-label-sm text-outline">10:35:12 AM</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-on-tertiary-container/10 text-on-tertiary-container text-label-sm font-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span> Success
+                                    </span>
+</td>
+<td class="px-6 py-4 font-label-sm text-label-sm text-primary">TERM-MAIN-01</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">login</span>
+<span class="text-body-md">Login</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="h-6 w-6 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a female teacher wearing professional glasses, high resolution, bright academic office lighting, clean blue and white corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDd9vOswJlCKIdgccmgw1qg728slo4cM3a9tu-VA-RjN2l6WPwl31RsA9mnbUVJwIgiHPujM-SbguVmDQJ-tSCJk1U6F-8yV40vA8S77yt809eIP2jctqEj2NJs4uIRAhhHmLBCR5ccXVKKqfTWlFpEzOeny0juVgh2YS5vowWMzkRKpavhvNM7w0mqK4kAGoEXmd6HVdeuzEk_grSL1Q-DsOjlI2GFxR4Q5Nn_h_Lxcs8vkQNU4XlSWw"/>
+</div>
+<span class="text-body-md font-medium">Ms. Sarah Jenkins</span>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant max-w-xs truncate">Administrative access granted to override terminal mode.</td>
+<td class="px-6 py-4 font-label-sm text-label-sm text-outline">#LOG-78282</td>
+</tr>
+<!-- Row 5 (Shaded Row) -->
+<tr class="bg-surface-container/30 hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<p class="font-body-md text-on-surface">Oct 24, 2024</p>
+<p class="text-label-sm font-label-sm text-outline">10:30:00 AM</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-on-tertiary-container/10 text-on-tertiary-container text-label-sm font-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span> Success
+                                    </span>
+</td>
+<td class="px-6 py-4 font-label-sm text-label-sm text-primary">GLOBAL-SRV</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">cloud_sync</span>
+<span class="text-body-md">Cloud Backup</span>
+</div>
+</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant italic">System-Automated</td>
+<td class="px-6 py-4 text-body-md text-on-surface-variant max-w-xs truncate">Hourly cloud backup completed for 45 terminals.</td>
+<td class="px-6 py-4 font-label-sm text-label-sm text-outline">#LOG-78280</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="px-6 py-4 flex items-center justify-between bg-surface-container-low/50">
+<p class="text-label-sm font-label-sm text-outline">Showing 1 to 25 of 12,842 logs</p>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-lg border border-outline-variant hover:bg-white text-outline disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<div class="flex items-center">
+<button class="px-3.5 py-1.5 rounded-lg bg-secondary text-on-secondary font-bold text-label-sm">1</button>
+<button class="px-3.5 py-1.5 rounded-lg hover:bg-white text-on-surface-variant font-medium text-label-sm">2</button>
+<button class="px-3.5 py-1.5 rounded-lg hover:bg-white text-on-surface-variant font-medium text-label-sm">3</button>
+<span class="px-2 text-outline">...</span>
+<button class="px-3.5 py-1.5 rounded-lg hover:bg-white text-on-surface-variant font-medium text-label-sm">514</button>
+</div>
+<button class="p-2 rounded-lg border border-outline-variant hover:bg-white text-outline">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container-highest md:hidden shadow-lg border-t border-outline-variant">
+<div class="flex justify-around items-center h-16 w-full px-2">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-sm text-label-sm">Students</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">fingerprint</span>
+<span class="font-label-sm text-label-sm">Attendance</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings_remote</span>
+<span class="font-label-sm text-label-sm">Logs</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Footer (Desktop Only) -->
+<footer class="hidden md:block w-full py-gutter bg-surface-container-low border-t border-outline-variant mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center px-container-padding max-w-desktop-max-width mx-auto">
+<p class="font-body-md text-body-md text-on-surface-variant">© 2024 RecordIT Biometric Solutions. All rights reserved.</p>
+<div class="flex gap-6 mt-4 md:mt-0">
+<a class="text-on-surface-variant hover:text-primary transition-colors hover:underline underline-offset-4" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors hover:underline underline-offset-4" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors hover:underline underline-offset-4" href="#">Support</a>
+</div>
+</div>
+</footer>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.transform = 'scale(0.96)';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.transform = '';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = '';
+            });
+        });
+
+        // Simple filter simulation
+        const searchInput = document.querySelector('input[type="text"]');
+        if(searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                console.log('Filtering for:', e.target.value);
+                // Here logic would be added to filter table rows
+            });
+        }
+    </script>
+</body></html>

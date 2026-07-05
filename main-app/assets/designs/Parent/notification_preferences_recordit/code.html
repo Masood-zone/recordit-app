@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Notification Preferences - EduGuard Parent</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#f7f9ff",
+                    "on-primary-fixed-variant": "#2a4386",
+                    "primary": "#00113a",
+                    "on-surface": "#0d1d2a",
+                    "on-background": "#0d1d2a",
+                    "tertiary": "#00171b",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-highest": "#d4e4f6",
+                    "primary-container": "#002366",
+                    "tertiary-fixed": "#9cf0ff",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed-dim": "#00daf3",
+                    "inverse-primary": "#b3c5ff",
+                    "inverse-on-surface": "#e7f2ff",
+                    "background": "#f7f9ff",
+                    "on-tertiary-container": "#009eb0",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "outline-variant": "#c5c6d2",
+                    "surface-container": "#e2efff",
+                    "on-secondary-fixed-variant": "#003baf",
+                    "surface-bright": "#f7f9ff",
+                    "surface-container-high": "#d9eafc",
+                    "on-surface-variant": "#444650",
+                    "surface-tint": "#435b9f",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "on-secondary-fixed": "#00164e",
+                    "on-primary-container": "#758dd5",
+                    "surface-variant": "#d4e4f6",
+                    "secondary-container": "#446ce4",
+                    "surface-dim": "#cbdcee",
+                    "secondary-fixed-dim": "#b6c4ff",
+                    "secondary": "#2552ca",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed": "#00174a",
+                    "primary-fixed": "#dbe1ff",
+                    "inverse-surface": "#223240",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed": "#001f24",
+                    "secondary-fixed": "#dce1ff",
+                    "error-container": "#ffdad6",
+                    "tertiary-container": "#002d33",
+                    "surface-container-low": "#ecf4ff",
+                    "outline": "#757682",
+                    "on-secondary-container": "#fffbff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "tablet-breakpoint": "768px",
+                    "desktop-max-width": "1280px",
+                    "container-padding": "24px",
+                    "gutter": "16px",
+                    "base": "8px",
+                    "mobile-breakpoint": "375px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Manrope"],
+                    "body-md": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "button-text": ["Manrope"],
+                    "label-sm": ["JetBrains Mono"],
+                    "headline-md": ["Manrope"],
+                    "body-lg": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .toggle-checkbox:checked + .toggle-slot {
+            background-color: #2552ca; /* secondary */
+        }
+        .toggle-checkbox:checked + .toggle-slot .toggle-dot {
+            transform: translateX(1.5rem);
+        }
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Custom scrollbar for a cleaner mobile look */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c5c6d2;
+            border-radius: 10px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm">
+<div class="flex justify-between items-center px-container-padding h-16 w-full max-w-tablet-breakpoint mx-auto">
+<div class="flex items-center gap-3">
+<button class="material-symbols-outlined text-on-surface-variant active:scale-95 transition-transform" data-icon="arrow_back">arrow_back</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">EduGuard Parent</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim active:scale-95 duration-150" data-icon="notifications_active">notifications_active</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A close-up professional headshot of a friendly female guardian in a soft-lit modern office. The lighting is high-key and natural, creating a warm, bright atmosphere consistent with a clean educational app interface. The image uses a muted palette of corporate blues and soft whites." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXbNQ8UFEPopPE-s3wFVORLKidT7tfYfJGkL-tXdvDvWBHUD62RDlUGf7w6BGizi8zjEdrjO1Or_xjisG4Nn-qzGHiwZOLl7k9gF8xDgWTVgtehQk33IDf8BeXPMTz4tFlMlz9RkwZ5iPrj0bRsJAtsHGZwZrUnvN0I1lzTOBpI9s1kRtm-mCOPdtaVaktvNkNOxtt5SpsAo7BcNcKKHbv512Pgg9aDrJ-Vy3iOaXN4_xmM8p8zjU0NQ"/>
+</div>
+</div>
+</div>
+</header>
+<main class="pt-20 px-container-padding max-w-tablet-breakpoint mx-auto">
+<!-- Title & Subtitle -->
+<section class="py-6">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Notification Settings</h2>
+<p class="text-on-surface-variant mt-2">Manage how and when you want to receive school alerts for your children.</p>
+</section>
+<!-- Notification Channels -->
+<div class="space-y-4">
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Delivery Channels</h3>
+<!-- Bento style list container -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-[0px_4px_12px_rgba(0,35,102,0.05)]">
+<!-- Channel: Email -->
+<div class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors duration-150 border-b border-outline-variant last:border-b-0">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+</div>
+<div>
+<p class="font-bold text-primary">Email Notifications</p>
+<p class="text-xs text-on-surface-variant">Daily reports and formal notices</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only toggle-checkbox" type="checkbox"/>
+<div class="toggle-slot w-11 h-6 bg-outline-variant rounded-full transition-colors duration-200">
+<div class="toggle-dot absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200"></div>
+</div>
+</label>
+</div>
+<!-- Channel: SMS -->
+<div class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors duration-150 border-b border-outline-variant last:border-b-0">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="sms">sms</span>
+</div>
+<div>
+<p class="font-bold text-primary">SMS Alerts</p>
+<p class="text-xs text-on-surface-variant">Urgent security and safety updates</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only toggle-checkbox" type="checkbox"/>
+<div class="toggle-slot w-11 h-6 bg-outline-variant rounded-full transition-colors duration-200">
+<div class="toggle-dot absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200"></div>
+</div>
+</label>
+</div>
+<!-- Channel: WhatsApp -->
+<div class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors duration-150 border-b border-outline-variant last:border-b-0">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+</div>
+<div>
+<p class="font-bold text-primary">WhatsApp Messages</p>
+<p class="text-xs text-on-surface-variant">Convenient instant messaging</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only toggle-checkbox" type="checkbox"/>
+<div class="toggle-slot w-11 h-6 bg-outline-variant rounded-full transition-colors duration-200">
+<div class="toggle-dot absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200"></div>
+</div>
+</label>
+</div>
+<!-- Channel: In-app -->
+<div class="flex items-center justify-between p-4 hover:bg-surface-container-low transition-colors duration-150 border-b border-outline-variant last:border-b-0">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="app_shortcut">app_shortcut</span>
+</div>
+<div>
+<p class="font-bold text-primary">In-app Badges</p>
+<p class="text-xs text-on-surface-variant">Real-time status within the dashboard</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only toggle-checkbox" type="checkbox"/>
+<div class="toggle-slot w-11 h-6 bg-outline-variant rounded-full transition-colors duration-200">
+<div class="toggle-dot absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200"></div>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Notification Triggers -->
+<div class="mt-8 space-y-4">
+<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Notification Triggers</h3>
+<div class="grid grid-cols-1 gap-4">
+<!-- Trigger: Absent -->
+<div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant flex items-center justify-between group active:scale-[0.98] transition-all">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-error" data-icon="person_off">person_off</span>
+<span class="font-bold text-on-surface">Notify when child is absent</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only toggle-checkbox" type="checkbox"/>
+<div class="toggle-slot w-11 h-6 bg-outline-variant rounded-full transition-colors duration-200">
+<div class="toggle-dot absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200"></div>
+</div>
+</label>
+</div>
+<!-- Trigger: Late -->
+<div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant flex items-center justify-between group active:scale-[0.98] transition-all">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-tertiary-container" data-icon="schedule">schedule</span>
+<span class="font-bold text-on-surface">Notify when child is late</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only toggle-checkbox" type="checkbox"/>
+<div class="toggle-slot w-11 h-6 bg-outline-variant rounded-full transition-colors duration-200">
+<div class="toggle-dot absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200"></div>
+</div>
+</label>
+</div>
+<!-- Trigger: Weekly Summary -->
+<div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant flex items-center justify-between group active:scale-[0.98] transition-all">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary" data-icon="summarize">summarize</span>
+<span class="font-bold text-on-surface">Weekly summary report</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only toggle-checkbox" type="checkbox"/>
+<div class="toggle-slot w-11 h-6 bg-outline-variant rounded-full transition-colors duration-200">
+<div class="toggle-dot absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200"></div>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="mt-10 flex flex-col gap-3">
+<button class="w-full bg-secondary text-on-secondary font-button-text h-12 rounded-xl active:scale-[0.95] transition-all shadow-md">
+                Save Preferences
+            </button>
+<button class="w-full bg-transparent text-outline font-button-text h-12 rounded-xl active:opacity-70 transition-all">
+                Cancel Changes
+            </button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface dark:bg-inverse-surface shadow-[0px_-4px_12px_rgba(0,35,102,0.05)]">
+<div class="flex justify-around items-center h-20 px-4 pb-safe w-full max-w-tablet-breakpoint mx-auto">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="family_restroom">family_restroom</span>
+<span class="font-label-sm text-label-sm">Children</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="font-label-sm text-label-sm">Alerts</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-full px-4 py-1 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</div>
+</nav>
+<script>
+        // Simple interactive feedback for toggles
+        document.querySelectorAll('.toggle-checkbox').forEach(toggle => {
+            toggle.addEventListener('change', (e) => {
+                const parent = e.target.closest('.group') || e.target.closest('.flex');
+                if (e.target.checked) {
+                    parent.style.borderColor = 'var(--secondary)';
+                    setTimeout(() => parent.style.borderColor = '', 1000);
+                }
+            });
+        });
+    </script>
+</body></html>

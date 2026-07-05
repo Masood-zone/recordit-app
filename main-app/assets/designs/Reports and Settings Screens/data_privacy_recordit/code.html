@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Privacy &amp; Security | RecordIT Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#f7f9ff",
+                    "primary-fixed": "#dbe1ff",
+                    "primary": "#00113a",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "tertiary-fixed": "#9cf0ff",
+                    "error-container": "#ffdad6",
+                    "background": "#f7f9ff",
+                    "on-tertiary": "#ffffff",
+                    "on-surface-variant": "#444650",
+                    "on-primary-container": "#758dd5",
+                    "inverse-on-surface": "#e7f2ff",
+                    "inverse-surface": "#223240",
+                    "on-secondary": "#ffffff",
+                    "primary-container": "#002366",
+                    "on-primary-fixed-variant": "#2a4386",
+                    "inverse-primary": "#b3c5ff",
+                    "surface": "#f7f9ff",
+                    "on-tertiary-fixed": "#001f24",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#b6c4ff",
+                    "secondary": "#2552ca",
+                    "surface-dim": "#cbdcee",
+                    "on-surface": "#0d1d2a",
+                    "secondary-container": "#446ce4",
+                    "on-secondary-container": "#fffbff",
+                    "on-primary-fixed": "#00174a",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "surface-container-highest": "#d4e4f6",
+                    "surface-container-high": "#d9eafc",
+                    "surface-variant": "#d4e4f6",
+                    "surface-container-low": "#ecf4ff",
+                    "tertiary-container": "#002d33",
+                    "outline": "#757682",
+                    "on-background": "#0d1d2a",
+                    "tertiary-fixed-dim": "#00daf3",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#00164e",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#dce1ff",
+                    "outline-variant": "#c5c6d2"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "desktop-max-width": "1280px",
+                    "tablet-breakpoint": "768px",
+                    "base": "8px",
+                    "gutter": "16px",
+                    "container-padding": "24px",
+                    "mobile-breakpoint": "375px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Manrope"],
+                    "body-lg": ["Manrope"],
+                    "button-text": ["Manrope"],
+                    "body-md": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "label-sm": ["JetBrains Mono"],
+                    "headline-lg-mobile": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .soft-shadow-hover:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+        .biometric-pulse {
+            box-shadow: 0 0 0 0 rgba(0, 218, 243, 0.7);
+            animation: pulse-cyan 2s infinite;
+        }
+        @keyframes pulse-cyan {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 218, 243, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 218, 243, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 218, 243, 0); }
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c5c6d2; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-surface-bright text-on-surface font-body-md min-h-screen">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 overflow-y-auto bg-primary-container dark:bg-tertiary-container flex flex-col p-gutter space-y-2 hidden md:flex z-50 shadow-md">
+<div class="mb-8 px-2 py-4">
+<h1 class="font-headline-md text-headline-md font-extrabold text-on-primary-container">RecordIT</h1>
+<p class="text-on-primary-container opacity-70 text-sm">Admin Portal</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:text-on-primary-container hover:bg-primary transition-all duration-150 font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:text-on-primary-container hover:bg-primary transition-all duration-150 font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">school</span> Academic Setup
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:text-on-primary-container hover:bg-primary transition-all duration-150 font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">group</span> Students
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:text-on-primary-container hover:bg-primary transition-all duration-150 font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">person_4</span> Teachers
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:text-on-primary-container hover:bg-primary transition-all duration-150 font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">family_restroom</span> Parents
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:text-on-primary-container hover:bg-primary transition-all duration-150 font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">meeting_room</span> Classes
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:text-on-primary-container hover:bg-primary transition-all duration-150 font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">fingerprint</span> Attendance
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim hover:text-on-primary-container hover:bg-primary transition-all duration-150 font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">assessment</span> Reports
+            </a>
+<div class="pt-4 mt-4 border-t border-on-primary-fixed-variant opacity-30"></div>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container font-bold rounded-lg font-button-text text-button-text" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+            </a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-64 min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="w-full sticky top-0 z-40 bg-surface-bright dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm">
+<div class="flex justify-between items-center px-container-padding py-base w-full max-w-desktop-max-width mx-auto">
+<div class="flex items-center gap-4">
+<span class="md:hidden material-symbols-outlined text-primary cursor-pointer">menu</span>
+<h2 class="font-headline-md text-headline-md text-primary">Privacy &amp; Security</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex bg-surface-container-low items-center px-4 py-2 rounded-full border border-outline-variant">
+<span class="material-symbols-outlined text-outline text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48" placeholder="Search settings..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-primary cursor-pointer">help</span>
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Close-up portrait of a professional school administrator with a warm, confident expression. The lighting is bright and even, highlighting a clean academic setting in the background. The style is modern corporate photography with soft focus on the environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuANzrIG4tYDhXARu3sBHObWt7-WA1vGRabckszWsjsq6pBVe5mUCHucOoJA0Xluk9ZHG7acql5QmumHbUKAXEZHW8CJIO9txw3K-w5iLFvClPag4CKHzGx0QU6YlgYhgsX2c-sAagJDPmMxz6yu2BhbXI2pFvcgrVT7Kl2PUwRBJnudGC1RoXNeKPUmmaS71jSgSblENxeOTaabZzQqAnjuvviAWV4E4Yls9w5C_3hcwstTF8QjsO6MHw"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<div class="p-container-padding max-w-desktop-max-width mx-auto w-full flex-1">
+<!-- Breadcrumbs -->
+<div class="flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm mb-6">
+<span>SETTINGS</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-primary font-bold">DATA PRIVACY &amp; SECURITY</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Primary Settings -->
+<div class="lg:col-span-8 space-y-gutter">
+<!-- Biometric Policy & Consent -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 soft-shadow">
+<div class="flex items-start justify-between mb-6">
+<div>
+<h3 class="font-headline-md text-headline-md text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-on-tertiary-container">fingerprint</span>
+                                    Biometric Data Compliance
+                                </h3>
+<p class="text-on-surface-variant mt-1">Manage institutional requirements for biometric registration and student consent.</p>
+</div>
+<div class="bg-on-tertiary-container/10 px-3 py-1 rounded-full text-on-tertiary-container font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+                                FERPA COMPLIANT
+                            </div>
+</div>
+<div class="space-y-6">
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg border border-outline-variant/30">
+<div class="max-w-[70%]">
+<p class="font-button-text text-button-text text-primary">Mandatory Parental Consent</p>
+<p class="text-sm text-on-surface-variant mt-1">Require a digital or signed physical waiver before biometric enrollment is activated for students under 18.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-outline-variant rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg border border-outline-variant/30">
+<div class="max-w-[70%]">
+<p class="font-button-text text-button-text text-primary">Biometric Encryption Mode</p>
+<p class="text-sm text-on-surface-variant mt-1">Only store cryptographic hashes of biometric signatures. Original scan images are never stored.</p>
+</div>
+<span class="bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm px-3 py-1 rounded-lg">AES-256 ACTIVE</span>
+</div>
+</div>
+<div class="mt-8 p-4 bg-primary-container/5 rounded-lg border-l-4 border-on-tertiary-container">
+<p class="font-button-text text-button-text text-on-tertiary-container flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">info</span> Legal Notice
+                            </p>
+<p class="text-sm text-on-surface-variant mt-1 leading-relaxed">
+                                Under BIPA and GDPR regulations, biometric data must be purged upon student withdrawal or graduation. RecordIT automatically schedules these deletions unless manual override is applied.
+                            </p>
+</div>
+</section>
+<!-- Data Retention Bento -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 soft-shadow">
+<h3 class="font-button-text text-button-text text-primary mb-4">Retention Period</h3>
+<div class="space-y-3">
+<label class="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-container border border-transparent cursor-pointer transition-colors">
+<input class="text-secondary focus:ring-secondary" name="retention" type="radio"/>
+<div>
+<p class="font-bold text-sm">1 Year</p>
+<p class="text-xs text-on-surface-variant">Active academic session + 3 months</p>
+</div>
+</label>
+<label class="flex items-center gap-3 p-3 rounded-lg bg-secondary-container/10 border border-secondary/20 cursor-pointer transition-colors">
+<input checked="" class="text-secondary focus:ring-secondary" name="retention" type="radio"/>
+<div>
+<p class="font-bold text-sm text-secondary">5 Years</p>
+<p class="text-xs text-on-surface-variant">Full graduation cycle (Recommended)</p>
+</div>
+</label>
+<label class="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-container border border-transparent cursor-pointer transition-colors">
+<input class="text-secondary focus:ring-secondary" name="retention" type="radio"/>
+<div>
+<p class="font-bold text-sm">10 Years</p>
+<p class="text-xs text-on-surface-variant">Extended institutional archiving</p>
+</div>
+</label>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 soft-shadow flex flex-col justify-between">
+<div>
+<h3 class="font-button-text text-button-text text-primary mb-2">Automated Purge</h3>
+<p class="text-xs text-on-surface-variant mb-4">Frequency of database optimization and inactive record deletion.</p>
+</div>
+<div class="flex items-end justify-between">
+<div class="text-center">
+<p class="text-primary font-bold text-2xl">Quarterly</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">SCHEDULE</p>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg text-sm font-button-text hover:bg-primary-container transition-colors">
+                                    Edit Schedule
+                                </button>
+</div>
+</div>
+</div>
+<!-- Access Control Summary -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 soft-shadow">
+<h3 class="font-button-text text-button-text text-primary mb-6">Administrative Access Control</h3>
+<div class="overflow-hidden">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm">
+<tr>
+<th class="px-4 py-3 border-b border-outline-variant">Role</th>
+<th class="px-4 py-3 border-b border-outline-variant">Biometric Access</th>
+<th class="px-4 py-3 border-b border-outline-variant">Data Export</th>
+<th class="px-4 py-3 border-b border-outline-variant text-right">Action</th>
+</tr>
+</thead>
+<tbody class="text-sm">
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-4 py-4 border-b border-outline-variant/30 font-bold">Super Admin</td>
+<td class="px-4 py-4 border-b border-outline-variant/30 text-on-tertiary-container">Full Access</td>
+<td class="px-4 py-4 border-b border-outline-variant/30 text-on-tertiary-container">Enabled</td>
+<td class="px-4 py-4 border-b border-outline-variant/30 text-right"><span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">edit</span></td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-4 py-4 border-b border-outline-variant/30 font-bold">Registrar</td>
+<td class="px-4 py-4 border-b border-outline-variant/30 text-on-surface-variant">View Only</td>
+<td class="px-4 py-4 border-b border-outline-variant/30 text-on-tertiary-container">Enabled</td>
+<td class="px-4 py-4 border-b border-outline-variant/30 text-right"><span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">edit</span></td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="px-4 py-4 border-b border-outline-variant/30 font-bold">Teacher</td>
+<td class="px-4 py-4 border-b border-outline-variant/30 text-error">None</td>
+<td class="px-4 py-4 border-b border-outline-variant/30 text-error">Disabled</td>
+<td class="px-4 py-4 border-b border-outline-variant/30 text-right"><span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">edit</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<!-- Right Column: Secondary Actions & Status -->
+<div class="lg:col-span-4 space-y-gutter">
+<!-- System Health / Security Status -->
+<div class="bg-primary-container text-on-primary-container rounded-xl p-6 shadow-md relative overflow-hidden">
+<div class="relative z-10">
+<h4 class="font-button-text text-button-text text-primary-fixed mb-4">Security Status</h4>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-16 h-16 rounded-full bg-on-tertiary-container/20 flex items-center justify-center biometric-pulse">
+<span class="material-symbols-outlined text-on-tertiary-container text-3xl" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<div>
+<p class="font-bold text-xl">High Security</p>
+<p class="text-xs text-primary-fixed-dim">All encryption protocols active</p>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs">
+<span>Database Integrity</span>
+<span>99.9%</span>
+</div>
+<div class="w-full bg-primary-fixed/20 h-1.5 rounded-full overflow-hidden">
+<div class="bg-on-tertiary-container h-full w-[99.9%]"></div>
+</div>
+</div>
+</div>
+<div class="absolute -right-8 -bottom-8 opacity-10">
+<span class="material-symbols-outlined text-9xl">verified_user</span>
+</div>
+</div>
+<!-- Export Actions -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 soft-shadow">
+<h4 class="font-button-text text-button-text text-primary mb-4">Data Governance</h4>
+<div class="space-y-4">
+<button class="w-full flex items-center justify-between p-3 rounded-lg border border-outline-variant hover:bg-surface-container transition-all group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">download</span>
+<span class="text-sm font-medium">Export Student Data</span>
+</div>
+<span class="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-3 rounded-lg border border-outline-variant hover:bg-surface-container transition-all group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">history</span>
+<span class="text-sm font-medium">Access Log Report</span>
+</div>
+<span class="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Danger Zone -->
+<div class="bg-error-container/20 rounded-xl border border-error/20 p-6 soft-shadow">
+<h4 class="font-button-text text-button-text text-error mb-2">Institutional Danger Zone</h4>
+<p class="text-xs text-on-surface-variant mb-6 leading-relaxed">
+                            These actions are irreversible. Executing them will permanently remove institutional records or deactivate the RecordIT instance.
+                        </p>
+<div class="space-y-3">
+<button class="w-full py-3 px-4 border border-error text-error rounded-lg text-sm font-button-text hover:bg-error hover:text-on-error transition-all">
+                                Deactivate Account
+                            </button>
+<button class="w-full py-3 px-4 bg-error text-on-error rounded-lg text-sm font-button-text hover:opacity-90 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">delete_forever</span>
+                                Wipe All Academic Data
+                            </button>
+</div>
+</div>
+<!-- Illustration for branding context -->
+<div class="rounded-xl overflow-hidden h-40 relative group">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist high-tech server room background with soft blue lighting and glass reflections. The mood is secure and serene, conveying a sense of top-tier academic technology and data safety. Minimalist vector elements of data shields are subtly integrated into the environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9h2nvoSDphlWUNa-N5rkKu6jTXJwqriO01VmEZKFAjNBxgt91z7auiwFBlZBiTPgOv9BDcNcAcnyN12hGYs83Zzh_7j4fi4Jz3UlCdVBZqO2AHJEACi2tdQoukeIUIVfKfyOA14751MTv9xlEemoEuzA8ps7Ft6iAoCuTnupgLON89GwEERWoWLzz-zlp6RhEHLErzVkqHLyqm-_568QjUVYZN2RWAK_KaZHhung86UIMiaHEL9cTrA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent flex flex-col justify-end p-4">
+<p class="text-white font-bold text-sm">RecordIT Security Cloud</p>
+<p class="text-white/70 text-xs">Certified Academic Infrastructure</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="w-full py-gutter bg-surface-container-low dark:bg-surface-dim border-t border-outline-variant mt-12">
+<div class="flex flex-col md:flex-row justify-between items-center px-container-padding max-w-desktop-max-width mx-auto gap-4">
+<div class="flex flex-col items-center md:items-start">
+<p class="font-button-text text-button-text text-primary mb-1">RecordIT</p>
+<p class="font-body-md text-body-md text-on-surface-variant text-xs">© 2024 RecordIT Biometric Solutions. All rights reserved.</p>
+</div>
+<div class="flex gap-6">
+<a class="text-on-surface-variant font-body-md text-body-md text-sm hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant font-body-md text-body-md text-sm hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-on-surface-variant font-body-md text-body-md text-sm hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</div>
+</footer>
+<!-- Mobile Bottom Nav -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl md:hidden bg-surface-container-highest dark:bg-surface-dim border-t border-outline-variant shadow-lg flex justify-around items-center h-16 px-2">
+<div class="flex flex-col items-center justify-center text-on-surface-variant scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-sm text-label-sm">Students</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">fingerprint</span>
+<span class="font-label-sm text-label-sm">Attendance</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-label-sm text-label-sm">Reports</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</div>
+</nav>
+</main>
+<script>
+        // Micro-interactions and toast simulation
+        document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
+            input.addEventListener('change', () => {
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 glass-panel border border-outline-variant px-6 py-3 rounded-full shadow-lg z-[100] transition-all duration-300 transform translate-y-10 opacity-0 flex items-center gap-2';
+                toast.innerHTML = `<span class="material-symbols-outlined text-on-tertiary-container text-sm">check_circle</span> <span class="text-sm font-medium">Setting updated successfully</span>`;
+                document.body.appendChild(toast);
+                
+                requestAnimationFrame(() => {
+                    toast.classList.remove('translate-y-10', 'opacity-0');
+                });
+
+                setTimeout(() => {
+                    toast.classList.add('translate-y-10', 'opacity-0');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            });
+        });
+    </script>
+</body></html>

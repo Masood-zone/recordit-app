@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EduGuard Parent - My Children</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#f7f9ff",
+                    "on-primary-fixed-variant": "#2a4386",
+                    "primary": "#00113a",
+                    "on-surface": "#0d1d2a",
+                    "on-background": "#0d1d2a",
+                    "tertiary": "#00171b",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-highest": "#d4e4f6",
+                    "primary-container": "#002366",
+                    "tertiary-fixed": "#9cf0ff",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed-dim": "#00daf3",
+                    "inverse-primary": "#b3c5ff",
+                    "inverse-on-surface": "#e7f2ff",
+                    "background": "#f7f9ff",
+                    "on-tertiary-container": "#009eb0",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "outline-variant": "#c5c6d2",
+                    "surface-container": "#e2efff",
+                    "on-secondary-fixed-variant": "#003baf",
+                    "surface-bright": "#f7f9ff",
+                    "surface-container-high": "#d9eafc",
+                    "on-surface-variant": "#444650",
+                    "surface-tint": "#435b9f",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "on-secondary-fixed": "#00164e",
+                    "on-primary-container": "#758dd5",
+                    "surface-variant": "#d4e4f6",
+                    "secondary-container": "#446ce4",
+                    "surface-dim": "#cbdcee",
+                    "secondary-fixed-dim": "#b6c4ff",
+                    "secondary": "#2552ca",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed": "#00174a",
+                    "primary-fixed": "#dbe1ff",
+                    "inverse-surface": "#223240",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed": "#001f24",
+                    "secondary-fixed": "#dce1ff",
+                    "error-container": "#ffdad6",
+                    "tertiary-container": "#002d33",
+                    "surface-container-low": "#ecf4ff",
+                    "outline": "#757682",
+                    "on-secondary-container": "#fffbff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "tablet-breakpoint": "768px",
+                    "desktop-max-width": "1280px",
+                    "container-padding": "24px",
+                    "gutter": "16px",
+                    "base": "8px",
+                    "mobile-breakpoint": "375px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Manrope"],
+                    "body-md": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "button-text": ["Manrope"],
+                    "label-sm": ["JetBrains Mono"],
+                    "headline-md": ["Manrope"],
+                    "body-lg": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        body {
+            background-color: #f7f9ff;
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface mb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-surface-dim shadow-sm border-b border-outline-variant dark:border-outline">
+<div class="flex justify-between items-center px-container-padding h-16 w-full max-w-tablet-breakpoint mx-auto">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a female parent in her late 30s with a warm and responsible expression. She is set against a clean, blurred educational office background with soft daylight. The aesthetic is modern and high-end, utilizing a color palette of soft blues and white, representing security and parental care in a school environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUv2WqeREX1ZjGbzU26lNwB3fb0XUe05cPdGSJKYec9HpEz8vPUXmGoGRCc7jQfACIcelfGGoAfQ2EmHojhKwTJ55HzejvxxgJn9OgvaamtzV_f8O-OeYARCC78yZIyh8tnavXJDtBZ1sK6BM3_U6I5qIUlzUt4HXX7lT68K4mJ7NdlNlWETM7MN4q1z1vUtVdPt0FuAvxi5sRr5nUfDGO2QWrR9_MoVOkszY_ZbOj8IzBb0yf9c7r6w"/>
+</div>
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">EduGuard Parent</span>
+</div>
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low dark:hover:bg-surface-container-high transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim">notifications_active</span>
+</button>
+</div>
+</header>
+<!-- Content Canvas -->
+<main class="pt-24 px-4 max-w-tablet-breakpoint mx-auto">
+<div class="mb-8">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-2">My Children</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Real-time attendance and safety monitoring for your children.</p>
+</div>
+<!-- Children List -->
+<div class="space-y-6">
+<!-- Child Card 1: Marcus -->
+<div class="relative group rounded-xl bg-surface-container-lowest border border-outline-variant p-5 shadow-[0px_4px_12px_rgba(0,35,102,0.05)] hover:shadow-[0px_8px_24px_rgba(0,35,102,0.12)] transition-all duration-300">
+<div class="flex gap-4 items-start mb-4">
+<div class="relative">
+<div class="w-20 h-20 rounded-xl overflow-hidden border-2 border-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="A teenage boy in a school uniform, Marcus, looking confident and academic. The lighting is crisp and bright, highlighting a professional school portrait style. The background is a subtle, out-of-focus high school hallway with cool blue tones, matching the secure and institutional EduGuard design system aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8oJ2_tVSn6IoshjQ6_JE6TY2fA0u4OLZye2yEhM0355b6ohoI_Gy6Zig2AP0e02yf-DzBuFT2LYkR0NgtgpY6yErxWGUQPsrNiJlhAUpzt6BJZxTHKOKj1AW-HCk4vqbqVuxPL637HEpUK33U0XNMzBheBZps02qGMbCFQgu3ARLM4zk4RUHX3OBv0DM9GGf4Ssr_n2dTtKZXT0fwY1Wz4xUmh0kEF4w3kAJ_Pjmy_aR5jOjuKnyRiw"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white"></div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md text-primary leading-tight">Marcus Holloway</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Grade 11 • Oakwood Academy</p>
+</div>
+<div class="bg-surface-container px-3 py-1 rounded-full">
+<span class="font-label-sm text-label-sm text-primary font-bold">94%</span>
+</div>
+</div>
+<div class="mt-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-[#009eb0]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Latest: <span class="text-tertiary font-semibold">Present</span></span>
+</div>
+</div>
+</div>
+<div class="h-[1px] bg-outline-variant w-full my-4"></div>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center border-2 border-surface-container-lowest">
+<span class="material-symbols-outlined text-[16px] text-on-secondary-container">shield</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center border-2 border-surface-container-lowest">
+<span class="material-symbols-outlined text-[16px] text-primary">history</span>
+</div>
+</div>
+<button class="bg-secondary-container text-on-secondary-container px-6 py-2.5 rounded-lg font-button-text text-button-text active:scale-95 transition-transform shadow-sm flex items-center gap-2">
+                        View Attendance
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Child Card 2: Sarah -->
+<div class="relative group rounded-xl bg-surface-container-lowest border border-outline-variant p-5 shadow-[0px_4px_12px_rgba(0,35,102,0.05)] hover:shadow-[0px_8px_24px_rgba(0,35,102,0.12)] transition-all duration-300">
+<div class="flex gap-4 items-start mb-4">
+<div class="relative">
+<div class="w-20 h-20 rounded-xl overflow-hidden border-2 border-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="A young middle-school girl, Sarah, with a friendly and studious look. She is wearing a neat school blazer. The photography style is high-end studio lighting with a soft gradient background in light slate gray and powder blue. The image represents safety and education excellence within a modern digital monitoring platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-EKFfSNNY-aBEhBo-GEdHPuQn4BPovwd9ZPHkP81fsnhNnFHiyZBhQgVbNF_5Yb0-U2Mk-7aIuTBBaQ8rV2ZuSL2edLlBpdjqgBXxLmpIQjoZW76ieJn8ECwcPYFnWfpQgfwP1ExTJNwg1TDbRG9POPKugEd_YR_L099LWJPS8hoRBJFCPoPxaXxN5DNeWmTAGb46WN52i3No_-x0VJXU-4C8LJMgZEbrY1F_ceoQXMs1nXZ7PX-DhA"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white"></div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md text-primary leading-tight">Sarah Holloway</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Grade 8 • Oakwood Academy</p>
+</div>
+<div class="bg-surface-container px-3 py-1 rounded-full">
+<span class="font-label-sm text-label-sm text-primary font-bold">98%</span>
+</div>
+</div>
+<div class="mt-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-[#009eb0]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Latest: <span class="text-tertiary font-semibold">Present</span></span>
+</div>
+</div>
+</div>
+<div class="h-[1px] bg-outline-variant w-full my-4"></div>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center border-2 border-surface-container-lowest">
+<span class="material-symbols-outlined text-[16px] text-on-secondary-container">shield</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center border-2 border-surface-container-lowest">
+<span class="material-symbols-outlined text-[16px] text-primary">history</span>
+</div>
+</div>
+<button class="bg-secondary-container text-on-secondary-container px-6 py-2.5 rounded-lg font-button-text text-button-text active:scale-95 transition-transform shadow-sm flex items-center gap-2">
+                        View Attendance
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Quick Stats / Bento Element -->
+<div class="grid grid-cols-2 gap-4 mt-8">
+<div class="bg-primary-container p-4 rounded-xl text-on-primary-container">
+<span class="material-symbols-outlined text-on-primary-container/70 mb-2">event_available</span>
+<p class="font-label-sm text-label-sm opacity-80">This Week</p>
+<p class="font-headline-md text-headline-md font-bold">100%</p>
+</div>
+<div class="bg-surface-container-high p-4 rounded-xl text-primary">
+<span class="material-symbols-outlined text-primary/70 mb-2">notifications_active</span>
+<p class="font-label-sm text-label-sm opacity-80">Alerts</p>
+<p class="font-headline-md text-headline-md font-bold">0</p>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface dark:bg-inverse-surface shadow-[0px_-4px_12px_rgba(0,35,102,0.05)] shadow-lg">
+<div class="flex justify-around items-center h-20 px-4 pb-safe w-full max-w-tablet-breakpoint mx-auto">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<!-- Children (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-full px-4 py-1 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">family_restroom</span>
+<span class="font-label-sm text-label-sm mt-0.5">Children</span>
+</a>
+<!-- Alerts -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span class="font-label-sm text-label-sm mt-1">Alerts</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm mt-1">Profile</span>
+</a>
+</div>
+</nav>
+<script>
+        // Micro-interaction for status indicators
+        document.querySelectorAll('.bg-green-500').forEach(dot => {
+            setInterval(() => {
+                dot.style.opacity = dot.style.opacity === '0.5' ? '1' : '0.5';
+            }, 1500);
+            dot.style.transition = 'opacity 1s ease-in-out';
+        });
+
+        // Pull-to-refresh logic (visual only)
+        let startY = 0;
+        document.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].pageY;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            const endY = e.changedTouches[0].pageY;
+            if (endY - startY > 150 && window.scrollY === 0) {
+                // Visual feedback for refresh
+                const toast = document.createElement('div');
+                toast.className = 'fixed top-20 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-4 py-2 rounded-full font-label-sm text-label-sm shadow-xl z-[60] transition-opacity duration-300';
+                toast.innerText = 'Updating Records...';
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 300);
+                }, 2000);
+            }
+        });
+    </script>
+</body></html>

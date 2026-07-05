@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EduGuard Parent - Notifications</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#f7f9ff",
+                    "on-primary-fixed-variant": "#2a4386",
+                    "primary": "#00113a",
+                    "on-surface": "#0d1d2a",
+                    "on-background": "#0d1d2a",
+                    "tertiary": "#00171b",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-highest": "#d4e4f6",
+                    "primary-container": "#002366",
+                    "tertiary-fixed": "#9cf0ff",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed-dim": "#00daf3",
+                    "inverse-primary": "#b3c5ff",
+                    "inverse-on-surface": "#e7f2ff",
+                    "background": "#f7f9ff",
+                    "on-tertiary-container": "#009eb0",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "outline-variant": "#c5c6d2",
+                    "surface-container": "#e2efff",
+                    "on-secondary-fixed-variant": "#003baf",
+                    "surface-bright": "#f7f9ff",
+                    "surface-container-high": "#d9eafc",
+                    "on-surface-variant": "#444650",
+                    "surface-tint": "#435b9f",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "on-secondary-fixed": "#00164e",
+                    "on-primary-container": "#758dd5",
+                    "surface-variant": "#d4e4f6",
+                    "secondary-container": "#446ce4",
+                    "surface-dim": "#cbdcee",
+                    "secondary-fixed-dim": "#b6c4ff",
+                    "secondary": "#2552ca",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed": "#00174a",
+                    "primary-fixed": "#dbe1ff",
+                    "inverse-surface": "#223240",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed": "#001f24",
+                    "secondary-fixed": "#dce1ff",
+                    "error-container": "#ffdad6",
+                    "tertiary-container": "#002d33",
+                    "surface-container-low": "#ecf4ff",
+                    "outline": "#757682",
+                    "on-secondary-container": "#fffbff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "tablet-breakpoint": "768px",
+                    "desktop-max-width": "1280px",
+                    "container-padding": "24px",
+                    "gutter": "16px",
+                    "base": "8px",
+                    "mobile-breakpoint": "375px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Manrope"],
+                    "body-md": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "button-text": ["Manrope"],
+                    "label-sm": ["JetBrains Mono"],
+                    "headline-md": ["Manrope"],
+                    "body-lg": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .notification-swipe-action {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pulse-unread {
+            animation: pulse-ring 2s infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.9); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 0.3; }
+            100% { transform: scale(0.9); opacity: 0.7; }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen">
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant shadow-sm h-16 flex justify-between items-center px-container-padding max-w-tablet-breakpoint mx-auto left-0 right-0">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img class="w-full h-full object-cover" data-alt="A close-up portrait of a professional guardian mother in her late 30s with a kind expression. She has warm lighting on her face and is wearing a smart-casual blazer. The background is a soft, blurred domestic library with cool blue tones, matching a secure and modern educational app interface style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMkW_mpvITb_jTq8NpAZBAPfSNeI6OjtBIdb9N2qBlJ_4EqFKlrHsMWhvIATuxUEJE4hUeQ9ktmaMxcuVLY-8AEsf95I4RIfxrYLpuYC-JSy99Od9Mf0k73MOk_p08KiJbziTErHnlXka_K2RM5RhRpV1XV6JaLPo7DwOm35YLvRh3DKzP9ebboi2sNFhBEldncjO6UvE-sYvX35IoXAWoHV5orBeImYyZt5Pm1zHgRvhG6EOyGpBHHQ"/>
+</div>
+<span class="font-headline-md text-headline-md font-extrabold text-primary">EduGuard Parent</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors active:scale-95 duration-150 relative">
+<span class="material-symbols-outlined text-primary">notifications_active</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+</header>
+<!-- Main Content Area -->
+<main class="pt-20 pb-24 px-4 max-w-tablet-breakpoint mx-auto">
+<!-- Page Title & Quick Filter -->
+<div class="flex justify-between items-end mb-6">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Stay Updated</p>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Alerts Center</h1>
+</div>
+<button class="flex items-center gap-1 font-button-text text-button-text text-secondary hover:underline">
+<span class="material-symbols-outlined text-[18px]">done_all</span>
+                Mark all read
+            </button>
+</div>
+<!-- Notifications List -->
+<div class="space-y-4">
+<!-- Alert 1: Absence (Unread) -->
+<div class="relative group overflow-hidden rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,35,102,0.05)] bg-surface-container-lowest">
+<div class="p-4 flex gap-4 items-start notification-swipe-action">
+<div class="relative flex-shrink-0">
+<div class="w-12 h-12 rounded-xl bg-error-container flex items-center justify-center">
+<span class="material-symbols-outlined text-error" data-weight="fill" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div class="absolute -top-1 -right-1 w-3 h-3 bg-error rounded-full border-2 border-surface pulse-unread"></div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="font-button-text text-button-text text-error uppercase tracking-tighter">Absence Alert</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2h ago</span>
+</div>
+<h3 class="font-body-md text-body-md font-bold text-on-surface">Marcus missed Morning Roll Call (Oct 21)</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Marcus was not recorded during the 8:30 AM biometric verification check at the Main Entrance.</p>
+<div class="mt-4 flex gap-2">
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-button-text text-button-text active:scale-95 transition-transform">Mark as Read</button>
+<button class="border border-outline text-on-surface-variant px-4 py-2 rounded-lg font-button-text text-button-text hover:bg-surface-container-low transition-colors">Delete</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Alert 2: Summary (Read) -->
+<div class="relative group overflow-hidden rounded-xl border border-outline-variant bg-surface-container-low/50">
+<div class="p-4 flex gap-4 items-start opacity-75">
+<div class="w-12 h-12 rounded-xl bg-secondary-container flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-white">analytics</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="font-button-text text-button-text text-on-secondary-fixed-variant uppercase tracking-tighter">Weekly Summary</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Yesterday</span>
+</div>
+<h3 class="font-body-md text-body-md font-semibold text-on-surface">Attendance remained at 94%</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Consistency report for the week of Oct 14-20. Marcus has maintained high attendance standards.</p>
+<div class="mt-3 flex gap-4">
+<button class="flex items-center gap-1 font-button-text text-button-text text-secondary active:opacity-70">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+                                View Report
+                             </button>
+<button class="flex items-center gap-1 font-button-text text-button-text text-on-surface-variant active:opacity-70">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+                                Remove
+                             </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Alert 3: Announcement (Unread) -->
+<div class="relative group overflow-hidden rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,35,102,0.05)] bg-surface-container-lowest">
+<div class="p-4 flex gap-4 items-start">
+<div class="relative flex-shrink-0">
+<div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-on-tertiary-fixed-variant">campaign</span>
+</div>
+<div class="absolute -top-1 -right-1 w-3 h-3 bg-error rounded-full border-2 border-surface pulse-unread"></div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="font-button-text text-button-text text-on-tertiary-fixed-variant uppercase tracking-tighter">School Announcement</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2d ago</span>
+</div>
+<h3 class="font-body-md text-body-md font-bold text-on-surface">Parents evening on Friday</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Book your slots now for the upcoming academic review evening scheduled for Friday, Oct 25.</p>
+<div class="mt-4 flex gap-2">
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-button-text text-button-text active:scale-95 transition-transform">Mark as Read</button>
+<button class="border border-outline text-on-surface-variant px-4 py-2 rounded-lg font-button-text text-button-text hover:bg-surface-container-low transition-colors">Delete</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Information Card -->
+<div class="mt-8 p-6 rounded-xl bg-surface-container-high border border-outline-variant relative overflow-hidden">
+<div class="relative z-10">
+<h4 class="font-headline-md text-headline-md text-primary mb-2">Notification Preferences</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">Would you like to customize how you receive these alerts?</p>
+<button class="bg-secondary text-white px-6 py-3 rounded-full font-button-text text-button-text shadow-lg active:scale-90 transition-transform">Configure Settings</button>
+</div>
+<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-[120px] text-primary/5 select-none">settings_suggest</span>
+</div>
+</main>
+<!-- BottomNavBar Shell -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface rounded-t-xl shadow-lg border-t border-outline-variant/30 h-20 px-4 pb-safe flex justify-around items-center max-w-tablet-breakpoint mx-auto left-0 right-0">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">family_restroom</span>
+<span class="font-label-sm text-label-sm mt-1">Children</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">notifications</span>
+<span class="font-label-sm text-label-sm mt-0.5">Alerts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions for deletion simulation
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.innerText === 'Delete' || btn.innerText === 'Remove') {
+                btn.addEventListener('click', function() {
+                    const card = this.closest('.rounded-xl');
+                    card.style.transform = 'translateX(100%)';
+                    card.style.opacity = '0';
+                    card.style.transition = 'all 0.5s ease-in-out';
+                    setTimeout(() => {
+                        card.remove();
+                    }, 500);
+                });
+            }
+            if (btn.innerText === 'Mark as Read') {
+                btn.addEventListener('click', function() {
+                    const card = this.closest('.rounded-xl');
+                    const unreadDot = card.querySelector('.pulse-unread');
+                    if (unreadDot) unreadDot.remove();
+                    card.classList.remove('bg-surface-container-lowest');
+                    card.classList.add('bg-surface-container-low/50');
+                    card.querySelector('.p-4').classList.add('opacity-75');
+                    this.remove();
+                });
+            }
+        });
+
+        // "Mark all read" Logic
+        document.querySelector('button.text-secondary').addEventListener('click', function() {
+            document.querySelectorAll('.pulse-unread').forEach(dot => dot.remove());
+            document.querySelectorAll('.bg-surface-container-lowest').forEach(card => {
+                card.classList.remove('bg-surface-container-lowest');
+                card.classList.add('bg-surface-container-low/50');
+                card.querySelector('.p-4').classList.add('opacity-75');
+                const markReadBtn = card.querySelector('button:first-of-type');
+                if (markReadBtn && markReadBtn.innerText === 'Mark as Read') markReadBtn.remove();
+            });
+        });
+    </script>
+</body></html>

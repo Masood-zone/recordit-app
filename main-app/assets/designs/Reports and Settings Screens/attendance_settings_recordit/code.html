@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Attendance Session Settings | RecordIT</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#f7f9ff",
+                    "primary-fixed": "#dbe1ff",
+                    "primary": "#00113a",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "tertiary-fixed": "#9cf0ff",
+                    "error-container": "#ffdad6",
+                    "background": "#f7f9ff",
+                    "on-tertiary": "#ffffff",
+                    "on-surface-variant": "#444650",
+                    "on-primary-container": "#758dd5",
+                    "inverse-on-surface": "#e7f2ff",
+                    "inverse-surface": "#223240",
+                    "on-secondary": "#ffffff",
+                    "primary-container": "#002366",
+                    "on-primary-fixed-variant": "#2a4386",
+                    "inverse-primary": "#b3c5ff",
+                    "surface": "#f7f9ff",
+                    "on-tertiary-fixed": "#001f24",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#b6c4ff",
+                    "secondary": "#2552ca",
+                    "surface-dim": "#cbdcee",
+                    "on-surface": "#0d1d2a",
+                    "secondary-container": "#446ce4",
+                    "on-secondary-container": "#fffbff",
+                    "on-primary-fixed": "#00174a",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "surface-container-highest": "#d4e4f6",
+                    "surface-container-high": "#d9eafc",
+                    "surface-variant": "#d4e4f6",
+                    "surface-container-low": "#ecf4ff",
+                    "tertiary-container": "#002d33",
+                    "outline": "#757682",
+                    "on-background": "#0d1d2a",
+                    "tertiary-fixed-dim": "#00daf3",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#00164e",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#dce1ff",
+                    "outline-variant": "#c5c6d2"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "desktop-max-width": "1280px",
+                    "tablet-breakpoint": "768px",
+                    "base": "8px",
+                    "gutter": "16px",
+                    "container-padding": "24px",
+                    "mobile-breakpoint": "375px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Manrope"],
+                    "body-lg": ["Manrope"],
+                    "button-text": ["Manrope"],
+                    "body-md": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "label-sm": ["JetBrains Mono"],
+                    "headline-lg-mobile": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #f7f9ff;
+            color: #0d1d2a;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid #E2E8F0;
+        }
+        .custom-shadow {
+            box-shadow: 0px 4px 12px rgba(0, 35, 102, 0.05);
+        }
+        .custom-shadow-hover:hover {
+            box-shadow: 0px 8px 24px rgba(0, 35, 102, 0.12);
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #d4e4f6;
+            border-radius: 3px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #002366;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -7px;
+            box-shadow: 0 0 4px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md">
+<!-- Top Navigation Bar -->
+<header class="w-full sticky top-0 z-50 bg-surface-bright border-b border-outline-variant shadow-sm">
+<div class="flex justify-between items-center px-container-padding py-base w-full max-w-desktop-max-width mx-auto">
+<div class="flex items-center gap-4">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">RecordIT</span>
+<div class="hidden md:flex gap-6 ml-8">
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 px-3 py-1 rounded cursor-pointer font-body-md text-body-md" href="#">Dashboard</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 px-3 py-1 rounded cursor-pointer font-body-md text-body-md" href="#">Attendance</a>
+<a class="text-secondary font-bold border-b-2 border-secondary px-3 py-1 cursor-pointer font-body-md text-body-md" href="#">Settings</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer p-2 rounded-full hover:bg-surface-container-high">notifications</span>
+<span class="material-symbols-outlined text-primary cursor-pointer p-2 rounded-full hover:bg-surface-container-high">help</span>
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A clean, professional headshot of a school administrator in a bright, modern office setting. The person has a friendly expression and is wearing a crisp white shirt and navy blazer. The lighting is soft and high-key, reflecting a corporate academic environment with blue and white tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC01uzJhU03SGSqAVxuxhnzhXLykRb2CawbL1kvFzIPY_13DUy2SXS44KRn57Vo3ofE6I0RGh3sxU790XKfO68iSAxnTaCjsqMHYLjrVt3UA4rgSRa-_OvD6dkdQLIxNAZoHbme_v4Txur2kpWu3nI3NYU6dWK3xKnfIR1Gar9xIHRJmM1_eDVo_v4OAdKlHNu4LcV3QRPP7wQ8LvRX43l66nU6pmBw1Y1cgfH74CK-fmxJXs2mlH0h6Q"/>
+</div>
+</div>
+</div>
+</header>
+<div class="flex min-h-screen">
+<!-- Side Navigation Bar -->
+<aside class="h-screen w-64 fixed left-0 top-0 overflow-y-auto bg-primary-container flex flex-col p-gutter space-y-2 hidden md:flex z-40 pt-20">
+<div class="mb-6 px-2">
+<h2 class="font-headline-md text-headline-md font-extrabold text-on-primary-container">Admin Portal</h2>
+<p class="text-primary-fixed-dim text-sm">Institutional Control</p>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 p-3 text-primary-fixed-dim hover:text-on-primary-container hover:bg-primary transition-all duration-150 hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-button-text text-button-text">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-primary-fixed-dim hover:text-on-primary-container hover:bg-primary transition-all duration-150 hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-button-text text-button-text">Academic Setup</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-primary-fixed-dim hover:text-on-primary-container hover:bg-primary transition-all duration-150 hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-button-text text-button-text">Students</span>
+</a>
+<a class="flex items-center gap-3 p-3 text-primary-fixed-dim hover:text-on-primary-container hover:bg-primary transition-all duration-150 hover:translate-x-1 rounded-lg" href="#">
+<span class="material-symbols-outlined">person_4</span>
+<span class="font-button-text text-button-text">Teachers</span>
+</a>
+<a class="flex items-center gap-3 p-3 bg-secondary-container text-on-secondary-container font-bold rounded-lg transition-all duration-150 translate-x-1" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-button-text text-button-text">Settings</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 p-container-padding pb-24">
+<div class="max-w-4xl mx-auto">
+<header class="mb-10">
+<h1 class="font-headline-lg text-headline-lg text-primary mb-2">Attendance Session Settings</h1>
+<p class="text-on-surface-variant font-body-md text-body-md">Establish the biometric and temporal logic for institutional record keeping.</p>
+</header>
+<div class="grid grid-cols-1 gap-8">
+<!-- Session Type Configuration -->
+<section class="glass-card rounded-xl p-gutter custom-shadow transition-shadow custom-shadow-hover">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-secondary-container">schedule</span>
+<h3 class="font-headline-md text-headline-md text-primary-container">Default Session Types</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<label class="relative flex flex-col p-4 border border-outline-variant rounded-xl cursor-pointer hover:bg-surface-container transition-colors group">
+<input checked="" class="absolute top-4 right-4 h-5 w-5 rounded border-outline text-secondary focus:ring-secondary" type="checkbox"/>
+<span class="font-button-text text-button-text text-primary mb-1">Morning</span>
+<span class="text-xs text-on-surface-variant">General Entry (AM)</span>
+</label>
+<label class="relative flex flex-col p-4 border border-outline-variant rounded-xl cursor-pointer hover:bg-surface-container transition-colors group">
+<input checked="" class="absolute top-4 right-4 h-5 w-5 rounded border-outline text-secondary focus:ring-secondary" type="checkbox"/>
+<span class="font-button-text text-button-text text-primary mb-1">Afternoon</span>
+<span class="text-xs text-on-surface-variant">Mid-day Check (PM)</span>
+</label>
+<label class="relative flex flex-col p-4 border border-outline-variant rounded-xl cursor-pointer hover:bg-surface-container transition-colors group">
+<input class="absolute top-4 right-4 h-5 w-5 rounded border-outline text-secondary focus:ring-secondary" type="checkbox"/>
+<span class="font-button-text text-button-text text-primary mb-1">Period Based</span>
+<span class="text-xs text-on-surface-variant">Hourly Registration</span>
+</label>
+</div>
+</section>
+<!-- Late Threshold Slider -->
+<section class="glass-card rounded-xl p-gutter custom-shadow transition-shadow custom-shadow-hover">
+<div class="flex justify-between items-center mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary-container">timer</span>
+<h3 class="font-headline-md text-headline-md text-primary-container">Late Time Threshold</h3>
+</div>
+<span class="bg-primary-container text-on-primary-container px-4 py-1 rounded-full font-label-sm text-label-sm" id="threshold-value">15 MINUTES</span>
+</div>
+<div class="px-2">
+<input class="mb-4" id="late-slider" max="60" min="1" type="range" value="15"/>
+<div class="flex justify-between text-xs text-outline font-label-sm">
+<span>1 MIN</span>
+<span>30 MIN</span>
+<span>60 MIN</span>
+</div>
+</div>
+<p class="mt-6 text-sm text-on-surface-variant italic">Students recording fingerprints after this window will be flagged as "Late" automatically.</p>
+</section>
+<!-- Advanced Rule Toggles (Bento Grid Style) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Biometric Lock -->
+<div class="glass-card rounded-xl p-gutter custom-shadow flex flex-col justify-between border-l-4 border-secondary">
+<div>
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<h4 class="font-button-text text-button-text text-primary">Biometric Mandate</h4>
+</div>
+<p class="text-sm text-on-surface-variant mb-6">Require physical fingerprint scan for all sessions. Disables ID card bypass.</p>
+</div>
+<div class="flex items-center">
+<button class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-outline-variant transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" id="fingerprint-toggle" onclick="toggleSwitch(this)">
+<span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0"></span>
+</button>
+<span class="ml-3 text-sm font-medium text-on-surface">Enabled</span>
+</div>
+</div>
+<!-- Auto Close -->
+<div class="glass-card rounded-xl p-gutter custom-shadow flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary">logout</span>
+<h4 class="font-button-text text-button-text text-primary">Auto-close Session</h4>
+</div>
+<p class="text-sm text-on-surface-variant mb-6">Automatically terminate session tracking 2 hours after start time.</p>
+</div>
+<div class="flex items-center">
+<button class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-primary-container transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" id="autoclose-toggle" onclick="toggleSwitch(this)">
+<span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+</button>
+<span class="ml-3 text-sm font-medium text-on-surface">Active</span>
+</div>
+</div>
+<!-- Manual Correction -->
+<div class="glass-card rounded-xl p-gutter custom-shadow flex flex-col justify-between md:col-span-2">
+<div class="flex flex-col md:flex-row md:items-center justify-between">
+<div class="mb-4 md:mb-0">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-primary">edit_note</span>
+<h4 class="font-button-text text-button-text text-primary">Allow Manual Correction</h4>
+</div>
+<p class="text-sm text-on-surface-variant">Permit designated staff to override biometric logs in cases of injury or equipment failure.</p>
+</div>
+<div class="flex items-center">
+<button class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-primary-container transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" id="manual-toggle" onclick="toggleSwitch(this)">
+<span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+</button>
+<span class="ml-3 text-sm font-medium text-on-surface">Permitted</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="flex flex-col md:flex-row gap-4 justify-end mt-8">
+<button class="px-8 py-3 rounded-xl border border-outline text-on-surface-variant font-button-text text-button-text hover:bg-surface-container-high transition-all active:scale-95">
+                            Reset to Default
+                        </button>
+<button class="px-10 py-3 rounded-xl bg-secondary text-on-secondary font-button-text text-button-text shadow-md hover:brightness-110 transition-all active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">save</span>
+                            Save Session Rules
+                        </button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Bottom Navbar for Mobile -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl md:hidden bg-surface-container-highest border-t border-outline-variant shadow-lg flex justify-around items-center h-16 w-full px-2">
+<div class="flex flex-col items-center justify-center text-on-surface-variant cursor-pointer scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant cursor-pointer scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-sm text-label-sm">Students</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant cursor-pointer scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">fingerprint</span>
+<span class="font-label-sm text-label-sm">Attendance</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 cursor-pointer scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</div>
+</nav>
+<footer class="w-full py-gutter bg-surface-container-low border-t border-outline-variant mt-20 mb-20 md:mb-0">
+<div class="flex flex-col md:flex-row justify-between items-center px-container-padding max-w-desktop-max-width mx-auto">
+<div class="flex items-center gap-4 mb-4 md:mb-0">
+<span class="font-button-text text-button-text text-primary">RecordIT</span>
+<span class="text-on-surface-variant font-body-md text-body-md">© 2024 RecordIT Biometric Solutions.</span>
+</div>
+<div class="flex gap-6">
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Support</a>
+</div>
+</div>
+</footer>
+<script>
+        // Late Threshold Slider logic
+        const slider = document.getElementById('late-slider');
+        const display = document.getElementById('threshold-value');
+        
+        slider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            display.textContent = `${val} ${val == 1 ? 'MINUTE' : 'MINUTES'}`;
+        });
+
+        // Custom Toggle functionality
+        function toggleSwitch(btn) {
+            const dot = btn.querySelector('span');
+            const label = btn.nextElementSibling;
+            
+            if (btn.classList.contains('bg-primary-container')) {
+                // Turn OFF
+                btn.classList.remove('bg-primary-container');
+                btn.classList.add('bg-outline-variant');
+                dot.classList.remove('translate-x-5');
+                dot.classList.add('translate-x-0');
+                if (label) label.textContent = label.textContent.includes('Enabled') ? 'Disabled' : 
+                                               label.textContent.includes('Active') ? 'Inactive' : 'Restricted';
+            } else {
+                // Turn ON
+                btn.classList.remove('bg-outline-variant');
+                btn.classList.add('bg-primary-container');
+                dot.classList.remove('translate-x-0');
+                dot.classList.add('translate-x-5');
+                if (label) label.textContent = label.textContent.includes('Disabled') ? 'Enabled' : 
+                                               label.textContent.includes('Inactive') ? 'Active' : 'Permitted';
+            }
+        }
+    </script>
+</body></html>

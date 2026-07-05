@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Parent Profile - EduGuard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#f7f9ff",
+                    "on-primary-fixed-variant": "#2a4386",
+                    "primary": "#00113a",
+                    "on-surface": "#0d1d2a",
+                    "on-background": "#0d1d2a",
+                    "tertiary": "#00171b",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-highest": "#d4e4f6",
+                    "primary-container": "#002366",
+                    "tertiary-fixed": "#9cf0ff",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed-dim": "#00daf3",
+                    "inverse-primary": "#b3c5ff",
+                    "inverse-on-surface": "#e7f2ff",
+                    "background": "#f7f9ff",
+                    "on-tertiary-container": "#009eb0",
+                    "on-tertiary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "outline-variant": "#c5c6d2",
+                    "surface-container": "#e2efff",
+                    "on-secondary-fixed-variant": "#003baf",
+                    "surface-bright": "#f7f9ff",
+                    "surface-container-high": "#d9eafc",
+                    "on-surface-variant": "#444650",
+                    "surface-tint": "#435b9f",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "on-secondary-fixed": "#00164e",
+                    "on-primary-container": "#758dd5",
+                    "surface-variant": "#d4e4f6",
+                    "secondary-container": "#446ce4",
+                    "surface-dim": "#cbdcee",
+                    "secondary-fixed-dim": "#b6c4ff",
+                    "secondary": "#2552ca",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed": "#00174a",
+                    "primary-fixed": "#dbe1ff",
+                    "inverse-surface": "#223240",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed": "#001f24",
+                    "secondary-fixed": "#dce1ff",
+                    "error-container": "#ffdad6",
+                    "tertiary-container": "#002d33",
+                    "surface-container-low": "#ecf4ff",
+                    "outline": "#757682",
+                    "on-secondary-container": "#fffbff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "tablet-breakpoint": "768px",
+                    "desktop-max-width": "1280px",
+                    "container-padding": "24px",
+                    "gutter": "16px",
+                    "base": "8px",
+                    "mobile-breakpoint": "375px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Manrope"],
+                    "body-md": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "button-text": ["Manrope"],
+                    "label-sm": ["JetBrains Mono"],
+                    "headline-md": ["Manrope"],
+                    "body-lg": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "button-text": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f7f9ff;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid #E2E8F0;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-surface-dim shadow-sm border-b border-outline-variant dark:border-outline">
+<div class="flex justify-between items-center px-container-padding h-16 w-full max-w-tablet-breakpoint mx-auto">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/10">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of Sarah Holloway, a mid-40s woman with a friendly and reliable expression, looking directly into the camera. She has shoulder-length brunette hair and is wearing a smart navy blue blazer. The background is a soft, out-of-focus academic hallway with clean lighting and blue tones that match the EduGuard professional security brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcfKnGg6bA_Wl1GQ-tO--9KdwMBvtlIMIIH3ImGrO5peviLYGM834ZBr4FbCsIajqhRLCIQL1NThSNi9sIJLJMebYB5l9fAnPwjJEUJtsRez8aRL0w-cXLhf04L-K_m5oPW0rqC3yhZdDJEZ1m-p5q6KvmR6BmcvvRTLZLJ1xlmcEi0sPVLB0wWqz3nRTCyQZYN94R9YirmQBLj-GGLkEmfurk_kadPFArmAOP9epBnAmSqiwEHA-t6Q"/>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">EduGuard Parent</h1>
+</div>
+<button class="active:scale-95 duration-150 transition-colors hover:bg-surface-container-low dark:hover:bg-surface-container-high p-2 rounded-full">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim">notifications_active</span>
+</button>
+</div>
+</header>
+<main class="pt-20 pb-24 px-4 max-w-tablet-breakpoint mx-auto space-y-6">
+<!-- Parent Hero Section -->
+<section class="glass-card rounded-xl p-6 shadow-[0px_4px_12px_rgba(0,35,102,0.05)] relative overflow-hidden">
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-lg mb-4">
+<img class="w-full h-full object-cover" data-alt="Close-up high-resolution portrait of a smiling woman in a professional setting. The image is bright and airy with high-key lighting, emphasizing a sense of security and trust. She is positioned against a blurred modern architectural background. The color palette is dominated by professional blues and clean whites, consistent with a high-end educational security software interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAejqLxNDwJThD0re1zkc2mxwSTBHTyAzMjM_K2DiNOfGq6BpP58IM1ymZLqchpdokNy6fNnRp-QmGXu61jY24mTq57djq0NTKTMkcdvc4vhOp12PS66MxFnH5uU9Rqx5tj2waELrpsBIDWD8pNolEhwcMWWlZ-ynWJKQZ_0PflUEbA33Fdpj45EDBR3VO-z1oOVX7ruDZ32JNSMVxX97A61wk5WM6sF19y9DvsrzwypE7vo2DEHEnZPg"/>
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary text-center">Sarah Holloway</h2>
+<div class="flex items-center gap-2 mt-1">
+<span class="bg-secondary-container/20 text-secondary text-label-sm font-label-sm px-3 py-1 rounded-full border border-secondary-container">Verified Guardian</span>
+<span class="bg-surface-container text-on-surface-variant text-label-sm font-label-sm px-3 py-1 rounded-full">Mother</span>
+</div>
+</div>
+<!-- Decorative Background Element -->
+<div class="absolute -right-8 -top-8 w-32 h-32 bg-primary/5 rounded-full blur-3xl"></div>
+</section>
+<!-- Contact Information Bento Grid -->
+<div class="grid grid-cols-1 gap-4">
+<div class="glass-card rounded-xl p-4 flex items-start gap-4">
+<div class="bg-primary/5 p-3 rounded-lg">
+<span class="material-symbols-outlined text-primary">phone</span>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Phone</p>
+<p class="text-body-md font-medium text-on-surface">+1 (555) 902-3481</p>
+</div>
+</div>
+<div class="glass-card rounded-xl p-4 flex items-start gap-4">
+<div class="bg-primary/5 p-3 rounded-lg">
+<span class="material-symbols-outlined text-primary">mail</span>
+</div>
+<div class="truncate">
+<p class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Email</p>
+<p class="text-body-md font-medium text-on-surface truncate">s.holloway@example.com</p>
+</div>
+</div>
+<div class="glass-card rounded-xl p-4 flex items-start gap-4">
+<div class="bg-primary/5 p-3 rounded-lg">
+<span class="material-symbols-outlined text-primary">location_on</span>
+</div>
+<div>
+<p class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Address</p>
+<p class="text-body-md font-medium text-on-surface">452 Oak Lane</p>
+</div>
+</div>
+</div>
+<!-- Children Section -->
+<section class="space-y-4">
+<div class="flex justify-between items-center px-1">
+<h3 class="font-headline-md text-headline-md text-primary">Linked Children</h3>
+<span class="text-label-sm font-label-sm text-secondary">2 Students</span>
+</div>
+<div class="space-y-3">
+<!-- Child 1 -->
+<div class="bg-white rounded-xl border border-outline-variant p-4 flex items-center justify-between hover:shadow-md transition-all active:scale-[0.98] cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover" data-alt="A portrait of Marcus, a 10-year-old student, wearing a smart school uniform with a blue polo shirt. He is smiling brightly with a library background. The lighting is natural and crisp, creating a safe and positive educational atmosphere. The image is sharp and colorful, emphasizing the biometric clarity of the EduGuard system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2lUBpR0FGmzJMUD4UPWrUkJEaWT9BrnVXOmmaK4S8gjPGAbXjQrqd6e8BQrjMV7qnFza245QsnZh_W2DruJm0YQ4JsYPMXvaGF25VCuii2Nt38l8AsM04posZzz6lK9YVLPIrYdXhj2EdNgjiX5G6haz-xvP7UWcH-FU1ceEdKEm-k97r4J-K_UOfV55L4Js2GD4P61QkmlWu5QW4hwffL6muo8VcfvrBgf54J9SVeyd0hZmAeBUabQ"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Marcus Holloway</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Grade 5 • Classroom 12B</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<!-- Child 2 -->
+<div class="bg-white rounded-xl border border-outline-variant p-4 flex items-center justify-between hover:shadow-md transition-all active:scale-[0.98] cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover" data-alt="A portrait of Sarah, a 7-year-old student, with pigtails and a cheerful expression. She is in an elementary school classroom setting with colorful educational posters blurred in the background. The style is bright and professional, representing high-quality student record photography for a school administration portal. Soft, even lighting on her face." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXxzo9dr0eMHEQS04Xfel5rI9trsx9fCp3gInvtK-DddRF6G9CRjUXHM1Q4B5Oxj66VYV9p9qeLEUlLH8iQlFg-nV66mZpYM7p2LkUeRt2SexNGhW-RQVgKdIJ3n9l720pCGI0xWQxWP9_gfq2CxlXsX3sGtpp_Ta6CoAiTrb4KeA5xOwm7AtKA_uase8mA4tR4Z0Bn219krH0rFXRNnCnvrtNh_MkBuMwUxuI9hHz-Kf-475uw_w51g"/>
+</div>
+<div>
+<p class="font-bold text-on-surface">Sarah Holloway</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Grade 2 • Classroom 04A</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Actions -->
+<section class="pt-4 space-y-3">
+<button class="w-full bg-primary text-on-primary py-4 rounded-xl font-button-text text-button-text flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+                Edit Contact Information
+            </button>
+<button class="w-full bg-white border-2 border-outline-variant text-on-surface py-4 rounded-xl font-button-text text-button-text flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]">lock_reset</span>
+                Change Password
+            </button>
+<p class="text-center text-label-sm font-label-sm text-on-surface-variant pt-4">
+                ID: EDU-PR-9034211
+            </p>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface dark:bg-inverse-surface shadow-lg shadow-[0px_-4px_12px_rgba(0,35,102,0.05)]">
+<div class="flex justify-around items-center h-20 px-4 pb-safe w-full max-w-tablet-breakpoint mx-auto">
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary active:scale-90 transition-transform duration-200">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary active:scale-90 transition-transform duration-200">
+<span class="material-symbols-outlined">family_restroom</span>
+<span class="font-label-sm text-label-sm">Children</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary active:scale-90 transition-transform duration-200">
+<span class="material-symbols-outlined">notifications</span>
+<span class="font-label-sm text-label-sm">Alerts</span>
+</button>
+<!-- Active State: Profile -->
+<button class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-full px-4 py-1 active:scale-90 transition-transform duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</button>
+</div>
+</nav>
+<script>
+        // Simple micro-interaction for active state on child cards
+        document.querySelectorAll('.bg-white.rounded-xl.border').forEach(card => {
+            card.addEventListener('touchstart', () => {
+                card.style.backgroundColor = '#ecf4ff';
+            });
+            card.addEventListener('touchend', () => {
+                card.style.backgroundColor = '#ffffff';
+            });
+        });
+    </script>
+</body></html>
