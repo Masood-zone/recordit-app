@@ -1,30 +1,14 @@
 import { useMutation } from "@tanstack/react-query"
 
 import { toApiClientError } from "@/lib/api-client-error"
-import type { ApiResponse } from "@/types"
+import type {
+  ApiResponse,
+  UploadedCloudinaryFile,
+  UploadFileInput,
+  UploadPurpose,
+} from "@/types"
 
-export type UploadPurpose =
-  | "organizationLogo"
-  | "organizationBanner"
-  | "userProfile"
-  | "welfareProgramCover"
-
-export interface UploadedCloudinaryFile {
-  bytes?: number
-  format?: string
-  height?: number
-  originalName?: string
-  previewUrl: string
-  public_id: string
-  secure_url: string
-  url: string
-  width?: number
-}
-
-export interface UploadFileInput {
-  file: File
-  purpose: UploadPurpose
-}
+export type { UploadedCloudinaryFile, UploadFileInput, UploadPurpose }
 
 export async function uploadFileToCloudinary({
   file,
@@ -43,7 +27,10 @@ export async function uploadFileToCloudinary({
     const payload = (await res.json()) as ApiResponse<UploadedCloudinaryFile>
 
     if (!res.ok || !payload.success || !payload.data) {
-      throw new Error(payload.message || "File upload failed")
+      throw toApiClientError(
+        { response: { data: payload, status: res.status } },
+        payload.message || "File upload failed"
+      )
     }
 
     return payload.data

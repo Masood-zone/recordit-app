@@ -1,11 +1,5 @@
-import * as React from "react";
-
-import { cn } from "@/lib/utils";
-
-type MaterialSymbolProps = React.HTMLAttributes<HTMLSpanElement> & {
-  icon: string;
-  filled?: boolean;
-};
+import { cn } from "@/lib/utils"
+import type { MaterialSymbolProps } from "@/types"
 
 export function MaterialSymbol({
   icon,
@@ -18,12 +12,12 @@ export function MaterialSymbol({
       className={cn(
         "material-symbols-outlined select-none leading-none",
         filled && "filled",
-        className,
+        className
       )}
       aria-hidden="true"
       {...props}
     >
       {icon}
     </span>
-  );
+  )
 }

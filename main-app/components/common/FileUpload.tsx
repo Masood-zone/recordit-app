@@ -1,19 +1,16 @@
 "use client"
 import React, { useCallback, useState } from "react"
 import { useDropzone, Accept } from "react-dropzone"
-import { Loader2, Trash2, UploadIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { MaterialSymbol } from "@/components/common/MaterialSymbol"
 import { cn } from "@/lib/utils"
 import {
   useUploadFile,
-  type UploadedCloudinaryFile,
   type UploadPurpose,
 } from "@/services/uploads/uploads"
+import type { ExtendedUploadFile } from "@/types"
 
-interface ExtendedFile extends File {
-  preview?: string
-  upload?: UploadedCloudinaryFile
-}
+type ExtendedFile = ExtendedUploadFile
 
 interface FileValidator {
   parse: (value: { file: ExtendedFile }) => unknown
@@ -191,12 +188,12 @@ const FileUpload: React.FC<FileUploadProps> = ({
    * Dynamic styling
    */
   const dropzoneClasses = cn(
-    "cursor-pointer rounded-lg border-2 border-dashed p-4 text-center transition-colors",
+    "cursor-pointer rounded-xl border-2 border-dashed p-4 text-center transition-colors",
     isDragActive
-      ? "border-blue-500 bg-blue-50"
+      ? "border-biometric bg-biometric/10"
       : internalErrors || externalErrors
-        ? "border-red-500"
-        : "border-gray-300 hover:border-gray-400",
+        ? "border-destructive"
+        : "border-outline-variant bg-card hover:border-primary",
     layout === "horizontal"
       ? "flex items-center justify-center space-x-4"
       : "flex flex-col items-center justify-center space-y-2"
@@ -211,20 +208,26 @@ const FileUpload: React.FC<FileUploadProps> = ({
         <input {...getInputProps()} />
 
         {uploading ? (
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <MaterialSymbol
+            icon="progress_activity"
+            className="text-primary size-8 animate-spin text-[32px]"
+          />
         ) : (
-          <UploadIcon className="h-8 w-8 text-gray-400" />
+          <MaterialSymbol
+            icon="cloud_upload"
+            className="text-muted-foreground size-8 text-[32px]"
+          />
         )}
 
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted-foreground">
           {uploading ? "Uploading..." : defaultText}
         </p>
 
-        <p className="text-xs text-gray-500">{otherText}</p>
+        <p className="text-xs text-muted-foreground">{otherText}</p>
       </div>
 
       {(internalErrors || externalErrors) && (
-        <p className="mt-2 text-xs font-medium text-red-500">
+        <p className="mt-2 text-xs font-medium text-destructive">
           {internalErrors ||
             (Array.isArray(externalErrors)
               ? externalErrors.join(", ")
@@ -242,7 +245,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
       {files.map((file, index) => (
         <div
           key={index}
-          className="flex items-center justify-between rounded-md border border-gray-200 bg-white p-3 shadow"
+          className="flex items-center justify-between rounded-xl border border-border bg-card p-3 shadow-card"
         >
           <div className="flex items-center space-x-2">
             {file.preview && file.type.startsWith("image/") ? (
@@ -252,7 +255,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 className="size-12 rounded object-cover"
               />
             ) : (
-              <div className="flex h-8 w-8 items-center justify-center rounded bg-gray-300 p-5">
+              <div className="bg-muted text-muted-foreground flex h-8 w-8 items-center justify-center rounded-lg p-5">
                 <span className="text-xs font-medium">
                   {file.name.split(".").pop()?.toUpperCase()}
                 </span>
@@ -264,7 +267,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 {file.name}
               </p>
 
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-muted-foreground">
                 {(file.size / 1024).toFixed(2)} KB
                 {file.upload ? " - Uploaded" : ""}
               </p>
@@ -272,7 +275,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
           </div>
 
           <Button variant="ghost" size="sm" onClick={() => removeFile(file)}>
-            <Trash2 className="h-4 w-4" />
+            <MaterialSymbol icon="delete" className="text-[18px]" />
           </Button>
         </div>
       ))}
