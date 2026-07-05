@@ -17,6 +17,12 @@ namespace Biokey01
         private TcpListener listener;
         private Thread listenerThread;
         private bool running;
+        private static readonly HashSet<string> AllowedOrigins = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "https://recorditservices.vercel.app"
+        };
 
         public BridgeServer(Form1 form, int port)
         {
@@ -73,10 +79,11 @@ namespace Biokey01
             TcpClient client = (TcpClient)state;
             using (client)
             {
+                HttpRequest request = null;
                 try
                 {
                     NetworkStream stream = client.GetStream();
-                    HttpRequest request = ReadRequest(stream);
+                    request = ReadRequest(stream);
                     if (request == null)
                     {
                         return;
@@ -84,18 +91,18 @@ namespace Biokey01
 
                     if (request.Method == "OPTIONS")
                     {
-                        WriteJson(stream, 204, new Dictionary<string, object>());
+                        WriteJson(stream, 204, new Dictionary<string, object>(), request.Origin);
                         return;
                     }
 
                     Dictionary<string, object> response = Dispatch(request);
-                    WriteJson(stream, 200, response);
+                    WriteJson(stream, 200, response, request.Origin);
                 }
                 catch (Exception ex)
                 {
                     try
                     {
-                        WriteJson(client.GetStream(), 500, Error("bridge_error", ex.Message));
+                        WriteJson(client.GetStream(), 500, Error("bridge_error", ex.Message), request == null ? null : request.Origin);
                     }
                     catch
                     {
@@ -290,10 +297,11 @@ namespace Biokey01
                 reader.Read(bodyChars, 0, contentLength);
             }
 
-            return new HttpRequest(parts[0], parts[1].Split('?')[0], new string(bodyChars));
+            string origin = headers.ContainsKey("Origin") ? headers["Origin"] : null;
+            return new HttpRequest(parts[0], parts[1].Split('?')[0], new string(bodyChars), origin);
         }
 
-        private void WriteJson(NetworkStream stream, int statusCode, Dictionary<string, object> payload)
+        private void WriteJson(NetworkStream stream, int statusCode, Dictionary<string, object> payload, string origin)
         {
             if (!payload.ContainsKey("ok") && !payload.ContainsKey("success") && statusCode < 400)
             {
@@ -303,13 +311,16 @@ namespace Biokey01
             string json = serializer.Serialize(payload);
             byte[] body = Encoding.UTF8.GetBytes(json);
             string statusText = statusCode == 204 ? "No Content" : statusCode == 200 ? "OK" : "Error";
+            string allowedOrigin = AllowedOrigins.Contains(origin ?? "") ? origin : "http://localhost:3000";
             string headers =
                 "HTTP/1.1 " + statusCode.ToString() + " " + statusText + "\r\n" +
                 "Content-Type: application/json; charset=utf-8\r\n" +
                 "Content-Length: " + (statusCode == 204 ? 0 : body.Length).ToString() + "\r\n" +
-                "Access-Control-Allow-Origin: http://localhost:3000\r\n" +
+                "Access-Control-Allow-Origin: " + allowedOrigin + "\r\n" +
                 "Access-Control-Allow-Methods: GET, POST, OPTIONS\r\n" +
                 "Access-Control-Allow-Headers: Content-Type\r\n" +
+                "Access-Control-Allow-Private-Network: true\r\n" +
+                "Vary: Origin\r\n" +
                 "Connection: close\r\n\r\n";
 
             byte[] headerBytes = Encoding.ASCII.GetBytes(headers);
@@ -334,12 +345,14 @@ namespace Biokey01
             public readonly string Method;
             public readonly string Path;
             public readonly string Body;
+            public readonly string Origin;
 
-            public HttpRequest(string method, string path, string body)
+            public HttpRequest(string method, string path, string body, string origin)
             {
                 Method = method;
                 Path = path;
                 Body = body;
+                Origin = origin;
             }
         }
     }
