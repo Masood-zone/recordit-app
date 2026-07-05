@@ -1,8 +1,54 @@
 import { JetBrains_Mono, Manrope } from "next/font/google"
+import type { Metadata } from "next"
 
 import "./globals.css"
 import { Providers } from "@/components/providers/providers"
 import { cn } from "@/lib/utils"
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  applicationName: "RecordIT",
+  title: {
+    default: "RecordIT | Smart Biometric Attendance",
+    template: "%s | RecordIT",
+  },
+  description:
+    "RecordIT is a secure biometric school attendance platform for real-time verification, attendance reporting, and institutional monitoring.",
+  keywords: [
+    "RecordIT",
+    "biometric attendance",
+    "school attendance system",
+    "student attendance",
+    "fingerprint attendance",
+  ],
+  authors: [{ name: "RecordIT Biometric Systems" }],
+  creator: "RecordIT Biometric Systems",
+  publisher: "RecordIT Biometric Systems",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_GH",
+    url: "/",
+    siteName: "RecordIT",
+    title: "RecordIT | Smart Biometric Attendance",
+    description:
+      "Secure biometric attendance for schools, administrators, teachers, parents, and students.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RecordIT | Smart Biometric Attendance",
+    description:
+      "Secure biometric attendance for schools, administrators, teachers, parents, and students.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-sans" })
 

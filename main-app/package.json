@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
+    "seed:super-admin": "tsx prisma/seed.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

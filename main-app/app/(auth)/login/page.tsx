@@ -13,7 +13,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { authClient } from "@/lib/auth-client"
-import { cn } from "@/lib/utils"
 import Image from "next/image"
 
 type LoginFormValues = {
@@ -68,15 +67,18 @@ export default function LoginPage() {
         <Card className="rounded-xl border-[#c5c6d2] bg-white shadow-[0_4px_12px_rgb(0_35_102/0.05)] transition-shadow duration-300 hover:shadow-[0_8px_24px_rgb(0_35_102/0.12)]">
           <CardContent className="p-8 md:p-10">
             <div className="mb-10 flex flex-col items-center">
-              <div className="mb-4 grid size-24 place-items-center">
-                <Image
-                  src="/logo.png"
-                  alt="RecordIT Logo"
-                  width={120}
-                  height={120}
-                  className="rounded-xl"
-                />
-              </div>
+              <Link href="/">
+                <div className="mb-4 grid size-24 place-items-center">
+                  <Image
+                    src="/logo.png"
+                    alt="RecordIT Logo"
+                    width={120}
+                    height={120}
+                    loading="eager"
+                    className="rounded-xl"
+                  />
+                </div>
+              </Link>
               <p className="mt-1 text-base text-[#444650]">Login Portal</p>
             </div>
 
