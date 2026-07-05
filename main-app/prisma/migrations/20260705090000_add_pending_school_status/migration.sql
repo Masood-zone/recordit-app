@@ -1,0 +1,2 @@
+-- AddEnumValue
+ALTER TYPE "SchoolStatus" ADD VALUE IF NOT EXISTS 'PENDING';

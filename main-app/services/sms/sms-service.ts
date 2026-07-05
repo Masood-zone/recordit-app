@@ -5,7 +5,7 @@ interface SendSMSOptions {
 
 class SMSService {
   private apiKey = process.env.UELLOSEND_API_KEY || ""
-  private senderId = process.env.UELLOSEND_SENDER_ID || "AMANAH"
+  private senderId = process.env.UELLOSEND_SENDER_ID || "RECORDIT"
   private baseUrl =
     process.env.UELLOSEND_API_URL ||
     process.env.UELLOSEND_BASE_URL ||
@@ -39,6 +39,19 @@ class SMSService {
     phoneNumber: string
   }): Promise<void> {
     const message = `Amanah Welfare has received ${args.organizationName}'s onboarding application. Your organization will be reviewed and verified soon.`
+
+    await this.sendSMS({
+      to: args.phoneNumber,
+      message,
+    })
+  }
+
+  async sendSchoolOnboardingReceivedSMS(args: {
+    contactName: string
+    phoneNumber: string
+    schoolName: string
+  }): Promise<void> {
+    const message = `Hello ${args.contactName}, RecordIT has received ${args.schoolName}'s onboarding application. Your school is under review and you will be notified after approval.`
 
     await this.sendSMS({
       to: args.phoneNumber,

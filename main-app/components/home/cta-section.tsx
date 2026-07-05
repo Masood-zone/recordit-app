@@ -21,7 +21,7 @@ export function CtaSection() {
                 variant="outline"
                 className="h-16 rounded-xl border-2 border-[#dce1ff] bg-transparent px-10 text-base font-bold text-white hover:bg-white/10 hover:text-white"
               >
-                <Link href="/login">Get Started Today</Link>
+                <Link href="/onboarding/step-1">Get Started Today</Link>
               </Button>
             </div>
           </div>

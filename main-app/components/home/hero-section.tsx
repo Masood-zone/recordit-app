@@ -33,7 +33,7 @@ export function HeroSection() {
                 asChild
                 className="h-14 rounded-xl bg-[#2552ca] px-8 text-sm font-semibold text-white shadow-[0_8px_24px_rgb(0_35_102/0.12)] hover:bg-[#003baf]"
               >
-                <Link href="/login">
+                <Link href="/onboarding/step-1">
                   Get Started
                   <MaterialSymbol icon="arrow_forward" />
                 </Link>

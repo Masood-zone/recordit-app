@@ -1,4 +1,3 @@
-import { NotificationType } from "@/app/generated/prisma/enums"
 import { prisma } from "@/lib/prisma"
 import { emailService } from "@/services/email/email-service"
 import { smsService } from "@/services/sms/sms-service"
@@ -43,7 +42,9 @@ export async function notifyWelfareProgramDueReminder(args: {
       data: {
         message,
         title: "Welfare contribution due tomorrow",
-        type: NotificationType.WARNING,
+        channel: "IN_APP",
+        status: "SENT",
+        sentAt: new Date(),
         userId: args.member.id,
       },
     })

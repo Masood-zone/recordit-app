@@ -1,11 +1,12 @@
 import { requireDashboardRole } from "@/lib/dashboard-auth"
+import { SuperAdminShell } from "@/components/super-admin/super-admin-shell"
 
 export default async function SuperAdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  await requireDashboardRole(["SUPER_ADMIN"])
+  const user = await requireDashboardRole(["SUPER_ADMIN"])
 
-  return children
+  return <SuperAdminShell userName={user.name}>{children}</SuperAdminShell>
 }

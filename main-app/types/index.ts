@@ -64,21 +64,15 @@ export type SelectOption<TValue extends string = string> = {
 }
 
 export type UserRole =
-  | "SUPER_ADMIN"
-  | "SCHOOL_ADMIN"
-  | "TEACHER"
-  | "PARENT_GUARDIAN"
+  "SUPER_ADMIN" | "SCHOOL_ADMIN" | "TEACHER" | "PARENT_GUARDIAN"
 
 export type UserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED"
-export type SchoolStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED"
+export type SchoolStatus = "PENDING" | "ACTIVE" | "INACTIVE" | "SUSPENDED"
 export type Gender = "MALE" | "FEMALE" | "OTHER"
 export type AttendanceStatus = "PRESENT" | "ABSENT" | "LATE" | "EXCUSED"
 
 export type AttendanceSessionStatus =
-  | "SCHEDULED"
-  | "OPEN"
-  | "CLOSED"
-  | "CANCELLED"
+  "SCHEDULED" | "OPEN" | "CLOSED" | "CANCELLED"
 
 export type AttendanceVerificationMethod = "FINGERPRINT" | "MANUAL"
 
@@ -97,21 +91,13 @@ export type FingerLabel =
 export type FingerprintTemplateStatus = "ACTIVE" | "REVOKED" | "REPLACED"
 
 export type BiometricDeviceStatus =
-  | "ACTIVE"
-  | "INACTIVE"
-  | "MAINTENANCE"
-  | "RETIRED"
+  "ACTIVE" | "INACTIVE" | "MAINTENANCE" | "RETIRED"
 
 export type BiometricScanPurpose =
-  | "ENROLLMENT"
-  | "ATTENDANCE_VERIFICATION"
-  | "IDENTIFICATION"
+  "ENROLLMENT" | "ATTENDANCE_VERIFICATION" | "IDENTIFICATION"
 
 export type BiometricScanStatus =
-  | "SUCCESS"
-  | "FAILED"
-  | "LOW_QUALITY"
-  | "NO_MATCH"
+  "SUCCESS" | "FAILED" | "LOW_QUALITY" | "NO_MATCH"
 
 export type NotificationChannel = "EMAIL" | "SMS" | "WHATSAPP" | "IN_APP"
 
@@ -434,10 +420,7 @@ export interface ExtendedUploadFile extends File {
 export type FileUploadMode = "single" | "multi"
 export type FileUploadLayout = "vertical" | "horizontal"
 
-export type FileUploadValue =
-  | ExtendedUploadFile
-  | ExtendedUploadFile[]
-  | null
+export type FileUploadValue = ExtendedUploadFile | ExtendedUploadFile[] | null
 
 export interface SendEmailOptions {
   html: string

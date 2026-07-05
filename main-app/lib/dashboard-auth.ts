@@ -11,6 +11,8 @@ type DashboardUser = {
   email: string
   role: DashboardRole
   status: string
+  schoolId: string | null
+  schoolStatus: string | null
 }
 
 export async function requireDashboardRole(
@@ -32,6 +34,12 @@ export async function requireDashboardRole(
       email: true,
       role: true,
       status: true,
+      schoolId: true,
+      school: {
+        select: {
+          status: true,
+        },
+      },
     },
   })
 
@@ -45,8 +53,50 @@ export async function requireDashboardRole(
     redirect(getDashboardHref(role))
   }
 
-  return {
-    ...user,
-    role,
+  if (role === "SCHOOL_ADMIN" && user.school?.status !== "ACTIVE") {
+    redirect("/admin/approval-status")
   }
+
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role,
+    status: user.status,
+    schoolId: user.schoolId,
+    schoolStatus: user.school?.status ?? null,
+  }
+}
+
+export async function requirePendingSchoolAdmin() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+
+  if (!session?.user?.id) {
+    redirect("/login")
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      status: true,
+      schoolId: true,
+      school: true,
+    },
+  })
+
+  if (!user || user.status !== "ACTIVE" || user.role !== "SCHOOL_ADMIN") {
+    redirect("/login")
+  }
+
+  if (user.school?.status === "ACTIVE") {
+    redirect("/admin/dashboard")
+  }
+
+  return user
 }

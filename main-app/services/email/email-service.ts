@@ -5,6 +5,7 @@ import { OrganizationApplicationDecisionEmail } from "@/services/email/organizat
 import { MemberInvitationEmail } from "@/services/email/member-invitation-email"
 import { OnboardingReceivedEmail } from "@/services/email/onboarding-received-email"
 import { PaymentSuccessEmail } from "@/services/email/payment-success-email"
+import { SchoolOnboardingReceivedEmail } from "@/services/email/school-onboarding-received-email"
 import { WelfareProgramDueReminderEmail } from "@/services/email/welfare-program-due-reminder-email"
 import { WelfareProgramEnrollmentEmail } from "@/services/email/welfare-program-enrollment-email"
 
@@ -22,6 +23,12 @@ interface OnboardingReceivedEmailData {
   organizationName: string
   organizationPhone: string
   organizationType: string
+}
+
+interface SchoolOnboardingReceivedEmailData {
+  contactEmail: string
+  contactName: string
+  schoolName: string
 }
 
 interface OrganizationApplicationDecisionEmailData {
@@ -126,6 +133,30 @@ class EmailService {
       subject: `Amanah Welfare received ${data.organizationName}'s onboarding application`,
       html,
       text: `Hello ${data.adminName}, Amanah Welfare has received ${data.organizationName}'s onboarding application. Status: pending verification. We will notify you once verification is complete.`,
+    })
+  }
+
+  async sendSchoolOnboardingReceivedEmail(
+    data: SchoolOnboardingReceivedEmailData
+  ): Promise<void> {
+    const signinUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      process.env.NEXT_PUBLIC_API_BASE_URL ||
+      process.env.BETTER_AUTH_URL ||
+      ""
+    const html = await render(
+      SchoolOnboardingReceivedEmail({
+        contactName: data.contactName,
+        schoolName: data.schoolName,
+        signinUrl: `${signinUrl}/admin/approval-status`,
+      })
+    )
+
+    await this.sendEmail({
+      to: data.contactEmail,
+      subject: `RecordIT received ${data.schoolName}'s onboarding application`,
+      html,
+      text: `Hello ${data.contactName}, RecordIT has received ${data.schoolName}'s onboarding application. Your school is under review and we will notify you after approval.`,
     })
   }
 

@@ -1,4 +1,3 @@
-import { NotificationType } from "@/app/generated/prisma/enums"
 import { prisma } from "@/lib/prisma"
 import { emailService } from "@/services/email/email-service"
 import { smsService } from "@/services/sms/sms-service"
@@ -27,7 +26,9 @@ export async function notifyWelfareProgramEnrollment(args: {
       title: mandatory
         ? "Mandatory welfare enrollment"
         : "Welfare enrollment confirmed",
-      type: NotificationType.INFO,
+      channel: "IN_APP",
+      status: "SENT",
+      sentAt: new Date(),
       userId: args.member.id,
     },
   })
