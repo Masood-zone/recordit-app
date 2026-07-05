@@ -23,12 +23,14 @@ import {
   useAdminClasses,
   useAdminOptions,
   useAdminParent,
+  useAdminParents,
   useAdminPatch,
   useAdminPost,
   useAdminSettings,
   useAdminStudent,
   useAdminStudents,
   useAdminTeacher,
+  useAdminTeachers,
   useAdminUsers,
   useBulkImportStudents,
 } from "@/services/admin/admin"
@@ -46,6 +48,13 @@ function list(value: unknown): R[] {
 function date(value: unknown) {
   if (!value) return "Not set"
   return new Date(String(value)).toLocaleDateString()
+}
+
+function dateInput(value: unknown) {
+  if (!value) return ""
+  const parsed = new Date(String(value))
+  if (Number.isNaN(parsed.getTime())) return ""
+  return parsed.toISOString().slice(0, 10)
 }
 
 function obj(value: unknown): R {
@@ -180,15 +189,26 @@ export function AcademicSetupPage() {
   const years = list(data?.academicYears)
   const terms = list(data?.academicTerms)
   const classes = list(data?.classes)
+  const [editingYear, setEditingYear] = useState<R | null>(null)
+  const [editingTerm, setEditingTerm] = useState<R | null>(null)
   const createYear = useAdminPost("/admin/academic-years")
   const createTerm = useAdminPost("/admin/academic-terms")
-  const savingYear = createYear.isPending
-  const savingTerm = createTerm.isPending
+  const updateYear = useAdminPatch(`/admin/academic-years/${text(editingYear?.id)}`)
+  const updateTerm = useAdminPatch(`/admin/academic-terms/${text(editingTerm?.id)}`)
+  const savingYear = createYear.isPending || updateYear.isPending
+  const savingTerm = createTerm.isPending || updateTerm.isPending
 
   async function onSubmit(path: "year" | "term", event: FormEvent<HTMLFormElement>) {
     const { data: form, form: element } = submitData(event)
     try {
-      await (path === "year" ? createYear : createTerm).mutateAsync(form)
+      if (path === "year") {
+        await (editingYear ? updateYear : createYear).mutateAsync(form)
+        setEditingYear(null)
+      } else {
+        await (editingTerm ? updateTerm : createTerm).mutateAsync(form)
+        setEditingTerm(null)
+      }
+
       toast.success(path === "year" ? "Academic year saved" : "Academic term saved")
       element.reset()
     } catch (error) {
@@ -200,41 +220,102 @@ export function AcademicSetupPage() {
     <div>
       <PageHeader title="Academic Setup" description="Manage academic years, terms, and the class foundation used by attendance workflows." />
       <section className="grid gap-6 xl:grid-cols-2">
-        <form onSubmit={(e) => onSubmit("year", e)} className="rounded-xl border border-outline-variant bg-white p-6 shadow-card">
-          <h2 className="mb-4 text-xl font-bold">Academic Years</h2>
-          <div className="grid gap-4 md:grid-cols-3">
-            <InputField name="name" label="Academic Year Name" placeholder="2026/2027" />
-            <InputField name="startsAt" label="Start Date" type="date" />
-            <InputField name="endsAt" label="End Date" type="date" />
+        <form
+          key={editingYear ? text(editingYear.id) : "new-year"}
+          onSubmit={(e) => onSubmit("year", e)}
+          className="rounded-xl border border-outline-variant bg-white p-6 shadow-card"
+        >
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h2 className="text-xl font-bold">Academic Years</h2>
+            {editingYear ? (
+              <Button type="button" variant="ghost" size="sm" onClick={() => setEditingYear(null)}>
+                Cancel Edit
+              </Button>
+            ) : null}
           </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            <InputField name="name" label="Academic Year Name" placeholder="2026/2027" defaultValue={text(editingYear?.name)} />
+            <InputField name="startsAt" label="Start Date" type="date" defaultValue={dateInput(editingYear?.startsAt)} />
+            <InputField name="endsAt" label="End Date" type="date" defaultValue={dateInput(editingYear?.endsAt)} />
+          </div>
+          <label className="mt-4 flex items-center gap-2 text-sm font-semibold text-on-surface-variant">
+            <input
+              name="isActive"
+              type="checkbox"
+              defaultChecked={Boolean(editingYear?.isActive) || years.length === 0}
+              className="size-4 accent-primary"
+            />
+            Set as active academic year
+          </label>
+          {years.length === 0 ? (
+            <p className="mt-2 text-xs text-on-surface-variant">
+              The first academic year is automatically active.
+            </p>
+          ) : null}
           <Button className="mt-4" disabled={savingYear}>
-            {pendingText(savingYear, "Add Academic Year")}
+            {pendingText(savingYear, editingYear ? "Save Academic Year" : "Add Academic Year")}
           </Button>
           <div className="mt-6 divide-y divide-outline-variant">
             {years.length ? years.map((year) => (
-              <div key={text(year.id)} className="flex items-center justify-between py-3">
+              <div key={text(year.id)} className="flex items-center justify-between gap-3 py-3">
                 <div><p className="font-semibold">{text(year.name)}</p><p className="text-xs text-on-surface-variant">{date(year.startsAt)} - {date(year.endsAt)}</p></div>
-                <StatusBadge status={Boolean(year.isActive)} />
+                <div className="flex items-center gap-2">
+                  <StatusBadge status={Boolean(year.isActive)} />
+                  <Button type="button" variant="outline" size="sm" onClick={() => setEditingYear(year)}>
+                    Edit
+                  </Button>
+                </div>
               </div>
             )) : <p className="text-on-surface-variant">No academic year has been created yet.</p>}
           </div>
         </form>
-        <form onSubmit={(e) => onSubmit("term", e)} className="rounded-xl border border-outline-variant bg-white p-6 shadow-card">
-          <h2 className="mb-4 text-xl font-bold">Academic Terms</h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            <SelectField name="academicYearId" label="Academic Year"><option value="">Select year</option>{years.map((year) => <option key={text(year.id)} value={text(year.id)}>{text(year.name)}</option>)}</SelectField>
-            <InputField name="name" label="Term Name" placeholder="Term 1" />
-            <InputField name="startsAt" label="Start Date" type="date" />
-            <InputField name="endsAt" label="End Date" type="date" />
+        <form
+          key={editingTerm ? text(editingTerm.id) : "new-term"}
+          onSubmit={(e) => onSubmit("term", e)}
+          className="rounded-xl border border-outline-variant bg-white p-6 shadow-card"
+        >
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h2 className="text-xl font-bold">Academic Terms</h2>
+            {editingTerm ? (
+              <Button type="button" variant="ghost" size="sm" onClick={() => setEditingTerm(null)}>
+                Cancel Edit
+              </Button>
+            ) : null}
           </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <SelectField name="academicYearId" label="Academic Year" defaultValue={text(editingTerm?.academicYearId)}>
+              <option value="">Select year</option>
+              {years.map((year) => <option key={text(year.id)} value={text(year.id)}>{text(year.name)}</option>)}
+            </SelectField>
+            <InputField name="name" label="Term Name" placeholder="Term 1" defaultValue={text(editingTerm?.name)} />
+            <InputField name="startsAt" label="Start Date" type="date" defaultValue={dateInput(editingTerm?.startsAt)} />
+            <InputField name="endsAt" label="End Date" type="date" defaultValue={dateInput(editingTerm?.endsAt)} />
+          </div>
+          <label className="mt-4 flex items-center gap-2 text-sm font-semibold text-on-surface-variant">
+            <input
+              name="isActive"
+              type="checkbox"
+              defaultChecked={Boolean(editingTerm?.isActive) || terms.length === 0}
+              className="size-4 accent-primary"
+            />
+            Set as active term
+          </label>
+          <p className="mt-2 text-xs text-on-surface-variant">
+            Only one term can be active at a time. Marking this term active will make the others inactive.
+          </p>
           <Button className="mt-4" disabled={savingTerm}>
-            {pendingText(savingTerm, "Add Term")}
+            {pendingText(savingTerm, editingTerm ? "Save Term" : "Add Term")}
           </Button>
           <div className="mt-6 divide-y divide-outline-variant">
             {terms.length ? terms.map((term) => (
-              <div key={text(term.id)} className="flex items-center justify-between py-3">
+              <div key={text(term.id)} className="flex items-center justify-between gap-3 py-3">
                 <div><p className="font-semibold">{text(term.name)}</p><p className="text-xs text-on-surface-variant">{text(obj(term.academicYear).name)} / {date(term.startsAt)}</p></div>
-                <StatusBadge status={Boolean(term.isActive)} />
+                <div className="flex items-center gap-2">
+                  <StatusBadge status={Boolean(term.isActive)} />
+                  <Button type="button" variant="outline" size="sm" onClick={() => setEditingTerm(term)}>
+                    Edit
+                  </Button>
+                </div>
               </div>
             )) : <p className="text-on-surface-variant">No terms created yet.</p>}
           </div>
@@ -523,6 +604,137 @@ export function StudentProfilePage() {
 
 function Info({ label, value }: { label: string; value: string }) {
   return <div><p className="text-xs font-bold tracking-[0.12em] text-on-surface-variant uppercase">{label}</p><p className="mt-1 text-lg font-bold">{value}</p></div>
+}
+
+export function TeachersListPage() {
+  const { data, isLoading } = useAdminTeachers()
+  const teachers = list(data?.teachers)
+
+  return (
+    <div>
+      <PageHeader
+        title="Teachers"
+        description="View teacher profiles, assigned classes, and account status before creating a new teacher."
+        actions={
+          <Button asChild>
+            <Link href="/admin/teachers/new">
+              <MaterialSymbol icon="person_add" />
+              Add Teacher
+            </Link>
+          </Button>
+        }
+      />
+      {isLoading ? <p className="mb-4 text-on-surface-variant">Loading teachers...</p> : null}
+      <TableShell footer={`Showing ${teachers.length} teachers`}>
+        {teachers.length ? (
+          <table className="w-full min-w-[920px] text-left">
+            <thead className="bg-primary-container text-white">
+              <tr>{["Teacher", "Staff Number", "Department", "Assigned Classes", "Status", "Actions"].map((h) => <th key={h} className="p-4">{h}</th>)}</tr>
+            </thead>
+            <tbody className="divide-y divide-outline-variant">
+              {teachers.map((teacher) => {
+                const user = obj(teacher.user)
+                const assignments = list(teacher.classAssignments)
+
+                return (
+                  <tr key={text(teacher.id)}>
+                    <td className="p-4">
+                      <p className="font-bold">{text(user.name)}</p>
+                      <p className="text-sm text-on-surface-variant">{text(user.email)}</p>
+                    </td>
+                    <td className="p-4">{text(teacher.staffNumber, "-")}</td>
+                    <td className="p-4">{text(teacher.department, "-")}</td>
+                    <td className="p-4">{assignments.map((item) => text(obj(item.class).name)).filter(Boolean).join(", ") || "Unassigned"}</td>
+                    <td className="p-4"><StatusBadge status={text(user.status)} /></td>
+                    <td className="p-4">
+                      <Button asChild variant="outline" size="sm">
+                        <Link href={`/admin/teachers/${text(teacher.id)}`}>View Profile</Link>
+                      </Button>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        ) : (
+          <div className="p-6">
+            <EmptyState
+              title="No teachers added yet"
+              message="Create teacher accounts before assigning classes and attendance sessions."
+              action={<Button asChild><Link href="/admin/teachers/new">Add Teacher</Link></Button>}
+            />
+          </div>
+        )}
+      </TableShell>
+    </div>
+  )
+}
+
+export function ParentsListPage() {
+  const { data, isLoading } = useAdminParents()
+  const guardians = list(data?.guardians)
+
+  return (
+    <div>
+      <PageHeader
+        title="Parents/Guardians"
+        description="Manage guardian contacts, linked children, and parent access to attendance records."
+        actions={
+          <Button asChild>
+            <Link href="/admin/parents/new">
+              <MaterialSymbol icon="person_add" />
+              Add Parent/Guardian
+            </Link>
+          </Button>
+        }
+      />
+      {isLoading ? <p className="mb-4 text-on-surface-variant">Loading parents and guardians...</p> : null}
+      <TableShell footer={`Showing ${guardians.length} parents/guardians`}>
+        {guardians.length ? (
+          <table className="w-full min-w-[920px] text-left">
+            <thead className="bg-primary-container text-white">
+              <tr>{["Guardian", "Phone", "Relationship", "Linked Students", "Status", "Actions"].map((h) => <th key={h} className="p-4">{h}</th>)}</tr>
+            </thead>
+            <tbody className="divide-y divide-outline-variant">
+              {guardians.map((guardian) => {
+                const user = obj(guardian.user)
+                const students = list(guardian.students)
+
+                return (
+                  <tr key={text(guardian.id)}>
+                    <td className="p-4">
+                      <p className="font-bold">{text(user.name)}</p>
+                      <p className="text-sm text-on-surface-variant">{text(user.email)}</p>
+                    </td>
+                    <td className="p-4">{text(user.phone, "-")}</td>
+                    <td className="p-4">{text(guardian.relationship, "-")}</td>
+                    <td className="p-4">{students.map((item) => {
+                      const student = obj(item.student)
+                      return `${text(student.firstName)} ${text(student.lastName)}`.trim()
+                    }).filter(Boolean).join(", ") || "No linked student"}</td>
+                    <td className="p-4"><StatusBadge status={text(user.status)} /></td>
+                    <td className="p-4">
+                      <Button asChild variant="outline" size="sm">
+                        <Link href={`/admin/parents/${text(guardian.id)}`}>View Profile</Link>
+                      </Button>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        ) : (
+          <div className="p-6">
+            <EmptyState
+              title="No parents or guardians yet"
+              message="Create guardian accounts and link them to students so they can view attendance records."
+              action={<Button asChild><Link href="/admin/parents/new">Add Parent/Guardian</Link></Button>}
+            />
+          </div>
+        )}
+      </TableShell>
+    </div>
+  )
 }
 
 export function TeacherFormPage() {

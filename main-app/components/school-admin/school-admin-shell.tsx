@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
 
@@ -27,8 +28,8 @@ const nav = [
   { href: "/admin/dashboard", icon: "dashboard", label: "Dashboard" },
   { href: "/admin/academic-setup", icon: "school", label: "Academic Setup" },
   { href: "/admin/students", icon: "groups", label: "Students" },
-  { href: "/admin/teachers/new", icon: "person", label: "Teachers" },
-  { href: "/admin/parents/new", icon: "family_restroom", label: "Parents/Guardians" },
+  { href: "/admin/teachers", icon: "person", label: "Teachers" },
+  { href: "/admin/parents", icon: "family_restroom", label: "Parents/Guardians" },
   { href: "/admin/classes", icon: "class", label: "Classes" },
   { href: "/admin/attendance", icon: "fingerprint", label: "Attendance" },
   { href: "/admin/reports", icon: "analytics", label: "Reports" },
@@ -72,8 +73,15 @@ export function SchoolAdminShell({
             href="/admin/dashboard"
             className="flex h-16 min-w-0 items-center gap-3 rounded-lg px-2 text-sidebar-foreground hover:bg-white/10"
           >
-            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground">
-              <MaterialSymbol icon="school" filled />
+            <span className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
+              <Image
+                src="/logo.png"
+                alt="RecordIT"
+                width={48}
+                height={48}
+                className="size-full object-contain"
+                priority
+              />
             </span>
             <span className="min-w-0 group-data-[collapsible=icon]/sidebar:sr-only">
               <span className="block truncate text-lg font-bold">RecordIT</span>
