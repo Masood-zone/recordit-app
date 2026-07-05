@@ -6,9 +6,25 @@ import { usePathname } from "next/navigation"
 import { MaterialSymbol } from "@/components/common/MaterialSymbol"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { useSession } from "@/lib/auth-client"
+import { getDashboardHref, getDashboardLabel } from "@/lib/role-dashboard"
 import { cn } from "@/lib/utils"
 import { publicNavItems } from "./constants"
+
+type SessionUser = NonNullable<
+  ReturnType<typeof useSession>["data"]
+>["user"] & {
+  role?: string | null
+  status?: string | null
+}
 
 function getInitials(name?: string | null, email?: string | null) {
   const source = name?.trim() || email?.split("@")[0] || "User"
@@ -25,7 +41,9 @@ function getInitials(name?: string | null, email?: string | null) {
 export function PublicNavbar() {
   const pathname = usePathname()
   const { data: session } = useSession()
-  const user = session?.user
+  const user = session?.user as SessionUser | undefined
+  const dashboardHref = getDashboardHref(user?.role)
+  const dashboardLabel = getDashboardLabel(user?.role)
 
   return (
     <header className="sticky top-0 z-50 h-16 w-full border-b border-[#c5c6d2] bg-[#f7f9ff] shadow-sm">
@@ -85,12 +103,50 @@ export function PublicNavbar() {
                   {user.email}
                 </div>
               </div>
-              <Avatar className="size-9 border border-[#c5c6d2] bg-[#e2efff]">
-                <AvatarImage src={user.image ?? undefined} alt={user.name} />
-                <AvatarFallback className="bg-[#00113a] text-xs text-white">
-                  {getInitials(user.name, user.email)}
-                </AvatarFallback>
-              </Avatar>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="Open user menu"
+                    className="rounded-full transition-transform outline-none focus-visible:ring-2 focus-visible:ring-[#2552ca]/40 active:scale-95"
+                  >
+                    <Avatar className="size-9 border border-[#c5c6d2] bg-[#e2efff]">
+                      <AvatarImage
+                        src={user.image ?? undefined}
+                        alt={user.name}
+                      />
+                      <AvatarFallback className="bg-[#00113a] text-xs text-white">
+                        {getInitials(user.name, user.email)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="border-[#c5c6d2]">
+                  <DropdownMenuLabel>
+                    <div className="min-w-0">
+                      <div className="truncate text-sm font-semibold text-[#00113a]">
+                        {user.name || "Signed in"}
+                      </div>
+                      <div className="truncate text-xs font-normal text-[#444650]">
+                        {user.email}
+                      </div>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href={dashboardHref}>
+                      <MaterialSymbol icon="dashboard" className="text-base" />
+                      {dashboardLabel}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/">
+                      <MaterialSymbol icon="home" className="text-base" />
+                      Home
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           ) : (
             <Button
