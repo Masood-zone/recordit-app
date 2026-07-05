@@ -1,5 +1,5 @@
-import { AdminPlaceholder } from "@/components/school-admin/admin-pages"
+import { AttendanceSessionsWorkflow } from "@/components/biometric/attendance-workflows"
 
 export default function Page() {
-  return <AdminPlaceholder title="Attendance" />
+  return <AttendanceSessionsWorkflow role="admin" />
 }

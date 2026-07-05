@@ -392,9 +392,17 @@ export function TeacherStudentProfilePage() {
         title={student.id ? fullName(student) : "Student Details"}
         description={student.id ? `${text(student.studentNumber)} / ${text(klass.name, "Assigned class")}` : "Loading student profile..."}
         actions={
-          <Button asChild variant="outline">
-            <Link href="/teacher/students">Back to Students</Link>
-          </Button>
+          <>
+            <Button asChild>
+              <Link href={`/teacher/students/${params.studentId}/fingerprint`}>
+                <MaterialSymbol icon="fingerprint" />
+                Enroll Fingerprint
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/teacher/students">Back to Students</Link>
+            </Button>
+          </>
         }
       />
       {isLoading ? <p className="mb-4 text-on-surface-variant">Loading student...</p> : null}

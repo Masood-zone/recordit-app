@@ -2,6 +2,17 @@ import { NextResponse } from "next/server"
 
 import { AuditAction, Gender } from "@/app/generated/prisma/enums"
 import { apiError, requireTeacherApi } from "@/lib/api-auth"
+import {
+  adjustAttendanceRecord,
+  closeAttendanceSession,
+  getAttendanceSession,
+  getTemplateSyncRoster,
+  listAttendanceSessions,
+  openAttendanceSession,
+  persistFingerprintEnrollment,
+  recordFailedScan,
+  recordFingerprintScan,
+} from "@/lib/attendance-biometric"
 import { clean, optionalClean } from "@/lib/admin-utils"
 import { prisma } from "@/lib/prisma"
 import type { ApiResponse } from "@/types"
@@ -341,11 +352,95 @@ export async function GET(request: Request, context: Context) {
 
   if (path[0] === "dashboard") return ok(await getDashboard(auth))
   if (path[0] === "classes") return ok({ classes: await getAssignedClasses(auth) })
+  if (path[0] === "fingerprints" && path[1] === "sync-roster") {
+    return ok({
+      students: await getTemplateSyncRoster({
+        restrictToAssignedClasses: true,
+        schoolId: auth.schoolId!,
+        teacherId: auth.teacher!.id,
+        userId: auth.user!.id,
+      }),
+    })
+  }
+  if (path[0] === "attendance-sessions" && path[1]) {
+    try {
+      return ok({
+        session: await getAttendanceSession(
+          {
+            restrictToAssignedClasses: true,
+            schoolId: auth.schoolId!,
+            teacherId: auth.teacher!.id,
+            userId: auth.user!.id,
+          },
+          path[1]
+        ),
+      })
+    } catch (error) {
+      return apiError(error instanceof Error ? error.message : "Attendance session not found", 404, "NOT_FOUND")
+    }
+  }
+  if (path[0] === "attendance-sessions") {
+    return ok({
+      sessions: await listAttendanceSessions({
+        restrictToAssignedClasses: true,
+        schoolId: auth.schoolId!,
+        teacherId: auth.teacher!.id,
+        userId: auth.user!.id,
+      }),
+    })
+  }
   if (path[0] === "students" && path[1]) {
     const student = await getStudent(auth, path[1])
     return student ? ok({ student }) : apiError("Student not found", 404, "NOT_FOUND")
   }
   if (path[0] === "students") return ok(await getStudents(auth, request))
+
+  return apiError("Teacher endpoint not found", 404, "NOT_FOUND")
+}
+
+export async function POST(request: Request, context: Context) {
+  const auth = await requireTeacherApi(request)
+  if (auth.response) return auth.response
+  const path = (await context.params).path || []
+  const input = await body(request)
+  const scope = {
+    restrictToAssignedClasses: true,
+    schoolId: auth.schoolId!,
+    teacherId: auth.teacher!.id,
+    userId: auth.user!.id,
+  }
+
+  if (path[0] === "students" && path[1] && path[2] === "fingerprints") {
+    try {
+      return ok(await persistFingerprintEnrollment(scope, { ...input, studentId: path[1] }), "Fingerprint enrolled", 201)
+    } catch (error) {
+      return fail(error instanceof Error ? error.message : "Fingerprint enrollment failed")
+    }
+  }
+  if (path[0] === "attendance-sessions" && !path[1]) {
+    try {
+      return ok({ session: await openAttendanceSession(scope, input) }, "Attendance session opened", 201)
+    } catch (error) {
+      return fail(error instanceof Error ? error.message : "Attendance session could not be opened")
+    }
+  }
+  if (path[0] === "attendance-sessions" && path[1] && path[2] === "scans") {
+    try {
+      if (input.matched === false || input.status === "NO_MATCH") {
+        return ok(await recordFailedScan(scope, path[1], input), "Scan logged")
+      }
+      return ok(await recordFingerprintScan(scope, path[1], input), "Attendance recorded")
+    } catch (error) {
+      return fail(error instanceof Error ? error.message : "Attendance scan could not be recorded")
+    }
+  }
+  if (path[0] === "attendance-sessions" && path[1] && path[2] === "close") {
+    try {
+      return ok({ session: await closeAttendanceSession(scope, path[1]) }, "Attendance session closed")
+    } catch (error) {
+      return fail(error instanceof Error ? error.message : "Attendance session could not be closed")
+    }
+  }
 
   return apiError("Teacher endpoint not found", 404, "NOT_FOUND")
 }
@@ -356,6 +451,26 @@ export async function PATCH(request: Request, context: Context) {
   const path = (await context.params).path || []
   const input = await body(request)
 
+  if (path[0] === "attendance-sessions" && path[1] && path[2] === "records" && path[3]) {
+    try {
+      return ok(
+        await adjustAttendanceRecord(
+          {
+            restrictToAssignedClasses: true,
+            schoolId: auth.schoolId!,
+            teacherId: auth.teacher!.id,
+            userId: auth.user!.id,
+          },
+          path[1],
+          path[3],
+          input
+        ),
+        "Attendance adjusted"
+      )
+    } catch (error) {
+      return fail(error instanceof Error ? error.message : "Attendance could not be adjusted")
+    }
+  }
   if (path[0] === "students" && path[1]) {
     return updateStudent(auth, path[1], input)
   }

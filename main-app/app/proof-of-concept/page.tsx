@@ -366,7 +366,11 @@ export default function Page() {
                 value={<StatusBadge status={enrollment.status} />}
               />
               <Row label="Finger" value={enrollment.finger} />
-              <Row label="Enroll index" value={enrollment.enrollIndex} />
+              <Row
+                label="Scans"
+                value={`${enrollment.scanCount}/${enrollment.scansRequired}`}
+              />
+              <Row label="Scans left" value={enrollment.scansRemaining} />
               <Row label="Last quality" value={enrollment.lastQuality ?? "-"} />
               <Row label="FPID" value={enrollment.fpId || "-"} />
               <Row

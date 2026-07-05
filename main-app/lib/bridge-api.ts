@@ -1,6 +1,18 @@
 export const BRIDGE_URL = "http://127.0.0.1:5050"
 
-export type FingerName = "left" | "right"
+export type FingerName =
+  | "LEFT_THUMB"
+  | "LEFT_INDEX"
+  | "LEFT_MIDDLE"
+  | "LEFT_RING"
+  | "LEFT_LITTLE"
+  | "RIGHT_THUMB"
+  | "RIGHT_INDEX"
+  | "RIGHT_MIDDLE"
+  | "RIGHT_RING"
+  | "RIGHT_LITTLE"
+  | "left"
+  | "right"
 export type PocStatus =
   | "IDLE"
   | "WAITING_FOR_FINGER"
@@ -34,6 +46,7 @@ export type FingerSummary = {
   status: PocStatus
   template9Length: number
   template10Length: number
+  finger?: string
 }
 
 export type StudentRecord = {
@@ -60,10 +73,14 @@ export type EnrollmentState = {
   finger: FingerName
   status: PocStatus
   enrollIndex: number
+  scanCount: number
+  scansRequired: number
+  scansRemaining: number
   lastQuality: number | null
   fpId: number
   template9Length: number
   template10Length: number
+  template9?: string | null
   template10: string | null
   message: string | null
 }
@@ -124,6 +141,27 @@ type FingerPayload = {
   finger: FingerName
 }
 
+export type SyncFingerprint = {
+  finger: string
+  fpId?: number
+  template9: string
+  template10: string
+}
+
+export type SyncStudent = {
+  studentId: string
+  name: string
+  className: string
+  fingers: SyncFingerprint[]
+}
+
+export type SyncStudentsResponse = {
+  success: boolean
+  students: number
+  templates: number
+  message: string
+}
+
 async function bridgeFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${BRIDGE_URL}${path}`, {
     ...init,
@@ -161,6 +199,8 @@ export const bridgeApi = {
   students: () => bridgeFetch<StudentsResponse>("/students"),
   registerStudent: (student: RegisterStudentInput) =>
     post<RegisterStudentResponse>("/students/register", student),
+  syncStudents: (students: SyncStudent[]) =>
+    post<SyncStudentsResponse>("/students/fingerprint/sync", { students }),
   startEnrollment: (payload: FingerPayload) =>
     post<StartResponse>("/students/fingerprint/enroll/start", payload),
   enrollmentStatus: () =>

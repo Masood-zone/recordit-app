@@ -1,0 +1,588 @@
+"use client"
+
+import Link from "next/link"
+import { useParams, useRouter } from "next/navigation"
+import { useQueryClient } from "@tanstack/react-query"
+import { FormEvent, useMemo, useState } from "react"
+import { toast } from "sonner"
+
+import { MaterialSymbol } from "@/components/common/MaterialSymbol"
+import { Button } from "@/components/ui/button"
+import { bridgeApi, type EnrollmentState, type FingerName, type IdentifyState } from "@/lib/bridge-api"
+import {
+  EmptyState,
+  PageHeader,
+  SelectField,
+  StatCard,
+  StatusBadge,
+  TableShell,
+} from "@/components/school-admin/school-admin-ui"
+import {
+  useAdminAttendanceSessions,
+  useAdminOptions,
+  useAdminPost,
+  useAdminStudent,
+  useAdminStudents,
+  useAdminSyncRoster,
+} from "@/services/admin/admin"
+import {
+  useTeacherAttendanceSessions,
+  useTeacherPost,
+  useTeacherStudent,
+  useTeacherStudents,
+  useTeacherSyncRoster,
+} from "@/services/teacher/teacher"
+
+type R = Record<string, unknown>
+type Role = "admin" | "teacher"
+
+const fingerOptions = [
+  ["LEFT_THUMB", "Left thumb"],
+  ["RIGHT_THUMB", "Right thumb"],
+  ["LEFT_INDEX", "Left index"],
+  ["RIGHT_INDEX", "Right index"],
+  ["LEFT_MIDDLE", "Left middle"],
+  ["RIGHT_MIDDLE", "Right middle"],
+  ["LEFT_RING", "Left ring"],
+  ["RIGHT_RING", "Right ring"],
+  ["LEFT_LITTLE", "Left little"],
+  ["RIGHT_LITTLE", "Right little"],
+] as const
+
+function text(value: unknown, fallback = "") {
+  return typeof value === "string" || typeof value === "number" ? String(value) : fallback
+}
+
+function list(value: unknown): R[] {
+  return Array.isArray(value) ? (value as R[]) : []
+}
+
+function obj(value: unknown): R {
+  return value && typeof value === "object" ? (value as R) : {}
+}
+
+function fullName(student: R) {
+  return [student.firstName, student.otherName, student.lastName].map((part) => text(part)).filter(Boolean).join(" ")
+}
+
+function date(value: unknown) {
+  if (!value) return "Not set"
+  return new Date(String(value)).toLocaleDateString()
+}
+
+function time(value: unknown) {
+  if (!value) return "-"
+  return new Date(String(value)).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+}
+
+function apiBase(role: Role) {
+  return role === "admin" ? "/admin" : "/teacher"
+}
+
+async function pollUntilDone<T extends { status: string }>(load: () => Promise<T>, apply: (value: T) => void) {
+  const startedAt = Date.now()
+  while (Date.now() - startedAt < 60000) {
+    await new Promise((resolve) => window.setTimeout(resolve, 900))
+    const next = await load()
+    apply(next)
+    if (next.status === "SUCCESS" || next.status === "FAILED") return next
+  }
+  throw new Error("Fingerprint operation timed out after 60 seconds.")
+}
+
+function BridgeStatusPanel({
+  onSync,
+  syncing,
+}: {
+  onSync: () => Promise<void>
+  syncing: boolean
+}) {
+  const [status, setStatus] = useState<R | null>(null)
+  const [checking, setChecking] = useState(false)
+
+  async function connect() {
+    setChecking(true)
+    try {
+      const device = await bridgeApi.connectDevice()
+      setStatus(device as unknown as R)
+      toast.success(device.connected ? "Fingerprint reader connected" : "Bridge responded")
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Bridge is unavailable")
+    } finally {
+      setChecking(false)
+    }
+  }
+
+  return (
+    <section className="rounded-xl border border-outline-variant bg-white p-5 shadow-card">
+      <div className="mb-4 flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-lg font-bold text-primary-container">Fingerprint Bridge</h2>
+          <p className="text-sm text-on-surface-variant">Local ZKTeco bridge at 127.0.0.1:5050.</p>
+        </div>
+        <StatusBadge status={status?.connected ? "CONNECTED" : "READY"} />
+      </div>
+      <div className="grid gap-2 text-sm">
+        <p>Device: {text(status?.serialNumber, "Not checked")}</p>
+        <p>Message: {text(status?.message, "Connect and sync before scanning")}</p>
+      </div>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Button type="button" onClick={connect} disabled={checking}>
+          <MaterialSymbol icon="sensors" />
+          {checking ? "Checking..." : "Connect Reader"}
+        </Button>
+        <Button type="button" variant="outline" onClick={onSync} disabled={syncing}>
+          <MaterialSymbol icon="sync" />
+          {syncing ? "Syncing..." : "Sync Templates"}
+        </Button>
+      </div>
+    </section>
+  )
+}
+
+function useRoleEnrollment(role: Role, studentId: string) {
+  const adminStudent = useAdminStudent(role === "admin" ? studentId : undefined)
+  const teacherStudent = useTeacherStudent(role === "teacher" ? studentId : undefined)
+  const adminSave = useAdminPost(`/admin/students/${studentId}/fingerprints`)
+  const teacherSave = useTeacherPost(`/teacher/students/${studentId}/fingerprints`)
+  const adminRoster = useAdminSyncRoster(role === "admin")
+  const teacherRoster = useTeacherSyncRoster(role === "teacher")
+
+  return {
+    data: role === "admin" ? adminStudent.data : teacherStudent.data,
+    isLoading: role === "admin" ? adminStudent.isLoading : teacherStudent.isLoading,
+    roster: role === "admin" ? adminRoster.data : teacherRoster.data,
+    save: role === "admin" ? adminSave : teacherSave,
+  }
+}
+
+export function FingerprintEnrollmentWorkflow({ role }: { role: Role }) {
+  const params = useParams<{ studentId: string }>()
+  const router = useRouter()
+  const { data, isLoading, roster, save } = useRoleEnrollment(role, params.studentId)
+  const student = obj(data?.student)
+  const klass = obj(student.class)
+  const [finger, setFinger] = useState<FingerName>("LEFT_THUMB")
+  const [enrollment, setEnrollment] = useState<EnrollmentState | null>(null)
+  const [syncing, setSyncing] = useState(false)
+  const [working, setWorking] = useState(false)
+  const backHref = role === "admin" ? `/admin/students/${params.studentId}` : `/teacher/students/${params.studentId}`
+
+  async function syncRoster() {
+    setSyncing(true)
+    try {
+      const students = list(roster?.students)
+      await bridgeApi.syncStudents(students as never)
+      toast.success("Persisted fingerprint templates synced to bridge")
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Roster sync failed")
+    } finally {
+      setSyncing(false)
+    }
+  }
+
+  async function enroll() {
+    if (!student.id) return
+    setWorking(true)
+    try {
+      await bridgeApi.registerStudent({
+        className: text(klass.name, "Unassigned"),
+        name: fullName(student),
+        studentId: text(student.id),
+      })
+      const start = await bridgeApi.startEnrollment({ studentId: text(student.id), finger })
+      setEnrollment({
+        enrollIndex: 0,
+        finger,
+        fpId: 0,
+        lastQuality: null,
+        message: start.message || "Place the same finger 3 times.",
+        scanCount: 0,
+        scansRemaining: 3,
+        scansRequired: 3,
+        status: start.status || "WAITING_FOR_FINGER",
+        studentId: text(student.id),
+        template9: null,
+        template9Length: 0,
+        template10: null,
+        template10Length: 0,
+      })
+      const done = await pollUntilDone(bridgeApi.enrollmentStatus, setEnrollment)
+      if (done.status !== "SUCCESS" || !done.template9 || !done.template10) {
+        throw new Error(done.message || "Enrollment did not return a usable template")
+      }
+      await save.mutateAsync({
+        device: { bridgeUrl: "http://127.0.0.1:5050", model: "ZKTeco ZK9500" },
+        finger,
+        fpId: done.fpId,
+        qualityScore: done.lastQuality,
+        template9: done.template9,
+        template10: done.template10,
+      })
+      toast.success("Fingerprint enrolled and saved")
+      router.refresh()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Enrollment failed")
+    } finally {
+      setWorking(false)
+    }
+  }
+
+  const enrolled = list(student.fingerprints)
+
+  return (
+    <div>
+      <PageHeader
+        breadcrumb="Students / Fingerprint Enrollment"
+        title={student.id ? fullName(student) : "Fingerprint Enrollment"}
+        description="Capture and persist student fingerprint templates for biometric attendance."
+        actions={<Button asChild variant="outline"><Link href={backHref}>Back to Student</Link></Button>}
+      />
+      {isLoading ? <p className="mb-4 text-on-surface-variant">Loading student...</p> : null}
+      <section className="grid gap-6 xl:grid-cols-[1fr_380px]">
+        <div className="rounded-xl border border-outline-variant bg-white p-6 shadow-card">
+          <div className="mb-6 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="font-mono text-sm text-on-surface-variant">ID: {text(student.studentNumber)}</p>
+              <h2 className="mt-1 text-2xl font-bold text-primary-container">{fullName(student)}</h2>
+              <p className="text-on-surface-variant">{text(klass.name, "Unassigned class")}</p>
+            </div>
+            <StatusBadge status={enrolled.length ? "ENROLLED" : "NOT ENROLLED"} />
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+            <div className="grid aspect-square place-items-center rounded-xl bg-primary-container text-white">
+              <div className="grid place-items-center gap-3 text-center">
+                <span className="grid size-28 place-items-center rounded-full border border-biometric bg-white/10">
+                  <MaterialSymbol icon="fingerprint" className="text-[68px]" />
+                </span>
+                <p className="font-bold">{enrollment?.status || "READY"}</p>
+                <p className="text-sm text-white/75">
+                  {enrollment ? `${enrollment.scansRemaining} scans left` : "Waiting to start"}
+                </p>
+              </div>
+            </div>
+            <div className="grid gap-4">
+              <SelectField label="Finger" value={finger} onChange={(event) => setFinger(event.target.value as FingerName)}>
+                {fingerOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+              </SelectField>
+              <div className="rounded-xl bg-surface-container p-4 text-sm">
+                <p className="font-bold text-primary-container">Enrollment progress</p>
+                <div className="mt-3 h-3 overflow-hidden rounded-full bg-white">
+                  <div
+                    className="h-full rounded-full bg-biometric"
+                    style={{
+                      width: `${Math.round(((enrollment?.scanCount || 0) / (enrollment?.scansRequired || 3)) * 100)}%`,
+                    }}
+                  />
+                </div>
+                <p className="mt-3 text-on-surface-variant">{enrollment?.message || "Place the selected finger only after starting enrollment."}</p>
+              </div>
+              <Button type="button" onClick={enroll} disabled={working || !student.id}>
+                <MaterialSymbol icon="fingerprint" />
+                {working ? "Enrolling..." : "Start Enrollment"}
+              </Button>
+            </div>
+          </div>
+        </div>
+        <div className="space-y-6">
+          <BridgeStatusPanel onSync={syncRoster} syncing={syncing} />
+          <TableShell title={<h2 className="text-lg font-bold">Saved Fingerprints</h2>}>
+            <div className="divide-y divide-outline-variant">
+              {enrolled.length ? enrolled.map((item) => (
+                <div key={text(item.id) || text(item.finger)} className="flex items-center justify-between p-4">
+                  <span className="font-semibold">{text(item.finger).replaceAll("_", " ")}</span>
+                  <StatusBadge status="ENROLLED" />
+                </div>
+              )) : <p className="p-4 text-on-surface-variant">No fingerprints saved yet.</p>}
+            </div>
+          </TableShell>
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function useRoleAttendance(role: Role) {
+  const adminSessions = useAdminAttendanceSessions(role === "admin")
+  const teacherSessions = useTeacherAttendanceSessions(role === "teacher")
+  const adminOptions = useAdminOptions(role === "admin")
+  const teacherStudents = useTeacherStudents(undefined, role === "teacher")
+  const adminStudents = useAdminStudents(undefined, role === "admin")
+  const adminRoster = useAdminSyncRoster(role === "admin")
+  const teacherRoster = useTeacherSyncRoster(role === "teacher")
+  const adminPost = useAdminPost(`${apiBase(role)}/attendance-sessions`)
+  const teacherPost = useTeacherPost(`${apiBase(role)}/attendance-sessions`)
+
+  return {
+    classes: role === "admin" ? list(adminOptions.data?.classes) : list(teacherStudents.data?.classes),
+    post: role === "admin" ? adminPost : teacherPost,
+    roster: role === "admin" ? adminRoster.data : teacherRoster.data,
+    sessions: role === "admin" ? list(adminSessions.data?.sessions) : list(teacherSessions.data?.sessions),
+    students: role === "admin" ? list(adminStudents.data?.students) : list(teacherStudents.data?.students),
+  }
+}
+
+export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
+  const queryClient = useQueryClient()
+  const { classes, post, roster, sessions, students } = useRoleAttendance(role)
+  const [sessionId, setSessionId] = useState("")
+  const [scan, setScan] = useState<IdentifyState | null>(null)
+  const [syncing, setSyncing] = useState(false)
+  const [scanning, setScanning] = useState(false)
+  const selectedSession = useMemo(
+    () => sessions.find((session) => text(session.id) === sessionId) || sessions.find((session) => text(session.status) === "OPEN") || sessions[0],
+    [sessionId, sessions]
+  )
+  const records = list(selectedSession?.records)
+  const classStudents = students.filter((student) => !selectedSession?.classId || text(student.classId) === text(selectedSession.classId))
+  const present = records.filter((record) => text(record.status) === "PRESENT").length
+  const late = records.filter((record) => text(record.status) === "LATE").length
+  const absent = records.filter((record) => text(record.status) === "ABSENT").length
+
+  async function syncRoster() {
+    setSyncing(true)
+    try {
+      await bridgeApi.syncStudents(list(roster?.students) as never)
+      toast.success("Bridge roster synced")
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Roster sync failed")
+    } finally {
+      setSyncing(false)
+    }
+  }
+
+  async function openSession(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const data = Object.fromEntries(new FormData(event.currentTarget).entries())
+    try {
+      const result = await post.mutateAsync(data)
+      const session = obj(result.session)
+      setSessionId(text(session.id))
+      toast.success("Attendance session opened")
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not open attendance session")
+    }
+  }
+
+  async function identify() {
+    if (!selectedSession?.id) {
+      toast.error("Open an attendance session first")
+      return
+    }
+    setScanning(true)
+    try {
+      const start = await bridgeApi.startIdentify()
+      setScan({
+        className: null,
+        finger: null,
+        fpId: null,
+        matched: false,
+        message: start.message || "Place finger on reader",
+        processedNumber: null,
+        score: null,
+        status: start.status || "WAITING_FOR_FINGER",
+        studentId: null,
+        studentName: null,
+      })
+      const done = await pollUntilDone(bridgeApi.identifyStatus, setScan)
+      const path = `${apiBase(role)}/attendance-sessions/${text(selectedSession.id)}/scans`
+      if (!done.matched || !done.studentId) {
+        await fetch(`/api${path}`, {
+          body: JSON.stringify({ matched: false, message: done.message, status: "NO_MATCH" }),
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
+        }).then(async (res) => {
+          const payload = await res.json()
+          if (!res.ok || !payload.success) throw new Error(payload.message || "Scan log failed")
+        })
+        await queryClient.invalidateQueries({ queryKey: [role] })
+        toast.error("Student not found")
+        return
+      }
+      const result = await fetch(`/api${path}`, {
+        body: JSON.stringify({
+          finger: done.finger,
+          matched: true,
+          matchScore: done.score,
+          score: done.score,
+          studentId: done.studentId,
+        }),
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      }).then(async (res) => {
+        const payload = await res.json()
+        if (!res.ok || !payload.success) throw new Error(payload.message || "Attendance scan failed")
+        return payload.data as R
+      })
+      await queryClient.invalidateQueries({ queryKey: [role] })
+      toast.success(Boolean(result.duplicate) ? "Student was already marked" : "Attendance recorded")
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Scan failed")
+    } finally {
+      setScanning(false)
+    }
+  }
+
+  async function adjust(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (!selectedSession?.id) return
+    const data = Object.fromEntries(new FormData(event.currentTarget).entries())
+    const studentId = text(data.studentId)
+    if (!studentId) return
+    try {
+      await fetch(`/api${apiBase(role)}/attendance-sessions/${text(selectedSession.id)}/records/${studentId}`, {
+        body: JSON.stringify(data),
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        method: "PATCH",
+      }).then(async (res) => {
+        const payload = await res.json()
+        if (!res.ok || !payload.success) throw new Error(payload.message || "Adjustment failed")
+      })
+      await queryClient.invalidateQueries({ queryKey: [role] })
+      toast.success("Attendance adjusted")
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Adjustment failed")
+    }
+  }
+
+  async function closeSession() {
+    if (!selectedSession?.id) return
+    try {
+      await fetch(`/api${apiBase(role)}/attendance-sessions/${text(selectedSession.id)}/close`, {
+        body: "{}",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      }).then(async (res) => {
+        const payload = await res.json()
+        if (!res.ok || !payload.success) throw new Error(payload.message || "Close failed")
+      })
+      await queryClient.invalidateQueries({ queryKey: [role] })
+      toast.success("Session closed")
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not close session")
+    }
+  }
+
+  return (
+    <div>
+      <PageHeader
+        breadcrumb={role === "admin" ? "School Admin / Attendance" : "Teacher / Attendance"}
+        title="Biometric Attendance"
+        description="Open a class session, scan fingerprints, adjust exceptions, and close the final register."
+      />
+      <section className="mb-6 grid gap-4 md:grid-cols-4">
+        <StatCard tone="dark" icon="task_alt" label="Present" value={present} />
+        <StatCard icon="event_busy" label="Absent" value={absent} />
+        <StatCard tone="blue" icon="schedule" label="Late" value={late} />
+        <StatCard icon="groups" label="Records" value={records.length} />
+      </section>
+      <section className="grid gap-6 xl:grid-cols-[380px_1fr]">
+        <div className="space-y-6">
+          <form onSubmit={openSession} className="rounded-xl border border-outline-variant bg-white p-5 shadow-card">
+            <h2 className="mb-4 text-lg font-bold text-primary-container">Open Attendance Session</h2>
+            <div className="grid gap-4">
+              <SelectField name="classId" label="Class" required>
+                <option value="">Select class</option>
+                {classes.map((item) => <option key={text(item.id)} value={text(item.id)}>{text(item.name)}</option>)}
+              </SelectField>
+              <SelectField name="sessionType" label="Session Type" defaultValue="Morning">
+                <option>Morning</option>
+                <option>Afternoon</option>
+                <option>Subject/Class Period</option>
+              </SelectField>
+              <label className="grid gap-2 text-sm font-semibold">
+                <span>Date</span>
+                <input name="sessionDate" type="date" defaultValue={new Date().toISOString().slice(0, 10)} className="h-12 rounded-t-lg border-0 border-b-2 border-outline-variant bg-surface-container-lowest px-3 outline-none" />
+              </label>
+              <Button disabled={post.isPending}>
+                <MaterialSymbol icon="add_task" />
+                {post.isPending ? "Opening..." : "Open Session"}
+              </Button>
+            </div>
+          </form>
+          <BridgeStatusPanel onSync={syncRoster} syncing={syncing} />
+          <form onSubmit={adjust} className="rounded-xl border border-outline-variant bg-white p-5 shadow-card">
+            <h2 className="mb-4 text-lg font-bold text-primary-container">Manual Adjustment</h2>
+            <div className="grid gap-4">
+              <SelectField name="studentId" label="Student" required>
+                <option value="">Select student</option>
+                {classStudents.map((student) => <option key={text(student.id)} value={text(student.id)}>{fullName(student)} / {text(student.studentNumber)}</option>)}
+              </SelectField>
+              <SelectField name="status" label="Status" defaultValue="PRESENT">
+                <option value="PRESENT">Present</option>
+                <option value="ABSENT">Absent</option>
+                <option value="LATE">Late</option>
+                <option value="EXCUSED">Excused</option>
+              </SelectField>
+              <textarea name="remarks" placeholder="Remarks" className="min-h-24 rounded-lg border border-outline-variant bg-white p-3 outline-none" />
+              <Button variant="outline" disabled={!selectedSession?.id}>Save Adjustment</Button>
+            </div>
+          </form>
+        </div>
+        <div className="space-y-6">
+          <section className="rounded-xl border border-outline-variant bg-white p-6 shadow-card">
+            <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
+              <div>
+                <h2 className="text-2xl font-bold text-primary-container">{text(selectedSession?.title, "No open session")}</h2>
+                <p className="text-on-surface-variant">
+                  {selectedSession ? `${date(selectedSession.sessionDate)} / ${text(selectedSession.status)}` : "Open a session to start scanning"}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button type="button" onClick={identify} disabled={scanning || !selectedSession?.id || text(selectedSession?.status) === "CLOSED"}>
+                  <MaterialSymbol icon="fingerprint" />
+                  {scanning ? "Scanning..." : "Scan Finger"}
+                </Button>
+                <Button type="button" variant="outline" onClick={closeSession} disabled={!selectedSession?.id || text(selectedSession?.status) === "CLOSED"}>
+                  Close Session
+                </Button>
+              </div>
+            </div>
+            <div className="grid gap-4 rounded-xl bg-primary-container p-6 text-white md:grid-cols-[220px_1fr]">
+              <div className="grid aspect-square place-items-center rounded-xl bg-white/10">
+                <MaterialSymbol icon="fingerprint" className="text-[84px]" />
+              </div>
+              <div className="flex flex-col justify-center">
+                <StatusBadge status={scan?.matched ? "PRESENT" : scan?.status || "WAITING"} />
+                <h3 className="mt-4 text-2xl font-bold">{text(scan?.studentName, scan?.matched ? "Student found" : "Waiting for student")}</h3>
+                <p className="mt-2 text-white/75">{text(scan?.message, "Scan feedback will appear here.")}</p>
+              </div>
+            </div>
+          </section>
+          <TableShell title={<h2 className="text-xl font-bold">Session Summary</h2>} footer={selectedSession ? `${records.length} records / ${classStudents.length || "all"} students` : null}>
+            {records.length ? (
+              <table className="w-full min-w-[760px] text-left">
+                <thead className="bg-primary-container text-white">
+                  <tr>{["Student", "Status", "Time", "Method", "Remarks"].map((head) => <th key={head} className="p-4">{head}</th>)}</tr>
+                </thead>
+                <tbody className="divide-y divide-outline-variant">
+                  {records.map((record) => {
+                    const student = obj(record.student)
+                    return (
+                      <tr key={text(record.id)}>
+                        <td className="p-4"><p className="font-bold">{fullName(student)}</p><p className="text-sm text-on-surface-variant">{text(student.studentNumber)}</p></td>
+                        <td className="p-4"><StatusBadge status={text(record.status)} /></td>
+                        <td className="p-4">{time(record.markedAt)}</td>
+                        <td className="p-4">{text(record.verificationMethod)}</td>
+                        <td className="p-4">{text(record.remarks, "-")}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            ) : (
+              <div className="p-6">
+                <EmptyState icon="fingerprint" title="No scans yet" message="Open or select a session, sync templates, then scan the first student." />
+              </div>
+            )}
+          </TableShell>
+        </div>
+      </section>
+    </div>
+  )
+}

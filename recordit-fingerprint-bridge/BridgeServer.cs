@@ -132,6 +132,10 @@ namespace Biokey01
             {
                 return form.BridgeRegisterStudent(body);
             }
+            if (request.Method == "POST" && request.Path == "/students/fingerprint/sync")
+            {
+                return form.BridgeSyncStudents(body);
+            }
             if (request.Method == "POST" && request.Path == "/students/fingerprint/enroll/start")
             {
                 return form.BridgeStartStudentEnrollment(body);

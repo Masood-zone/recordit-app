@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -11,8 +12,9 @@ namespace Biokey01
         private const string MockStudentId = "REC-MOCK-001";
         private const string MockStudentName = "Mock Student";
         private const string MockStudentClassName = "RecordIT Demo Class";
-        private const string FingerLeft = "left";
-        private const string FingerRight = "right";
+        private const string FingerLeft = "LEFT_THUMB";
+        private const string FingerRight = "RIGHT_THUMB";
+        private const int EnrollmentScanTotal = 3;
         private const string StatusIdle = "IDLE";
         private const string StatusWaiting = "WAITING_FOR_FINGER";
         private const string StatusCapturing = "CAPTURING";
@@ -33,6 +35,7 @@ namespace Biokey01
         private string identifyStatus = StatusIdle;
         private string capturedTemplate = "";
         private int enrollIndex = 0;
+        private int enrollmentScanCount = 0;
         private int lastQuality = 0;
         private bool verifyMatched = false;
         private bool identifyMatched = false;
@@ -101,6 +104,7 @@ namespace Biokey01
                 {
                     enrollmentStatus = StatusCapturing;
                     enrollIndex = axZKFPEngX1.EnrollIndex;
+                    enrollmentScanCount = Math.Min(EnrollmentScanTotal, Math.Max(enrollmentScanCount, enrollIndex));
                 }
                 else if (bridgeMode == "CaptureOnly")
                 {
@@ -165,12 +169,13 @@ namespace Biokey01
 
             lock (bridgeLock)
             {
-                enrollIndex = 3;
+                enrollIndex = EnrollmentScanTotal;
+                enrollmentScanCount = EnrollmentScanTotal;
                 enrollmentStatus = StatusSuccess;
                 bridgeMode = "None";
             }
 
-            SetBridgeMessage("Register Succeed: " + student.Name + " " + activeFinger + " finger");
+            SetBridgeMessage("Register Succeed: " + student.Name + " " + HumanFingerName(activeFinger));
         }
 
         private void BridgeOnCapture(object sender, AxZKFPEngXControl.IZKFPEngXEvents_OnCaptureEvent e)
@@ -259,6 +264,14 @@ namespace Biokey01
             return RunOnUiThread(new Func<Dictionary<string, object>>(delegate
             {
                 return BridgeRegisterStudentCore(body);
+            }));
+        }
+
+        public Dictionary<string, object> BridgeSyncStudents(Dictionary<string, object> body)
+        {
+            return RunOnUiThread(new Func<Dictionary<string, object>>(delegate
+            {
+                return BridgeSyncStudentsCore(body);
             }));
         }
 
@@ -449,6 +462,89 @@ namespace Biokey01
             return data;
         }
 
+        private Dictionary<string, object> BridgeSyncStudentsCore(Dictionary<string, object> body)
+        {
+            object rawStudents;
+            if (body == null || !body.TryGetValue("students", out rawStudents))
+            {
+                return BridgeFailure("Students payload is required", null);
+            }
+
+            IEnumerable studentItems = rawStudents as IEnumerable;
+            if (studentItems == null)
+            {
+                return BridgeFailure("Students payload must be an array", null);
+            }
+
+            students.Clear();
+            nextFpId = 1;
+            int templateCount = 0;
+
+            foreach (object rawStudent in studentItems)
+            {
+                Dictionary<string, object> item = rawStudent as Dictionary<string, object>;
+                if (item == null)
+                {
+                    continue;
+                }
+
+                string studentId = ReadString(item, "studentId", "").Trim();
+                string name = ReadString(item, "name", "").Trim();
+                string className = ReadString(item, "className", "").Trim();
+                if (String.IsNullOrEmpty(studentId) || String.IsNullOrEmpty(name))
+                {
+                    continue;
+                }
+
+                StudentRecord student = new StudentRecord(studentId, name, className);
+                students[studentId] = student;
+
+                object rawFingers;
+                if (item.TryGetValue("fingers", out rawFingers))
+                {
+                    IEnumerable fingerItems = rawFingers as IEnumerable;
+                    if (fingerItems != null)
+                    {
+                        foreach (object rawFinger in fingerItems)
+                        {
+                            Dictionary<string, object> fingerItem = rawFinger as Dictionary<string, object>;
+                            if (fingerItem == null)
+                            {
+                                continue;
+                            }
+
+                            FingerTemplate finger = GetFinger(student, ReadString(fingerItem, "finger", FingerLeft));
+                            finger.FpId = ReadInt(fingerItem, "fpId", nextFpId);
+                            finger.Template9 = ReadString(fingerItem, "template9", "");
+                            finger.Template10 = ReadString(fingerItem, "template10", "");
+                            finger.Status = String.IsNullOrEmpty(finger.Template10) ? StatusIdle : StatusSuccess;
+                            if (finger.FpId >= nextFpId)
+                            {
+                                nextFpId = finger.FpId + 1;
+                            }
+                            if (!String.IsNullOrEmpty(finger.Template9) && !String.IsNullOrEmpty(finger.Template10))
+                            {
+                                templateCount++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (bridgeConnected)
+            {
+                RebuildFingerprintCache();
+            }
+
+            SetBridgeMessage("Synced " + students.Count.ToString() + " students and " + templateCount.ToString() + " fingerprint templates");
+            Dictionary<string, object> data = new Dictionary<string, object>();
+            data["success"] = true;
+            data["students"] = students.Count;
+            data["templates"] = templateCount;
+            data["message"] = bridgeMessage;
+            return data;
+        }
+
         private Dictionary<string, object> BridgeStartEnrollmentCore(string studentId, string fingerName)
         {
             Dictionary<string, object> notReady = RequireConnected();
@@ -472,11 +568,12 @@ namespace Biokey01
             activeFinger = fingerName;
             enrollmentStatus = StatusWaiting;
             enrollIndex = 0;
+            enrollmentScanCount = 0;
             bridgeMode = "Enrollment";
             GetFinger(student, activeFinger).Status = StatusWaiting;
-            axZKFPEngX1.EnrollCount = 3;
+            axZKFPEngX1.EnrollCount = EnrollmentScanTotal;
             axZKFPEngX1.BeginEnroll();
-            SetBridgeMessage("Place the same " + activeFinger + " finger on the reader 3 times");
+            SetBridgeMessage("Place the same " + HumanFingerName(activeFinger) + " on the reader 3 times");
 
             Dictionary<string, object> data = new Dictionary<string, object>();
             data["started"] = true;
@@ -495,11 +592,15 @@ namespace Biokey01
             data["studentId"] = activeStudentId;
             data["finger"] = activeFinger;
             data["status"] = enrollmentStatus;
-            data["enrollIndex"] = enrollIndex;
+            data["enrollIndex"] = enrollmentScanCount;
+            data["scanCount"] = enrollmentScanCount;
+            data["scansRequired"] = EnrollmentScanTotal;
+            data["scansRemaining"] = Math.Max(0, EnrollmentScanTotal - enrollmentScanCount);
             data["lastQuality"] = lastQuality == 0 ? (object)null : lastQuality;
             data["fpId"] = finger == null ? 0 : finger.FpId;
             data["template9Length"] = finger == null ? 0 : finger.Template9.Length;
             data["template10Length"] = finger == null ? 0 : finger.Template10.Length;
+            data["template9"] = finger == null || String.IsNullOrEmpty(finger.Template9) ? null : (object)finger.Template9;
             data["template10"] = finger == null || String.IsNullOrEmpty(finger.Template10) ? null : (object)finger.Template10;
             data["message"] = bridgeMessage;
             return data;
@@ -569,7 +670,7 @@ namespace Biokey01
             bridgeMode = "Verify";
             FMatchType = 1;
             axZKFPEngX1.BeginCapture();
-            SetBridgeMessage("Place " + activeFinger + " finger on reader to verify " + student.Name);
+                SetBridgeMessage("Place " + HumanFingerName(activeFinger) + " on reader to verify " + student.Name);
 
             Dictionary<string, object> data = new Dictionary<string, object>();
             data["started"] = true;
@@ -666,16 +767,50 @@ namespace Biokey01
 
         private FingerTemplate GetFinger(StudentRecord student, string fingerName)
         {
-            return NormalizeFinger(fingerName) == FingerRight ? student.RightFinger : student.LeftFinger;
+            string normalized = NormalizeFinger(fingerName);
+            if (!student.Fingers.ContainsKey(normalized))
+            {
+                student.Fingers[normalized] = new FingerTemplate();
+            }
+            return student.Fingers[normalized];
         }
 
         private string NormalizeFinger(string fingerName)
         {
-            if (!String.IsNullOrEmpty(fingerName) && fingerName.ToLowerInvariant() == FingerRight)
+            string value = String.IsNullOrEmpty(fingerName) ? FingerLeft : fingerName.Trim().ToUpperInvariant();
+            value = value.Replace("-", "_").Replace(" ", "_");
+            if (value == "LEFT")
+            {
+                return FingerLeft;
+            }
+            if (value == "RIGHT")
             {
                 return FingerRight;
             }
+            if (IsFingerLabel(value))
+            {
+                return value;
+            }
             return FingerLeft;
+        }
+
+        private bool IsFingerLabel(string value)
+        {
+            return value == "LEFT_THUMB" ||
+                value == "LEFT_INDEX" ||
+                value == "LEFT_MIDDLE" ||
+                value == "LEFT_RING" ||
+                value == "LEFT_LITTLE" ||
+                value == "RIGHT_THUMB" ||
+                value == "RIGHT_INDEX" ||
+                value == "RIGHT_MIDDLE" ||
+                value == "RIGHT_RING" ||
+                value == "RIGHT_LITTLE";
+        }
+
+        private string HumanFingerName(string fingerName)
+        {
+            return NormalizeFinger(fingerName).ToLowerInvariant().Replace("_", " ") + " finger";
         }
 
         private Dictionary<string, object> StudentToDictionary(StudentRecord student)
@@ -684,10 +819,23 @@ namespace Biokey01
             data["studentId"] = student.StudentId;
             data["name"] = student.Name;
             data["className"] = student.ClassName;
-            data["leftFinger"] = FingerToDictionary(student.LeftFinger);
-            data["rightFinger"] = FingerToDictionary(student.RightFinger);
-            data["fullyEnrolled"] = student.LeftFinger.Status == StatusSuccess && student.RightFinger.Status == StatusSuccess;
+            data["leftFinger"] = FingerToDictionary(GetFinger(student, FingerLeft));
+            data["rightFinger"] = FingerToDictionary(GetFinger(student, FingerRight));
+            data["fingers"] = FingersToArray(student);
+            data["fullyEnrolled"] = GetFinger(student, FingerLeft).Status == StatusSuccess && GetFinger(student, FingerRight).Status == StatusSuccess;
             return data;
+        }
+
+        private Dictionary<string, object>[] FingersToArray(StudentRecord student)
+        {
+            List<Dictionary<string, object>> items = new List<Dictionary<string, object>>();
+            foreach (string fingerName in StudentRecord.FingerLabels)
+            {
+                Dictionary<string, object> item = FingerToDictionary(GetFinger(student, fingerName));
+                item["finger"] = fingerName;
+                items.Add(item);
+            }
+            return items.ToArray();
         }
 
         private Dictionary<string, object> FingerToDictionary(FingerTemplate finger)
@@ -705,8 +853,10 @@ namespace Biokey01
             fpOwners.Clear();
             foreach (StudentRecord student in students.Values)
             {
-                AddFingerToCache(student, FingerLeft, student.LeftFinger);
-                AddFingerToCache(student, FingerRight, student.RightFinger);
+                foreach (string fingerName in StudentRecord.FingerLabels)
+                {
+                    AddFingerToCache(student, fingerName, GetFinger(student, fingerName));
+                }
             }
         }
 
@@ -753,6 +903,17 @@ namespace Biokey01
             return body[key].ToString();
         }
 
+        private int ReadInt(Dictionary<string, object> body, string key, int fallback)
+        {
+            if (body == null || !body.ContainsKey(key) || body[key] == null)
+            {
+                return fallback;
+            }
+
+            int parsed;
+            return Int32.TryParse(body[key].ToString(), out parsed) ? parsed : fallback;
+        }
+
         private void SetBridgeMessage(string message)
         {
             lock (bridgeLock)
@@ -787,17 +948,34 @@ namespace Biokey01
 
         private class StudentRecord
         {
+            public static readonly string[] FingerLabels = new string[]
+            {
+                "LEFT_THUMB",
+                "LEFT_INDEX",
+                "LEFT_MIDDLE",
+                "LEFT_RING",
+                "LEFT_LITTLE",
+                "RIGHT_THUMB",
+                "RIGHT_INDEX",
+                "RIGHT_MIDDLE",
+                "RIGHT_RING",
+                "RIGHT_LITTLE"
+            };
+
             public readonly string StudentId;
             public string Name;
             public string ClassName;
-            public readonly FingerTemplate LeftFinger = new FingerTemplate();
-            public readonly FingerTemplate RightFinger = new FingerTemplate();
+            public readonly Dictionary<string, FingerTemplate> Fingers = new Dictionary<string, FingerTemplate>();
 
             public StudentRecord(string studentId, string name, string className)
             {
                 StudentId = studentId;
                 Name = name;
                 ClassName = className;
+                foreach (string fingerName in FingerLabels)
+                {
+                    Fingers[fingerName] = new FingerTemplate();
+                }
             }
         }
 

@@ -19,6 +19,7 @@ export const adminKeys = {
   students: ["admin", "students"] as const,
   teachers: ["admin", "teachers"] as const,
   users: ["admin", "users"] as const,
+  attendanceSessions: ["admin", "attendance-sessions"] as const,
 }
 
 async function unwrap<T>(promise: Promise<{ data: ApiResponse<T> }>, fallback: string) {
@@ -38,8 +39,9 @@ export function useAdminDashboard() {
   })
 }
 
-export function useAdminOptions() {
+export function useAdminOptions(enabled = true) {
   return useQuery({
+    enabled,
     queryKey: adminKeys.options,
     queryFn: () => unwrap<AdminEntity>(api.get("/admin/options"), "Options could not be loaded"),
   })
@@ -59,10 +61,35 @@ export function useAdminClasses() {
   })
 }
 
-export function useAdminStudents(params?: Record<string, string>) {
+export function useAdminStudents(params?: Record<string, string>, enabled = true) {
   return useQuery({
+    enabled,
     queryKey: ["admin", "students", params],
     queryFn: () => unwrap<AdminEntity>(api.get("/admin/students", { params }), "Students could not be loaded"),
+  })
+}
+
+export function useAdminAttendanceSessions(enabled = true) {
+  return useQuery({
+    enabled,
+    queryKey: adminKeys.attendanceSessions,
+    queryFn: () =>
+      unwrap<AdminEntity>(
+        api.get("/admin/attendance-sessions"),
+        "Attendance sessions could not be loaded"
+      ),
+  })
+}
+
+export function useAdminSyncRoster(enabled = true) {
+  return useQuery({
+    enabled,
+    queryKey: ["admin", "fingerprints", "sync-roster"] as const,
+    queryFn: () =>
+      unwrap<AdminEntity>(
+        api.get("/admin/fingerprints/sync-roster"),
+        "Fingerprint roster could not be loaded"
+      ),
   })
 }
 

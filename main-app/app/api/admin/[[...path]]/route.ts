@@ -13,6 +13,17 @@ import {
 } from "@/app/generated/prisma/enums"
 import { apiError, requireSchoolAdminApi } from "@/lib/api-auth"
 import {
+  adjustAttendanceRecord,
+  closeAttendanceSession,
+  getAttendanceSession,
+  getTemplateSyncRoster,
+  listAttendanceSessions,
+  openAttendanceSession,
+  persistFingerprintEnrollment,
+  recordFailedScan,
+  recordFingerprintScan,
+} from "@/lib/attendance-biometric"
+import {
   clean,
   fieldErrors,
   normalizeEmail,
@@ -967,6 +978,19 @@ export async function GET(request: Request, context: Context) {
     })
     return ok({ students })
   }
+  if (path[0] === "fingerprints" && path[1] === "sync-roster") {
+    return ok({ students: await getTemplateSyncRoster({ schoolId, userId: auth.user!.id }) })
+  }
+  if (path[0] === "attendance-sessions" && path[1]) {
+    try {
+      return ok({ session: await getAttendanceSession({ schoolId, userId: auth.user!.id }, path[1]) })
+    } catch (error) {
+      return apiError(error instanceof Error ? error.message : "Attendance session not found", 404, "NOT_FOUND")
+    }
+  }
+  if (path[0] === "attendance-sessions") {
+    return ok({ sessions: await listAttendanceSessions({ schoolId, userId: auth.user!.id }) })
+  }
   if (path[0] === "settings") {
     const [school, settings] = await Promise.all([
       prisma.school.findUnique({ where: { id: schoolId } }),
@@ -997,6 +1021,48 @@ export async function POST(request: Request, context: Context) {
   if (path[0] === "students" && path[1] === "bulk-import") return bulkImportStudents(auth, request)
   const input = await body(request)
 
+  if (path[0] === "students" && path[1] && path[2] === "fingerprints") {
+    try {
+      return ok(
+        await persistFingerprintEnrollment({
+          schoolId,
+          userId: auth.user!.id,
+        }, { ...input, studentId: path[1] }),
+        "Fingerprint enrolled",
+        201
+      )
+    } catch (error) {
+      return fail(error instanceof Error ? error.message : "Fingerprint enrollment failed")
+    }
+  }
+  if (path[0] === "attendance-sessions" && !path[1]) {
+    try {
+      return ok(
+        { session: await openAttendanceSession({ schoolId, userId: auth.user!.id }, input) },
+        "Attendance session opened",
+        201
+      )
+    } catch (error) {
+      return fail(error instanceof Error ? error.message : "Attendance session could not be opened")
+    }
+  }
+  if (path[0] === "attendance-sessions" && path[1] && path[2] === "scans") {
+    try {
+      if (input.matched === false || input.status === "NO_MATCH") {
+        return ok(await recordFailedScan({ schoolId, userId: auth.user!.id }, path[1], input), "Scan logged")
+      }
+      return ok(await recordFingerprintScan({ schoolId, userId: auth.user!.id }, path[1], input), "Attendance recorded")
+    } catch (error) {
+      return fail(error instanceof Error ? error.message : "Attendance scan could not be recorded")
+    }
+  }
+  if (path[0] === "attendance-sessions" && path[1] && path[2] === "close") {
+    try {
+      return ok({ session: await closeAttendanceSession({ schoolId, userId: auth.user!.id }, path[1]) }, "Attendance session closed")
+    } catch (error) {
+      return fail(error instanceof Error ? error.message : "Attendance session could not be closed")
+    }
+  }
   if (path[0] === "classes") return createOrUpdateClass(auth, input)
   if (path[0] === "teachers") return createTeacher(auth, input)
   if (path[0] === "parents") return createGuardian(auth, input)
@@ -1071,6 +1137,16 @@ export async function PATCH(request: Request, context: Context) {
   const input = await body(request)
   const schoolId = auth.schoolId!
 
+  if (path[0] === "attendance-sessions" && path[1] && path[2] === "records" && path[3]) {
+    try {
+      return ok(
+        await adjustAttendanceRecord({ schoolId, userId: auth.user!.id }, path[1], path[3], input),
+        "Attendance adjusted"
+      )
+    } catch (error) {
+      return fail(error instanceof Error ? error.message : "Attendance could not be adjusted")
+    }
+  }
   if (path[0] === "classes" && path[1]) return createOrUpdateClass(auth, input, path[1])
   if (path[0] === "teachers" && path[1]) return updateTeacher(auth, path[1], input)
   if (path[0] === "parents" && path[1]) return updateGuardian(auth, path[1], input)

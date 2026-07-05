@@ -1,5 +1,5 @@
-import { AdminPlaceholder } from "@/components/school-admin/admin-pages"
+import { FingerprintEnrollmentWorkflow } from "@/components/biometric/attendance-workflows"
 
 export default function Page() {
-  return <AdminPlaceholder title="Fingerprint Enrollment" />
+  return <FingerprintEnrollmentWorkflow role="admin" />
 }

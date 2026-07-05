@@ -10,9 +10,11 @@ export type TeacherEntity = Record<string, unknown>
 
 export const teacherKeys = {
   all: ["teacher"] as const,
+  attendanceSessions: ["teacher", "attendance-sessions"] as const,
   dashboard: ["teacher", "dashboard"] as const,
   students: (params?: Record<string, string>) => ["teacher", "students", params] as const,
   student: (studentId?: string) => ["teacher", "students", studentId] as const,
+  syncRoster: ["teacher", "fingerprints", "sync-roster"] as const,
 }
 
 async function unwrap<T>(promise: Promise<{ data: ApiResponse<T> }>, fallback: string) {
@@ -33,8 +35,9 @@ export function useTeacherDashboard() {
   })
 }
 
-export function useTeacherStudents(params?: Record<string, string>) {
+export function useTeacherStudents(params?: Record<string, string>, enabled = true) {
   return useQuery({
+    enabled,
     queryKey: teacherKeys.students(params),
     queryFn: () =>
       unwrap<TeacherEntity>(
@@ -53,6 +56,40 @@ export function useTeacherStudent(studentId?: string) {
         api.get(`/teacher/students/${studentId}`),
         "Student could not be loaded"
       ),
+  })
+}
+
+export function useTeacherAttendanceSessions(enabled = true) {
+  return useQuery({
+    enabled,
+    queryKey: teacherKeys.attendanceSessions,
+    queryFn: () =>
+      unwrap<TeacherEntity>(
+        api.get("/teacher/attendance-sessions"),
+        "Attendance sessions could not be loaded"
+      ),
+  })
+}
+
+export function useTeacherSyncRoster(enabled = true) {
+  return useQuery({
+    enabled,
+    queryKey: teacherKeys.syncRoster,
+    queryFn: () =>
+      unwrap<TeacherEntity>(
+        api.get("/teacher/fingerprints/sync-roster"),
+        "Fingerprint roster could not be loaded"
+      ),
+  })
+}
+
+export function useTeacherPost(path: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (input: TeacherEntity) =>
+      unwrap<TeacherEntity>(api.post(path, input), "Save failed"),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: teacherKeys.all }),
   })
 }
 
