@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 
 import { AuditAction, Gender } from "@/app/generated/prisma/enums"
 import { apiError, requireTeacherApi } from "@/lib/api-auth"
+import { createAttendanceReport, getAttendanceReport } from "@/lib/attendance-reports"
 import {
   adjustAttendanceRecord,
   closeAttendanceSession,
@@ -12,6 +13,7 @@ import {
   persistFingerprintEnrollment,
   recordFailedScan,
   recordFingerprintScan,
+  syncAttendanceScans,
 } from "@/lib/attendance-biometric"
 import { clean, optionalClean } from "@/lib/admin-utils"
 import { prisma } from "@/lib/prisma"
@@ -389,6 +391,19 @@ export async function GET(request: Request, context: Context) {
       }),
     })
   }
+  if (path[0] === "reports") {
+    return ok(
+      await getAttendanceReport(
+        {
+          restrictToAssignedClasses: true,
+          schoolId: auth.schoolId!,
+          teacherId: auth.teacher!.id,
+          userId: auth.user!.id,
+        },
+        request
+      )
+    )
+  }
   if (path[0] === "students" && path[1]) {
     const student = await getStudent(auth, path[1])
     return student ? ok({ student }) : apiError("Student not found", 404, "NOT_FOUND")
@@ -424,6 +439,9 @@ export async function POST(request: Request, context: Context) {
       return fail(error instanceof Error ? error.message : "Attendance session could not be opened")
     }
   }
+  if (path[0] === "attendance-sessions" && path[1] && path[2] === "scans" && path[3] === "sync") {
+    return ok(await syncAttendanceScans(scope, path[1], input), "Offline attendance queue synced")
+  }
   if (path[0] === "attendance-sessions" && path[1] && path[2] === "scans") {
     try {
       if (input.matched === false || input.status === "NO_MATCH") {
@@ -440,6 +458,13 @@ export async function POST(request: Request, context: Context) {
     } catch (error) {
       return fail(error instanceof Error ? error.message : "Attendance session could not be closed")
     }
+  }
+  if (path[0] === "reports") {
+    return ok(
+      await createAttendanceReport(scope, request, input),
+      "Report generated",
+      201
+    )
   }
 
   return apiError("Teacher endpoint not found", 404, "NOT_FOUND")

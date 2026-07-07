@@ -27,8 +27,13 @@ import { authClient } from "@/lib/auth-client"
 const nav = [
   { href: "/teacher/dashboard", icon: "dashboard", label: "Dashboard" },
   { href: "/teacher/students", icon: "groups", label: "Students" },
-  { href: "/teacher/attendance-sessions", icon: "fingerprint", label: "Attendance Sessions" },
-  { href: "/teacher/pending-attendance", icon: "pending_actions", label: "Pending Attendance" },
+  {
+    href: "/teacher/attendance-sessions",
+    icon: "fingerprint",
+    label: "Attendance Sessions",
+  },
+  // { href: "/teacher/pending-attendance", icon: "pending_actions", label: "Pending Attendance" },
+  { href: "/teacher/reports", icon: "analytics", label: "Reports" },
 ]
 
 export function TeacherShell({
@@ -89,7 +94,10 @@ export function TeacherShell({
               <SidebarMenu>
                 {nav.map((item) => (
                   <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild isActive={pathname.startsWith(item.href)}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith(item.href)}
+                    >
                       <Link href={item.href}>
                         <MaterialSymbol icon={item.icon} />
                         <span>{item.label}</span>
@@ -149,7 +157,9 @@ export function TeacherShell({
               <SidebarTrigger />
               <div className="hidden min-w-0 rounded-full bg-surface-container px-4 py-2 text-on-surface-variant md:flex md:w-[420px] md:items-center md:gap-3">
                 <MaterialSymbol icon="search" />
-                <span className="truncate text-sm">Search students or class records...</span>
+                <span className="truncate text-sm">
+                  Search students or class records...
+                </span>
               </div>
             </div>
             <div className="flex items-center gap-2">

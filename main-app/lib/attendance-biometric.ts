@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto"
+import { createHash, randomUUID } from "node:crypto"
 
 import {
   AttendanceSessionStatus,
@@ -9,6 +9,9 @@ import {
   BiometricScanStatus,
   FingerprintTemplateStatus,
   FingerLabel,
+  NotificationChannel,
+  NotificationStatus,
+  NotificationType,
 } from "@/app/generated/prisma/enums"
 import { prisma } from "@/lib/prisma"
 
@@ -41,6 +44,18 @@ export function normalizeFingerLabel(value: unknown) {
 
 function clean(value: unknown) {
   return typeof value === "string" ? value.trim() : ""
+}
+
+function optionalDate(value: unknown) {
+  const text = clean(value)
+  if (!text) return undefined
+  const date = new Date(text)
+  return Number.isNaN(date.getTime()) ? undefined : date
+}
+
+function optionalClientRequestId(value: unknown) {
+  const text = clean(value)
+  return text.length > 0 ? text : undefined
 }
 
 function templatePayload(template9: string, template10: string, fpId?: number | null) {
@@ -352,6 +367,96 @@ export async function getAttendanceSession(scope: ActorScope, sessionId: string)
   return session
 }
 
+async function notifyParentsForAttendance(recordId: string) {
+  const record = await prisma.attendanceRecord.findUnique({
+    where: { id: recordId },
+    select: {
+      id: true,
+      markedAt: true,
+      schoolId: true,
+      status: true,
+      studentId: true,
+      session: {
+        select: {
+          class: { select: { name: true } },
+          title: true,
+        },
+      },
+      student: {
+        select: {
+          firstName: true,
+          lastName: true,
+          otherName: true,
+          guardians: {
+            select: {
+              guardian: {
+                select: {
+                  id: true,
+                  notificationPreferences: true,
+                  user: { select: { id: true, email: true, name: true, phone: true } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+
+  if (!record || (record.status !== AttendanceStatus.ABSENT && record.status !== AttendanceStatus.LATE)) return
+
+  const studentName = [record.student.firstName, record.student.otherName, record.student.lastName]
+    .filter(Boolean)
+    .join(" ")
+  const type =
+    record.status === AttendanceStatus.ABSENT
+      ? NotificationType.ABSENCE_ALERT
+      : NotificationType.LATENESS_ALERT
+  const title =
+    record.status === AttendanceStatus.ABSENT
+      ? `${studentName} was marked absent`
+      : `${studentName} was marked late`
+  const message = `${studentName} was marked ${record.status.toLowerCase()} for ${
+    record.session.title
+  } on ${record.markedAt.toLocaleDateString()}.`
+
+  const jobs = record.student.guardians.flatMap(({ guardian }) => {
+    const prefs = guardian.notificationPreferences
+    const wantsAlert =
+      record.status === AttendanceStatus.ABSENT
+        ? prefs?.absentAlerts !== false
+        : prefs?.lateAlerts !== false
+    if (!wantsAlert) return []
+
+    const channels: NotificationChannel[] = []
+    if (prefs?.inAppEnabled !== false) channels.push(NotificationChannel.IN_APP)
+    if (prefs?.emailEnabled !== false && guardian.user.email) channels.push(NotificationChannel.EMAIL)
+    if (prefs?.smsEnabled !== false && guardian.user.phone) channels.push(NotificationChannel.SMS)
+
+    return channels.map((channel) =>
+      prisma.notification.create({
+        data: {
+          attendanceRecordId: record.id,
+          channel,
+          message,
+          schoolId: record.schoolId,
+          sentAt: channel === NotificationChannel.IN_APP ? new Date() : undefined,
+          status:
+            channel === NotificationChannel.IN_APP
+              ? NotificationStatus.SENT
+              : NotificationStatus.PENDING,
+          studentId: record.studentId,
+          title,
+          type,
+          userId: guardian.user.id,
+        },
+      })
+    )
+  })
+
+  await Promise.allSettled(jobs)
+}
+
 export async function recordFingerprintScan(scope: ActorScope, sessionId: string, input: Record<string, unknown>) {
   const session = await getSession(scope, sessionId)
   if (!session) throw new Error("Attendance session not found")
@@ -360,7 +465,30 @@ export async function recordFingerprintScan(scope: ActorScope, sessionId: string
   const studentId = clean(input.studentId)
   const finger = normalizeFingerLabel(input.finger)
   const score = Number(input.score || input.matchScore || 0) || null
+  const clientRequestId = optionalClientRequestId(input.clientRequestId)
+  const markedAt = optionalDate(input.capturedAt) || optionalDate(input.markedAt)
+  const capturedOffline = input.capturedOffline === true || input.capturedOffline === "true"
   if (!studentId) throw new Error("Matched student is required")
+
+  if (clientRequestId) {
+    const [existingRequest, existingScanLog] = await Promise.all([
+      prisma.attendanceRecord.findUnique({
+        where: { clientRequestId },
+        select: { id: true },
+      }),
+      prisma.biometricScanLog.findUnique({
+        where: { clientRequestId },
+        select: { id: true },
+      }),
+    ])
+    if (existingRequest || existingScanLog) {
+      return {
+        duplicate: true,
+        record: existingRequest,
+        session: await getAttendanceSession(scope, sessionId),
+      }
+    }
+  }
 
   const student = await assertStudentScope(scope, studentId)
   if (!student || student.classId !== session.classId) throw new Error("Student is not in this attendance class")
@@ -381,22 +509,29 @@ export async function recordFingerprintScan(scope: ActorScope, sessionId: string
   const record = await prisma.attendanceRecord.upsert({
     where: { sessionId_studentId: { sessionId, studentId } },
     create: {
+      capturedOffline,
+      clientRequestId,
       deviceId: device.id,
       fingerprintMatched: true,
       fingerprintScore: score,
+      markedAt,
       markedByUserId: scope.userId,
       schoolId: scope.schoolId,
       sessionId,
       status: AttendanceStatus.PRESENT,
       studentId,
+      syncedAt: capturedOffline ? new Date() : undefined,
       templateId: template?.id,
       verificationMethod: AttendanceVerificationMethod.FINGERPRINT,
     },
     update: {
+      capturedOffline,
       deviceId: device.id,
       fingerprintMatched: true,
       fingerprintScore: score,
+      ...(markedAt ? { markedAt } : {}),
       markedByUserId: scope.userId,
+      syncedAt: capturedOffline ? new Date() : undefined,
       templateId: template?.id,
       verificationMethod: AttendanceVerificationMethod.FINGERPRINT,
     },
@@ -405,6 +540,7 @@ export async function recordFingerprintScan(scope: ActorScope, sessionId: string
   await prisma.biometricScanLog.create({
     data: {
       attendanceRecordId: record.id,
+      clientRequestId,
       deviceId: device.id,
       matchScore: score,
       message: existing ? "Student was already marked for this session" : "Fingerprint attendance recorded",
@@ -417,24 +553,76 @@ export async function recordFingerprintScan(scope: ActorScope, sessionId: string
     },
   })
 
+  await notifyParentsForAttendance(record.id)
+
   return { duplicate: Boolean(existing), record, session: await getAttendanceSession(scope, sessionId) }
 }
 
 export async function recordFailedScan(scope: ActorScope, sessionId: string, input: Record<string, unknown>) {
   const session = await getSession(scope, sessionId)
   if (!session) throw new Error("Attendance session not found")
+  const clientRequestId = optionalClientRequestId(input.clientRequestId)
+  if (clientRequestId) {
+    const existing = await prisma.biometricScanLog.findUnique({
+      where: { clientRequestId },
+      select: { id: true },
+    })
+    if (existing) return { duplicate: true, session }
+  }
   const device = await ensureDevice(scope.schoolId, input.device as DevicePayload | undefined)
   await prisma.biometricScanLog.create({
     data: {
+      clientRequestId,
       deviceId: device.id,
       message: clean(input.message) || "Fingerprint was not matched",
       performedById: scope.userId,
       purpose: BiometricScanPurpose.IDENTIFICATION,
       schoolId: scope.schoolId,
+      scannedAt: optionalDate(input.capturedAt) || undefined,
       status: BiometricScanStatus.NO_MATCH,
     },
   })
   return { session }
+}
+
+export async function syncAttendanceScans(scope: ActorScope, sessionId: string, input: Record<string, unknown>) {
+  const items = Array.isArray(input.items) ? (input.items as Record<string, unknown>[]) : []
+
+  const results = []
+  for (const item of items) {
+    const clientRequestId = clean(item.clientRequestId)
+    try {
+      const payload: Record<string, unknown> = {
+        ...((item.payload && typeof item.payload === "object" ? item.payload : item) as Record<string, unknown>),
+        action: item.action,
+        capturedAt: item.capturedAt,
+        capturedOffline: true,
+        clientRequestId,
+        device: item.device,
+      }
+      const result =
+        payload.action === "close"
+          ? { duplicate: false, session: await closeAttendanceSession(scope, sessionId) }
+          : payload.action === "adjust"
+            ? await adjustAttendanceRecord(scope, sessionId, clean(payload.studentId), payload)
+            : payload.matched === false || payload.status === "NO_MATCH"
+              ? await recordFailedScan(scope, sessionId, payload)
+              : await recordFingerprintScan(scope, sessionId, payload)
+
+      results.push({
+        clientRequestId,
+        status: "duplicate" in result && result.duplicate ? "duplicate" : "synced",
+      })
+    } catch (error) {
+      results.push({
+        clientRequestId,
+        error: error instanceof Error ? error.message : "Sync failed",
+        status: "failed",
+      })
+    }
+  }
+
+  return { results }
 }
 
 export async function adjustAttendanceRecord(
@@ -484,6 +672,8 @@ export async function adjustAttendanceRecord(
     },
   })
 
+  await notifyParentsForAttendance(record.id)
+
   return { record, session: await getAttendanceSession(scope, sessionId) }
 }
 
@@ -503,10 +693,15 @@ export async function closeAttendanceSession(scope: ActorScope, sessionId: strin
   const marked = new Set(existing.map((item) => item.studentId))
   const missing = students.filter((student) => !marked.has(student.id))
 
+  const createdMissing: string[] = []
+
   await prisma.$transaction([
-    ...missing.map((student) =>
-      prisma.attendanceRecord.create({
+    ...missing.map((student) => {
+      const id = randomUUID()
+      createdMissing.push(id)
+      return prisma.attendanceRecord.create({
         data: {
+          id,
           markedByUserId: scope.userId,
           remarks: "Automatically marked absent when session closed.",
           schoolId: scope.schoolId,
@@ -516,7 +711,7 @@ export async function closeAttendanceSession(scope: ActorScope, sessionId: strin
           verificationMethod: AttendanceVerificationMethod.MANUAL,
         },
       })
-    ),
+    }),
     prisma.attendanceSession.update({
       where: { id: sessionId },
       data: { endsAt: new Date(), status: AttendanceSessionStatus.CLOSED },
@@ -532,6 +727,8 @@ export async function closeAttendanceSession(scope: ActorScope, sessionId: strin
       },
     }),
   ])
+
+  await Promise.allSettled(createdMissing.map((recordId) => notifyParentsForAttendance(recordId)))
 
   return getAttendanceSession(scope, sessionId)
 }

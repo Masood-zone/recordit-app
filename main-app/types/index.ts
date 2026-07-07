@@ -280,6 +280,7 @@ export interface BiometricScanLog {
   templateId?: Nullable<ID>
   performedById?: Nullable<ID>
   attendanceRecordId?: Nullable<ID>
+  clientRequestId?: Nullable<string>
   purpose: BiometricScanPurpose
   status: BiometricScanStatus
   matchScore?: Nullable<number>
@@ -312,6 +313,7 @@ export interface AttendanceRecord extends Timestamped {
   studentId: ID
   deviceId?: Nullable<ID>
   templateId?: Nullable<ID>
+  clientRequestId?: Nullable<string>
   status: AttendanceStatus
   markedAt: DateLike
   markedByUserId?: Nullable<ID>
@@ -319,6 +321,8 @@ export interface AttendanceRecord extends Timestamped {
   fingerprintMatched: boolean
   fingerprintScore?: Nullable<number>
   remarks?: Nullable<string>
+  capturedOffline: boolean
+  syncedAt?: Nullable<DateLike>
   student?: Student
   session?: AttendanceSession
 }

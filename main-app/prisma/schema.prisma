@@ -528,6 +528,7 @@ model BiometricScanLog {
   templateId         String?
   performedById      String?
   attendanceRecordId String?
+  clientRequestId    String?              @unique
   purpose            BiometricScanPurpose
   status             BiometricScanStatus
   matchScore         Int?
@@ -589,6 +590,7 @@ model AttendanceRecord {
   studentId          String
   deviceId           String?
   templateId         String?
+  clientRequestId    String?                      @unique
   status             AttendanceStatus
   markedAt           DateTime                     @default(now())
   markedByUserId     String?
@@ -596,6 +598,8 @@ model AttendanceRecord {
   fingerprintMatched Boolean                      @default(false)
   fingerprintScore   Int?
   remarks            String?
+  capturedOffline    Boolean                      @default(false)
+  syncedAt           DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

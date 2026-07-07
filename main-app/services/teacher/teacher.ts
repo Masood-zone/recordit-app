@@ -12,6 +12,7 @@ export const teacherKeys = {
   all: ["teacher"] as const,
   attendanceSessions: ["teacher", "attendance-sessions"] as const,
   dashboard: ["teacher", "dashboard"] as const,
+  reports: (params?: Record<string, string>) => ["teacher", "reports", params] as const,
   students: (params?: Record<string, string>) => ["teacher", "students", params] as const,
   student: (studentId?: string) => ["teacher", "students", studentId] as const,
   syncRoster: ["teacher", "fingerprints", "sync-roster"] as const,
@@ -71,6 +72,15 @@ export function useTeacherAttendanceSessions(enabled = true) {
   })
 }
 
+export function useTeacherReports(params?: Record<string, string>, enabled = true) {
+  return useQuery({
+    enabled,
+    queryKey: teacherKeys.reports(params),
+    queryFn: () =>
+      unwrap<TeacherEntity>(api.get("/teacher/reports", { params }), "Reports could not be loaded"),
+  })
+}
+
 export function useTeacherSyncRoster(enabled = true) {
   return useQuery({
     enabled,
@@ -89,6 +99,16 @@ export function useTeacherPost(path: string) {
   return useMutation({
     mutationFn: (input: TeacherEntity) =>
       unwrap<TeacherEntity>(api.post(path, input), "Save failed"),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: teacherKeys.all }),
+  })
+}
+
+export function useTeacherGenerateReport() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (input: TeacherEntity) =>
+      unwrap<TeacherEntity>(api.post("/teacher/reports", input), "Report could not be generated"),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: teacherKeys.all }),
   })
 }

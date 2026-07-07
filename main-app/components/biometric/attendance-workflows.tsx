@@ -3,12 +3,20 @@
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useQueryClient } from "@tanstack/react-query"
-import { FormEvent, useMemo, useState } from "react"
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 
 import { MaterialSymbol } from "@/components/common/MaterialSymbol"
 import { Button } from "@/components/ui/button"
 import { bridgeApi, type EnrollmentState, type FingerName, type IdentifyState } from "@/lib/bridge-api"
+import {
+  enqueueOfflineAttendance,
+  listOfflineAttendance,
+  queueId,
+  removeOfflineAttendance,
+  updateOfflineAttendance,
+  type OfflineAttendanceQueueItem,
+} from "@/lib/offline-attendance-queue"
 import {
   EmptyState,
   PageHeader,
@@ -328,6 +336,10 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
   const { classes, post, roster, sessions, students } = useRoleAttendance(role)
   const [sessionId, setSessionId] = useState("")
   const [scan, setScan] = useState<IdentifyState | null>(null)
+  const [queueItems, setQueueItems] = useState<OfflineAttendanceQueueItem[]>([])
+  const [syncingQueue, setSyncingQueue] = useState(false)
+  const [syncedThisRun, setSyncedThisRun] = useState(0)
+  const syncQueueRunningRef = useRef(false)
   const [syncing, setSyncing] = useState(false)
   const [scanning, setScanning] = useState(false)
   const selectedSession = useMemo(
@@ -339,8 +351,132 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
   const present = records.filter((record) => text(record.status) === "PRESENT").length
   const late = records.filter((record) => text(record.status) === "LATE").length
   const absent = records.filter((record) => text(record.status) === "ABSENT").length
+  const pendingQueue = queueItems.filter((item) => item.status === "pending" || item.status === "syncing").length
+  const failedQueue = queueItems.filter((item) => item.status === "failed").length
+
+  const refreshQueue = useCallback(async () => {
+    if (typeof window === "undefined") return
+    setQueueItems(await listOfflineAttendance(role))
+  }, [role])
+
+  const queueScan = useCallback(
+    async ({
+      action = "scan",
+      capturedAt,
+      clientRequestId,
+      payload,
+      sessionId,
+    }: {
+      action?: OfflineAttendanceQueueItem["action"]
+      capturedAt: string
+      clientRequestId: string
+      payload: R
+      sessionId: string
+    }) => {
+      await enqueueOfflineAttendance({
+        action,
+        capturedAt,
+        clientRequestId,
+        device: { bridgeUrl: "http://127.0.0.1:5050", model: "ZKTeco ZK9500" },
+        payload,
+        role,
+        sessionId,
+      })
+      await refreshQueue()
+    },
+    [refreshQueue, role]
+  )
+
+  const syncOfflineQueue = useCallback(async () => {
+    if (typeof window === "undefined" || syncQueueRunningRef.current) return
+    syncQueueRunningRef.current = true
+    const items = (await listOfflineAttendance(role)).filter((item) => item.status !== "synced")
+    if (!items.length) {
+      setQueueItems([])
+      syncQueueRunningRef.current = false
+      return
+    }
+
+    setSyncingQueue(true)
+    setSyncedThisRun(0)
+    let synced = 0
+    const bySession = new Map<string, OfflineAttendanceQueueItem[]>()
+    for (const item of items) {
+      const group = bySession.get(item.sessionId) || []
+      group.push(item.status === "failed" ? { ...item, status: "pending" } : item)
+      bySession.set(item.sessionId, group)
+      await updateOfflineAttendance(item.clientRequestId, { status: "syncing" })
+    }
+    await refreshQueue()
+
+    for (const [queuedSessionId, group] of bySession) {
+      try {
+        const response = await fetch(
+          `/api${apiBase(role)}/attendance-sessions/${queuedSessionId}/scans/sync`,
+          {
+            body: JSON.stringify({ items: group }),
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            method: "POST",
+          }
+        )
+        const payload = await response.json()
+        if (!response.ok || !payload.success) throw new Error(payload.message || "Queue sync failed")
+        const results = list(obj(payload.data).results)
+        for (const result of results) {
+          const id = text(result.clientRequestId)
+          if (!id) continue
+          if (text(result.status) === "synced" || text(result.status) === "duplicate") {
+            await removeOfflineAttendance(id)
+            synced += 1
+          } else {
+            const item = group.find((entry) => entry.clientRequestId === id)
+            await updateOfflineAttendance(id, {
+              lastError: text(result.error, "Sync failed"),
+              retryCount: (item?.retryCount || 0) + 1,
+              status: "failed",
+            })
+          }
+        }
+      } catch (error) {
+        for (const item of group) {
+          await updateOfflineAttendance(item.clientRequestId, {
+            lastError: error instanceof Error ? error.message : "Queue sync failed",
+            retryCount: item.retryCount + 1,
+            status: "failed",
+          })
+        }
+      }
+    }
+
+    setSyncedThisRun(synced)
+    await queryClient.invalidateQueries({ queryKey: [role] })
+    await refreshQueue()
+    setSyncingQueue(false)
+    syncQueueRunningRef.current = false
+    if (synced) toast.success(`${synced} offline scans synced`)
+  }, [queryClient, refreshQueue, role])
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    window.setTimeout(() => void refreshQueue(), 0)
+    if (navigator.onLine) window.setTimeout(() => void syncOfflineQueue(), 0)
+    const onOnline = () => void syncOfflineQueue()
+    const retry = window.setInterval(() => {
+      if (navigator.onLine) void syncOfflineQueue()
+    }, 15000)
+    window.addEventListener("online", onOnline)
+    return () => {
+      window.clearInterval(retry)
+      window.removeEventListener("online", onOnline)
+    }
+  }, [refreshQueue, syncOfflineQueue])
 
   async function syncRoster() {
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      toast.warning("Offline mode is active. Template sync will run when internet returns.")
+      return
+    }
     setSyncing(true)
     try {
       await bridgeApi.syncStudents(list(roster?.students) as never)
@@ -354,6 +490,10 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
 
   async function openSession(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      toast.warning("Opening a new attendance session needs internet. Use an already-open session while offline.")
+      return
+    }
     const data = Object.fromEntries(new FormData(event.currentTarget).entries())
     try {
       const result = await post.mutateAsync(data)
@@ -387,38 +527,65 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
       })
       const done = await pollUntilDone(bridgeApi.identifyStatus, setScan)
       const path = `${apiBase(role)}/attendance-sessions/${text(selectedSession.id)}/scans`
+      const capturedAt = new Date().toISOString()
+      const clientRequestId = queueId()
+      const submitPayload = !done.matched || !done.studentId
+        ? {
+            clientRequestId,
+            matched: false,
+            message: done.message,
+            status: "NO_MATCH",
+          }
+        : {
+            clientRequestId,
+            finger: done.finger,
+            matched: true,
+            matchScore: done.score,
+            score: done.score,
+            studentId: done.studentId,
+          }
+      async function submitOrQueue() {
+      if (!navigator.onLine) {
+          await queueScan({
+            capturedAt,
+            clientRequestId,
+            payload: submitPayload,
+            sessionId: text(selectedSession.id),
+          })
+          toast.warning("Internet is offline. Scan saved to offline queue.")
+          return null
+        }
+        try {
+          return await fetch(`/api${path}`, {
+            body: JSON.stringify({ ...submitPayload, capturedAt }),
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            method: "POST",
+          }).then(async (res) => {
+            const payload = await res.json()
+            if (!res.ok || !payload.success) throw new Error(payload.message || "Attendance scan failed")
+            return payload.data as R
+          })
+        } catch (error) {
+          await queueScan({
+            capturedAt,
+            clientRequestId,
+            payload: submitPayload,
+            sessionId: text(selectedSession.id),
+          })
+          toast.warning(error instanceof Error ? `Scan queued: ${error.message}` : "Scan saved to offline queue")
+          return null
+        }
+      }
       if (!done.matched || !done.studentId) {
-        await fetch(`/api${path}`, {
-          body: JSON.stringify({ matched: false, message: done.message, status: "NO_MATCH" }),
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          method: "POST",
-        }).then(async (res) => {
-          const payload = await res.json()
-          if (!res.ok || !payload.success) throw new Error(payload.message || "Scan log failed")
-        })
+        await submitOrQueue()
         await queryClient.invalidateQueries({ queryKey: [role] })
         toast.error("Student not found")
         return
       }
-      const result = await fetch(`/api${path}`, {
-        body: JSON.stringify({
-          finger: done.finger,
-          matched: true,
-          matchScore: done.score,
-          score: done.score,
-          studentId: done.studentId,
-        }),
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-      }).then(async (res) => {
-        const payload = await res.json()
-        if (!res.ok || !payload.success) throw new Error(payload.message || "Attendance scan failed")
-        return payload.data as R
-      })
+      const result = await submitOrQueue()
       await queryClient.invalidateQueries({ queryKey: [role] })
-      toast.success(Boolean(result.duplicate) ? "Student was already marked" : "Attendance recorded")
+      if (result) toast.success(Boolean(result.duplicate) ? "Student was already marked" : "Attendance recorded")
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Scan failed")
     } finally {
@@ -432,9 +599,25 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
     const data = Object.fromEntries(new FormData(event.currentTarget).entries())
     const studentId = text(data.studentId)
     if (!studentId) return
+    const clientRequestId = queueId()
+    const capturedAt = new Date().toISOString()
+    async function queueAdjustment(message: string) {
+      await queueScan({
+        action: "adjust",
+        capturedAt,
+        clientRequestId,
+        payload: { ...data, clientRequestId, studentId },
+        sessionId: text(selectedSession.id),
+      })
+      toast.warning(message)
+    }
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      await queueAdjustment("Offline mode is active. Manual adjustment saved to queue.")
+      return
+    }
     try {
       await fetch(`/api${apiBase(role)}/attendance-sessions/${text(selectedSession.id)}/records/${studentId}`, {
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, clientRequestId, capturedAt }),
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         method: "PATCH",
@@ -445,15 +628,31 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
       await queryClient.invalidateQueries({ queryKey: [role] })
       toast.success("Attendance adjusted")
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Adjustment failed")
+      await queueAdjustment(error instanceof Error ? `Adjustment queued: ${error.message}` : "Adjustment saved to queue")
     }
   }
 
   async function closeSession() {
     if (!selectedSession?.id) return
+    const clientRequestId = queueId()
+    const capturedAt = new Date().toISOString()
+    async function queueClose(message: string) {
+      await queueScan({
+        action: "close",
+        capturedAt,
+        clientRequestId,
+        payload: { clientRequestId },
+        sessionId: text(selectedSession.id),
+      })
+      toast.warning(message)
+    }
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      await queueClose("Offline mode is active. Close session saved to queue.")
+      return
+    }
     try {
       await fetch(`/api${apiBase(role)}/attendance-sessions/${text(selectedSession.id)}/close`, {
-        body: "{}",
+        body: JSON.stringify({ clientRequestId, capturedAt }),
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         method: "POST",
@@ -464,7 +663,7 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
       await queryClient.invalidateQueries({ queryKey: [role] })
       toast.success("Session closed")
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not close session")
+      await queueClose(error instanceof Error ? `Close queued: ${error.message}` : "Close session saved to queue")
     }
   }
 
@@ -480,6 +679,9 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
         <StatCard icon="event_busy" label="Absent" value={absent} />
         <StatCard tone="blue" icon="schedule" label="Late" value={late} />
         <StatCard icon="groups" label="Records" value={records.length} />
+        <StatCard icon="cloud_upload" label="Offline Pending" value={pendingQueue} />
+        <StatCard icon="sync_problem" label="Sync Failed" value={failedQueue} />
+        <StatCard icon="done_all" label="Synced Now" value={syncedThisRun} />
       </section>
       <section className="grid gap-6 xl:grid-cols-[380px_1fr]">
         <div className="space-y-6">
@@ -506,6 +708,40 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
             </div>
           </form>
           <BridgeStatusPanel onSync={syncRoster} syncing={syncing} />
+          <section className="rounded-xl border border-outline-variant bg-white p-5 shadow-card">
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-bold text-primary-container">Offline Queue</h2>
+                <p className="text-sm text-on-surface-variant">
+                  Scans captured without internet are synced back to RecordIT when connection returns.
+                </p>
+              </div>
+              <StatusBadge status={pendingQueue || failedQueue ? "PENDING" : "CLEAR"} />
+            </div>
+            <div className="grid grid-cols-3 gap-3 text-center text-sm">
+              <div className="rounded-lg bg-surface-container p-3">
+                <p className="text-xl font-bold">{pendingQueue}</p>
+                <p className="text-on-surface-variant">Pending</p>
+              </div>
+              <div className="rounded-lg bg-surface-container p-3">
+                <p className="text-xl font-bold">{failedQueue}</p>
+                <p className="text-on-surface-variant">Failed</p>
+              </div>
+              <div className="rounded-lg bg-surface-container p-3">
+                <p className="text-xl font-bold">{syncedThisRun}</p>
+                <p className="text-on-surface-variant">Synced</p>
+              </div>
+            </div>
+            <Button type="button" className="mt-4 w-full" variant="outline" onClick={syncOfflineQueue} disabled={syncingQueue || (!pendingQueue && !failedQueue)}>
+              <MaterialSymbol icon={syncingQueue ? "progress_activity" : "sync"} className={syncingQueue ? "animate-spin" : ""} />
+              {syncingQueue ? "Syncing Queue..." : "Sync Queue"}
+            </Button>
+            {failedQueue ? (
+              <p className="mt-3 text-xs text-destructive">
+                Last error: {text(queueItems.find((item) => item.status === "failed")?.lastError, "Sync failed")}
+              </p>
+            ) : null}
+          </section>
           <form onSubmit={adjust} className="rounded-xl border border-outline-variant bg-white p-5 shadow-card">
             <h2 className="mb-4 text-lg font-bold text-primary-container">Manual Adjustment</h2>
             <div className="grid gap-4">

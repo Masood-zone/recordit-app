@@ -12,6 +12,7 @@ import {
   UserStatus,
 } from "@/app/generated/prisma/enums"
 import { apiError, requireSchoolAdminApi } from "@/lib/api-auth"
+import { createAttendanceReport, getAttendanceReport } from "@/lib/attendance-reports"
 import {
   adjustAttendanceRecord,
   closeAttendanceSession,
@@ -22,6 +23,7 @@ import {
   persistFingerprintEnrollment,
   recordFailedScan,
   recordFingerprintScan,
+  syncAttendanceScans,
 } from "@/lib/attendance-biometric"
 import {
   clean,
@@ -991,6 +993,9 @@ export async function GET(request: Request, context: Context) {
   if (path[0] === "attendance-sessions") {
     return ok({ sessions: await listAttendanceSessions({ schoolId, userId: auth.user!.id }) })
   }
+  if (path[0] === "reports") {
+    return ok(await getAttendanceReport({ schoolId, userId: auth.user!.id }, request))
+  }
   if (path[0] === "settings") {
     const [school, settings] = await Promise.all([
       prisma.school.findUnique({ where: { id: schoolId } }),
@@ -1046,6 +1051,12 @@ export async function POST(request: Request, context: Context) {
       return fail(error instanceof Error ? error.message : "Attendance session could not be opened")
     }
   }
+  if (path[0] === "attendance-sessions" && path[1] && path[2] === "scans" && path[3] === "sync") {
+    return ok(
+      await syncAttendanceScans({ schoolId, userId: auth.user!.id }, path[1], input),
+      "Offline attendance queue synced"
+    )
+  }
   if (path[0] === "attendance-sessions" && path[1] && path[2] === "scans") {
     try {
       if (input.matched === false || input.status === "NO_MATCH") {
@@ -1062,6 +1073,13 @@ export async function POST(request: Request, context: Context) {
     } catch (error) {
       return fail(error instanceof Error ? error.message : "Attendance session could not be closed")
     }
+  }
+  if (path[0] === "reports") {
+    return ok(
+      await createAttendanceReport({ schoolId, userId: auth.user!.id }, request, input),
+      "Report generated",
+      201
+    )
   }
   if (path[0] === "classes") return createOrUpdateClass(auth, input)
   if (path[0] === "teachers") return createTeacher(auth, input)

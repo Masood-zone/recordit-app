@@ -15,6 +15,7 @@ export const adminKeys = {
   dashboard: ["admin", "dashboard"] as const,
   options: ["admin", "options"] as const,
   parents: ["admin", "parents"] as const,
+  reports: (params?: Record<string, string>) => ["admin", "reports", params] as const,
   settings: ["admin", "settings"] as const,
   students: ["admin", "students"] as const,
   teachers: ["admin", "teachers"] as const,
@@ -78,6 +79,15 @@ export function useAdminAttendanceSessions(enabled = true) {
         api.get("/admin/attendance-sessions"),
         "Attendance sessions could not be loaded"
       ),
+  })
+}
+
+export function useAdminReports(params?: Record<string, string>, enabled = true) {
+  return useQuery({
+    enabled,
+    queryKey: adminKeys.reports(params),
+    queryFn: () =>
+      unwrap<AdminEntity>(api.get("/admin/reports", { params }), "Reports could not be loaded"),
   })
 }
 
@@ -154,6 +164,15 @@ export function useAdminPost(path: string) {
   const invalidate = useInvalidateAdmin()
   return useMutation({
     mutationFn: (input: AdminEntity) => unwrap<AdminEntity>(api.post(path, input), "Save failed"),
+    onSuccess: invalidate,
+  })
+}
+
+export function useAdminGenerateReport() {
+  const invalidate = useInvalidateAdmin()
+  return useMutation({
+    mutationFn: (input: AdminEntity) =>
+      unwrap<AdminEntity>(api.post("/admin/reports", input), "Report could not be generated"),
     onSuccess: invalidate,
   })
 }
