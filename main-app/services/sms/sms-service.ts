@@ -149,6 +149,19 @@ class SMSService {
     })
   }
 
+  async sendPasswordResetSMS(args: {
+    phoneNumber: string
+    resetUrl: string
+    userName: string
+  }): Promise<void> {
+    const message = `Hello ${args.userName}, use this secure RecordIT link to reset your password: ${args.resetUrl}. Ignore this SMS if you did not request it.`
+
+    await this.sendSMS({
+      to: args.phoneNumber,
+      message,
+    })
+  }
+
   formatPhoneNumber(phoneNumber: string): string {
     const cleaned = phoneNumber.replace(/\D/g, "")
 

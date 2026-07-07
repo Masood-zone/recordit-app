@@ -5,6 +5,7 @@ import { OrganizationApplicationDecisionEmail } from "@/services/email/organizat
 import { MemberInvitationEmail } from "@/services/email/member-invitation-email"
 import { OnboardingReceivedEmail } from "@/services/email/onboarding-received-email"
 import { PaymentSuccessEmail } from "@/services/email/payment-success-email"
+import { PasswordResetEmail } from "@/services/email/password-reset-email"
 import { SchoolOnboardingReceivedEmail } from "@/services/email/school-onboarding-received-email"
 import { WelfareProgramDueReminderEmail } from "@/services/email/welfare-program-due-reminder-email"
 import { WelfareProgramEnrollmentEmail } from "@/services/email/welfare-program-enrollment-email"
@@ -74,6 +75,12 @@ interface PaymentSuccessEmailData {
   paidAt: string
   programTitle: string
   reference: string
+}
+
+interface PasswordResetEmailData {
+  resetUrl: string
+  userEmail: string
+  userName: string
 }
 
 class EmailService {
@@ -299,6 +306,22 @@ class EmailService {
       subject: `Payment confirmed: ${data.programTitle}`,
       html,
       text: `Hello ${data.memberName}, your payment of GHS ${data.amount.toFixed(2)} for ${data.programTitle} was confirmed. Reference: ${data.reference}. Paid at: ${data.paidAt}.`,
+    })
+  }
+
+  async sendPasswordResetEmail(data: PasswordResetEmailData): Promise<void> {
+    const html = await render(
+      PasswordResetEmail({
+        resetUrl: data.resetUrl,
+        userName: data.userName,
+      })
+    )
+
+    await this.sendEmail({
+      to: data.userEmail,
+      subject: "Reset your RecordIT password",
+      html,
+      text: `Hello ${data.userName}, reset your RecordIT password here: ${data.resetUrl}. If you did not request this, you can ignore this message.`,
     })
   }
 
