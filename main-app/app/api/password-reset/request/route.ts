@@ -6,8 +6,7 @@ import { UserStatus } from "@/app/generated/prisma/enums"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
-const GENERIC_MESSAGE =
-  "If the account exists, reset instructions have been sent."
+const GENERIC_MESSAGE = "Account Reset instructions have been sent."
 const THROTTLE_PREFIX = "recordit-password-reset"
 const THROTTLE_WINDOW_MS = 15 * 60 * 1000
 const MAX_REQUESTS_PER_WINDOW = 3
@@ -96,16 +95,21 @@ async function findEmailForIdentifier(identifier: string) {
   const normalizedPhone = normalizePhone(identifier)
   if (normalizedPhone.length < 9) return null
 
+  const lastNineDigits = normalizedPhone.slice(-9)
+  const lastFourDigits = normalizedPhone.slice(-4)
   const users = await prisma.user.findMany({
     where: {
-      phone: { contains: normalizedPhone.slice(-9) },
+      OR: [
+        { phone: { contains: lastNineDigits } },
+        { phone: { contains: lastFourDigits } },
+      ],
       status: UserStatus.ACTIVE,
     },
     select: {
       email: true,
       phone: true,
     },
-    take: 5,
+    take: 25,
   })
 
   const matches = users.filter(
