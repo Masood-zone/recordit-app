@@ -131,20 +131,25 @@ function terminal(status: string) {
   return status === "SUCCESS" || status === "FAILED"
 }
 
+const FINGERPRINT_OPERATION_TIMEOUT_MS = 60_000
+const FINGERPRINT_ENROLLMENT_TIMEOUT_MS = 120_000
+
 async function pollUntilDone<T extends { status: string }>(
   load: () => Promise<T>,
-  apply: (value: T) => void
+  apply: (value: T) => void,
+  timeoutMs = FINGERPRINT_OPERATION_TIMEOUT_MS,
+  operationName = "Operation"
 ) {
   const startedAt = Date.now()
 
-  while (Date.now() - startedAt < 60000) {
+  while (Date.now() - startedAt < timeoutMs) {
     await new Promise((resolve) => window.setTimeout(resolve, 1000))
     const next = await load()
     apply(next)
     if (terminal(next.status)) return
   }
 
-  throw new Error("Operation timed out after 60 seconds.")
+  throw new Error(`${operationName} timed out after ${timeoutMs / 1000} seconds.`)
 }
 
 function baseState() {
@@ -331,9 +336,14 @@ export const useFingerprintPocStore = create<FingerprintPocStore>(
       }
     },
     pollEnrollmentStatus: async () => {
-      await pollUntilDone(bridgeApi.enrollmentStatus, (enrollment) => {
-        set({ enrollment })
-      })
+      await pollUntilDone(
+        bridgeApi.enrollmentStatus,
+        (enrollment) => {
+          set({ enrollment })
+        },
+        FINGERPRINT_ENROLLMENT_TIMEOUT_MS,
+        "Fingerprint enrollment"
+      )
       get().addFrontendLog(`Enrollment ${get().enrollment.status}`)
     },
     startCapture: async () => {

@@ -44,6 +44,9 @@ import {
 type R = Record<string, unknown>
 type Role = "admin" | "teacher"
 
+const FINGERPRINT_OPERATION_TIMEOUT_MS = 60_000
+const FINGERPRINT_ENROLLMENT_TIMEOUT_MS = 120_000
+
 const fingerOptions = [
   ["LEFT_THUMB", "Left thumb"],
   ["RIGHT_THUMB", "Right thumb"],
@@ -87,15 +90,20 @@ function apiBase(role: Role) {
   return role === "admin" ? "/admin" : "/teacher"
 }
 
-async function pollUntilDone<T extends { status: string }>(load: () => Promise<T>, apply: (value: T) => void) {
+async function pollUntilDone<T extends { status: string }>(
+  load: () => Promise<T>,
+  apply: (value: T) => void,
+  timeoutMs = FINGERPRINT_OPERATION_TIMEOUT_MS,
+  operationName = "Fingerprint operation"
+) {
   const startedAt = Date.now()
-  while (Date.now() - startedAt < 60000) {
+  while (Date.now() - startedAt < timeoutMs) {
     await new Promise((resolve) => window.setTimeout(resolve, 900))
     const next = await load()
     apply(next)
     if (next.status === "SUCCESS" || next.status === "FAILED") return next
   }
-  throw new Error("Fingerprint operation timed out after 60 seconds.")
+  throw new Error(`${operationName} timed out after ${timeoutMs / 1000} seconds.`)
 }
 
 function BridgeStatusPanel({
@@ -215,7 +223,12 @@ export function FingerprintEnrollmentWorkflow({ role }: { role: Role }) {
         template10: null,
         template10Length: 0,
       })
-      const done = await pollUntilDone(bridgeApi.enrollmentStatus, setEnrollment)
+      const done = await pollUntilDone(
+        bridgeApi.enrollmentStatus,
+        setEnrollment,
+        FINGERPRINT_ENROLLMENT_TIMEOUT_MS,
+        "Fingerprint enrollment"
+      )
       if (done.status !== "SUCCESS" || !done.template9 || !done.template10) {
         throw new Error(done.message || "Enrollment did not return a usable template")
       }
