@@ -78,6 +78,11 @@ function toGender(value: unknown) {
   return Gender.OTHER
 }
 
+function toStudentActiveStatus(value: unknown) {
+  const text = clean(value).toUpperCase()
+  return !(value === false || text === "FALSE" || text === "INACTIVE" || text === "0")
+}
+
 function toUserStatus(value: unknown) {
   const text = clean(value).toUpperCase()
   if (text === UserStatus.INACTIVE || text === UserStatus.SUSPENDED) return text
@@ -144,6 +149,7 @@ const studentSelect = {
   },
   gender: true,
   guardians: {
+    orderBy: { isPrimary: "desc" as const },
     select: {
       id: true,
       isPrimary: true,
@@ -758,6 +764,11 @@ async function createOrUpdateStudent(
   const errors = fieldErrors(input, ["studentNumber", "firstName", "lastName", "gender"])
   if (Object.keys(errors).length) return fail("Please complete the student form", errors)
   const schoolId = auth.schoolId!
+  const classId = optionalClean(input.classId)
+  const guardianId = optionalClean(input.guardianId)
+  const guardianRelationship = optionalClean(input.guardianRelationship)
+  const studentNumber = clean(input.studentNumber)
+
   if (studentId) {
     const existing = await prisma.student.findFirst({
       where: { id: studentId, schoolId },
@@ -766,36 +777,91 @@ async function createOrUpdateStudent(
     if (!existing) return apiError("Student not found", 404, "NOT_FOUND")
   }
 
+  const duplicate = await prisma.student.findFirst({
+    where: {
+      schoolId,
+      studentNumber,
+      ...(studentId ? { NOT: { id: studentId } } : {}),
+    },
+    select: { id: true },
+  })
+  if (duplicate) return apiError("A student with this student ID already exists", 409, "CONFLICT")
+
+  if (classId) {
+    const assignedClass = await prisma.class.findFirst({
+      where: { id: classId, schoolId },
+      select: { id: true },
+    })
+    if (!assignedClass) return apiError("Class not found", 404, "NOT_FOUND")
+  }
+
+  if (guardianId) {
+    const guardian = await prisma.parentGuardian.findFirst({
+      where: { id: guardianId, schoolId },
+      select: { id: true },
+    })
+    if (!guardian) return apiError("Parent/guardian not found", 404, "NOT_FOUND")
+    if (!guardianRelationship) {
+      return fail("Please provide the student's relationship to the selected parent/guardian", {
+        guardianRelationship: ["Relationship is required when a parent/guardian is selected"],
+      })
+    }
+  }
+
   const saved = await prisma.$transaction(async (tx) => {
     const data = {
-      classId: optionalClean(input.classId),
-      dateOfBirth: toDate(input.dateOfBirth),
+      classId: classId ?? null,
+      dateOfBirth: toDate(input.dateOfBirth) ?? null,
       firstName: clean(input.firstName),
       gender: toGender(input.gender),
-      isActive: input.isActive === false ? false : true,
+      isActive: toStudentActiveStatus(input.isActive),
       lastName: clean(input.lastName),
-      otherName: optionalClean(input.otherName),
-      photoUrl: optionalClean(input.photoUrl),
+      otherName: optionalClean(input.otherName) ?? null,
+      photoUrl: optionalClean(input.photoUrl) ?? null,
       schoolId,
-      studentNumber: clean(input.studentNumber),
+      studentNumber,
     }
     const student = studentId
       ? await tx.student.update({ where: { id: studentId }, data })
       : await tx.student.create({ data })
 
-    const guardianId = optionalClean(input.guardianId)
-    if (guardianId && input.guardianRelationship) {
+    if (input.manageGuardian === true) {
+      const previousGuardianId = optionalClean(input.previousGuardianId)
+
+      if (previousGuardianId && previousGuardianId !== guardianId) {
+        await tx.studentGuardian.deleteMany({
+          where: { guardianId: previousGuardianId, studentId: student.id },
+        })
+      }
+
+      if (guardianId && guardianRelationship) {
+        await tx.studentGuardian.updateMany({
+          where: { studentId: student.id },
+          data: { isPrimary: false },
+        })
+        await tx.studentGuardian.upsert({
+          where: { studentId_guardianId: { studentId: student.id, guardianId } },
+          create: {
+            guardianId,
+            isPrimary: true,
+            relationship: guardianRelationship,
+            studentId: student.id,
+          },
+          update: { isPrimary: true, relationship: guardianRelationship },
+        })
+      }
+    } else if (guardianId && guardianRelationship) {
       await tx.studentGuardian.upsert({
         where: { studentId_guardianId: { studentId: student.id, guardianId } },
         create: {
           guardianId,
-          isPrimary: Boolean(input.isPrimaryGuardian),
-          relationship: clean(input.guardianRelationship),
+          isPrimary: input.isPrimaryGuardian !== false,
+          relationship: guardianRelationship,
           studentId: student.id,
         },
         update: {
-          isPrimary: Boolean(input.isPrimaryGuardian),
-          relationship: clean(input.guardianRelationship),
+          isPrimary: input.isPrimaryGuardian !== false,
+          relationship: guardianRelationship,
         },
       })
     }

@@ -430,7 +430,7 @@ export function StudentsDirectoryPage() {
                   <td className="p-4">{text(obj(student.class).name, "Unassigned")}</td>
                   <td className="p-4"><StatusBadge status={list(student.fingerprints).length ? "ENROLLED" : "NOT ENROLLED"} /></td>
                   <td className="p-4"><StatusBadge status={Boolean(student.isActive)} /></td>
-                  <td className="p-4"><div className="flex gap-2"><Button asChild size="icon-sm" variant="ghost"><Link href={`/admin/students/${text(student.id)}`}><MaterialSymbol icon="visibility" /></Link></Button><Button asChild size="icon-sm" variant="ghost"><Link href={`/admin/students/${text(student.id)}/fingerprint`}><MaterialSymbol icon="fingerprint" /></Link></Button></div></td>
+                  <td className="p-4"><div className="flex gap-2"><Button asChild size="icon-sm" variant="ghost"><Link href={`/admin/students/${text(student.id)}`} title="View student"><MaterialSymbol icon="visibility" /></Link></Button><Button asChild size="icon-sm" variant="ghost"><Link href={`/admin/students/${text(student.id)}/edit`} title="Edit student"><MaterialSymbol icon="edit" /></Link></Button><Button asChild size="icon-sm" variant="ghost"><Link href={`/admin/students/${text(student.id)}/fingerprint`} title="Enroll fingerprint"><MaterialSymbol icon="fingerprint" /></Link></Button></div></td>
                 </tr>
               ))}
             </tbody>
@@ -584,7 +584,7 @@ export function StudentProfilePage() {
 
   return (
     <div>
-      <PageHeader title="Student Profile" breadcrumb={`Students / ${text(student.firstName)} ${text(student.lastName)}`} actions={<Button asChild><Link href={`/admin/students/${params.studentId}/fingerprint`}><MaterialSymbol icon="fingerprint" />Re-enroll Fingerprint</Link></Button>} />
+      <PageHeader title="Student Profile" breadcrumb={`Students / ${text(student.firstName)} ${text(student.lastName)}`} actions={<><Button asChild variant="outline"><Link href={`/admin/students/${params.studentId}/edit`}><MaterialSymbol icon="edit" />Edit Student</Link></Button><Button asChild><Link href={`/admin/students/${params.studentId}/fingerprint`}><MaterialSymbol icon="fingerprint" />Re-enroll Fingerprint</Link></Button></>} />
       <section className="mb-8 grid gap-6 xl:grid-cols-[1fr_360px]">
         <div className="rounded-xl border border-outline-variant bg-white p-6 shadow-card md:flex md:gap-8">
           <div className="grid size-48 shrink-0 place-items-center overflow-hidden rounded-xl bg-surface-container">{student.photoUrl ? <img src={text(student.photoUrl)} alt="" className="size-full object-cover" /> : <MaterialSymbol icon="person" className="text-[54px]" />}</div>
@@ -599,6 +599,196 @@ export function StudentProfilePage() {
         <table className="w-full min-w-[780px] text-left"><thead className="bg-surface-container"><tr>{["Date", "Session", "Class/Room", "Status", "Time Marked"].map((h) => <th key={h} className="p-4">{h}</th>)}</tr></thead><tbody className="divide-y divide-outline-variant">{records.map((record) => <tr key={text(record.id)}><td className="p-4">{date(record.markedAt)}</td><td className="p-4">{text(obj(record.session).title)}</td><td className="p-4">{text(obj(obj(record.session).class).name)}</td><td className="p-4"><StatusBadge status={text(record.status)} /></td><td className="p-4">{new Date(String(record.markedAt)).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</td></tr>)}</tbody></table>
       </TableShell>
     </div>
+  )
+}
+
+export function StudentEditPage() {
+  const params = useParams<{ studentId: string }>()
+  const { data, error, isLoading } = useAdminStudent(params.studentId)
+  const { classes, guardians } = useOptions()
+  const student = obj(data?.student)
+
+  if (isLoading) {
+    return <p className="text-on-surface-variant">Loading student details...</p>
+  }
+
+  if (!student.id) {
+    return (
+      <EmptyState
+        icon="person_off"
+        title="Student could not be loaded"
+        message={errorMessage(error, "The student may no longer exist or may not belong to your school.")}
+        action={<Button asChild><Link href="/admin/students">Back to Students</Link></Button>}
+      />
+    )
+  }
+
+  return (
+    <div>
+      <PageHeader
+        breadcrumb={`Students / ${text(student.firstName)} ${text(student.lastName)} / Edit`}
+        title="Edit Student Details"
+        description="Update the student record, class assignment, primary guardian, and account status. Fingerprint and attendance records are preserved."
+        actions={<Button asChild variant="outline"><Link href={`/admin/students/${params.studentId}`}>Back to Profile</Link></Button>}
+      />
+      <StudentEditForm
+        key={text(student.id)}
+        classes={classes}
+        guardians={guardians}
+        student={student}
+        studentId={params.studentId}
+      />
+    </div>
+  )
+}
+
+function StudentEditForm({
+  classes,
+  guardians,
+  student,
+  studentId,
+}: {
+  classes: R[]
+  guardians: R[]
+  student: R
+  studentId: string
+}) {
+  const router = useRouter()
+  const update = useAdminPatch(`/admin/students/${studentId}`)
+  const guardianLinks = list(student.guardians)
+  const guardianLink = guardianLinks.find((item) => item.isPrimary === true) || guardianLinks[0] || {}
+  const linkedGuardian = obj(guardianLink.guardian)
+  const [classId, setClassId] = useState(text(student.classId))
+  const [guardianId, setGuardianId] = useState(text(linkedGuardian.id))
+  const [guardianRelationship, setGuardianRelationship] = useState(
+    text(guardianLink.relationship, text(linkedGuardian.relationship))
+  )
+  const [photoUrl, setPhotoUrl] = useState(text(student.photoUrl))
+  const [photoUploading, setPhotoUploading] = useState(false)
+
+  async function uploadPhoto(file: File) {
+    setPhotoUploading(true)
+    const formData = new FormData()
+    formData.append("file", file)
+    formData.append("purpose", "studentPhoto")
+
+    try {
+      const response = await fetch("/api/uploads", { method: "POST", body: formData })
+      const payload = await response.json()
+      if (!response.ok || !payload.success) {
+        throw new Error(payload.message || "Photo upload failed")
+      }
+      setPhotoUrl(text(payload.data?.secure_url))
+      toast.success("Student photo uploaded")
+    } catch (error) {
+      toast.error(errorMessage(error, "Student photo could not be uploaded"))
+    } finally {
+      setPhotoUploading(false)
+    }
+  }
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    const { data: form } = submitData(event)
+
+    try {
+      await update.mutateAsync({
+        ...form,
+        classId,
+        guardianId,
+        guardianRelationship,
+        isActive: form.isActive === "ACTIVE",
+        manageGuardian: true,
+        photoUrl,
+        previousGuardianId: text(linkedGuardian.id),
+      })
+      toast.success("Student details updated")
+      router.push(`/admin/students/${studentId}`)
+    } catch (error) {
+      toast.error(errorMessage(error, "Student could not be updated"))
+    }
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="grid gap-6 xl:grid-cols-[300px_1fr]">
+      <aside className="h-fit rounded-xl border border-outline-variant bg-white p-6 shadow-card">
+        <label className="flex h-64 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-outline-variant bg-surface-container-low text-center text-on-surface-variant">
+          {photoUrl ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={photoUrl} alt="Student portrait preview" className="size-full object-cover" />
+            </>
+          ) : (
+            <>
+              <MaterialSymbol icon={photoUploading ? "progress_activity" : "add_a_photo"} className={`mb-2 text-[42px] ${photoUploading ? "animate-spin" : ""}`} />
+              <span>{photoUploading ? "Uploading..." : "Upload Student Portrait"}</span>
+            </>
+          )}
+          <input className="hidden" type="file" accept="image/*" disabled={photoUploading} onChange={(event) => event.target.files?.[0] && uploadPhoto(event.target.files[0])} />
+        </label>
+        {photoUrl ? <Button type="button" variant="ghost" className="mt-3 w-full" onClick={() => setPhotoUrl("")}>Remove Photo</Button> : null}
+        <div className="mt-6 rounded-xl bg-surface-container-low p-4 text-sm text-on-surface-variant">
+          <p className="font-bold text-on-surface">Protected student history</p>
+          <p className="mt-1">Editing this profile does not remove fingerprint templates or attendance records.</p>
+        </div>
+      </aside>
+
+      <section className="rounded-xl border border-outline-variant bg-white p-6 shadow-card">
+        <div className="grid gap-5 md:grid-cols-2">
+          <InputField name="firstName" label="First Name" defaultValue={text(student.firstName)} required />
+          <InputField name="lastName" label="Last Name" defaultValue={text(student.lastName)} required />
+          <InputField name="otherName" label="Other Name (Optional)" defaultValue={text(student.otherName)} />
+          <InputField name="studentNumber" label="Student ID Number" defaultValue={text(student.studentNumber)} required />
+          <SelectField name="gender" label="Gender" defaultValue={text(student.gender, "OTHER")} required>
+            <option value="MALE">Male</option>
+            <option value="FEMALE">Female</option>
+            <option value="OTHER">Other</option>
+          </SelectField>
+          <InputField name="dateOfBirth" label="Date of Birth" type="date" defaultValue={dateInput(student.dateOfBirth)} />
+          <SelectField name="classId" label="Class Assignment" value={classId} onChange={(event) => setClassId(event.target.value)}>
+            <option value="">Unassigned</option>
+            {classes.map((item) => <option key={text(item.id)} value={text(item.id)}>{text(item.name)}</option>)}
+          </SelectField>
+          <SelectField name="isActive" label="Student Status" defaultValue={student.isActive === false ? "INACTIVE" : "ACTIVE"}>
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+          </SelectField>
+          <SelectField
+            name="guardianId"
+            label="Primary Parent/Guardian"
+            value={guardianId}
+            onChange={(event) => {
+              const nextGuardianId = event.target.value
+              setGuardianId(nextGuardianId)
+              if (!nextGuardianId) {
+                setGuardianRelationship("")
+              } else if (nextGuardianId !== guardianId) {
+                const nextGuardian = guardians.find((item) => text(item.id) === nextGuardianId)
+                setGuardianRelationship(text(nextGuardian?.relationship))
+              }
+            }}
+          >
+            <option value="">No primary guardian</option>
+            {guardians.map((item) => <option key={text(item.id)} value={text(item.id)}>{text(obj(item.user).name)}</option>)}
+          </SelectField>
+          <InputField
+            name="guardianRelationship"
+            label="Guardian Relationship"
+            placeholder="Mother, father, aunt..."
+            value={guardianRelationship}
+            required={Boolean(guardianId)}
+            disabled={!guardianId}
+            onChange={(event) => setGuardianRelationship(event.target.value)}
+          />
+        </div>
+
+        <div className="mt-8 flex flex-wrap justify-end gap-3 border-t border-outline-variant pt-6">
+          <Button asChild type="button" variant="outline"><Link href={`/admin/students/${studentId}`}>Cancel</Link></Button>
+          <Button disabled={update.isPending || photoUploading}>
+            {pendingText(update.isPending, "Save Changes")}
+          </Button>
+        </div>
+      </section>
+    </form>
   )
 }
 
