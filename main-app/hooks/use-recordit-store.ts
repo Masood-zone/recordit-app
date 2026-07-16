@@ -132,7 +132,7 @@ function terminal(status: string) {
 }
 
 const FINGERPRINT_OPERATION_TIMEOUT_MS = 60_000
-const FINGERPRINT_ENROLLMENT_TIMEOUT_MS = 120_000
+const FINGERPRINT_ENROLLMENT_TIMEOUT_MS = 500_000
 
 async function pollUntilDone<T extends { status: string }>(
   load: () => Promise<T>,
@@ -149,7 +149,9 @@ async function pollUntilDone<T extends { status: string }>(
     if (terminal(next.status)) return
   }
 
-  throw new Error(`${operationName} timed out after ${timeoutMs / 1000} seconds.`)
+  throw new Error(
+    `${operationName} timed out after ${timeoutMs / 1000} seconds.`
+  )
 }
 
 function baseState() {
