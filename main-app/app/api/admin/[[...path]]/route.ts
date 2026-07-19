@@ -274,6 +274,25 @@ async function getDashboard(auth: Authed) {
   }
 }
 
+async function getNotifications(auth: Authed, request: Request) {
+  const limit = Number(new URL(request.url).searchParams.get("limit") || 50)
+  const take = Number.isFinite(limit) ? Math.min(Math.max(limit, 1), 100) : 50
+  const where = { schoolId: auth.schoolId! }
+  const [notifications, unreadCount] = await Promise.all([
+    prisma.notification.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      take,
+      select: {
+        id: true, title: true, message: true, type: true, channel: true, status: true, readAt: true, createdAt: true,
+        user: { select: { name: true } },
+      },
+    }),
+    prisma.notification.count({ where: { ...where, readAt: null } }),
+  ])
+  return { notifications, unreadCount }
+}
+
 async function getAcademicSetup(schoolId: string) {
   const [academicYears, academicTerms, classes] = await Promise.all([
     prisma.academicYear.findMany({
@@ -439,7 +458,9 @@ async function createTeacher(auth: Authed, input: Record<string, unknown>) {
   if (Object.keys(errors).length) return fail("Please complete the teacher form", errors)
 
   const schoolId = auth.schoolId!
-  const password = clean(input.password) || temporaryPassword()
+  const suppliedPassword = clean(input.password)
+  if (suppliedPassword && suppliedPassword.length < 8) return fail("Password must contain at least 8 characters", { password: ["Use at least 8 characters"] })
+  const password = suppliedPassword || temporaryPassword()
   const email = normalizeEmail(input.email)
   const staffNumber = optionalClean(input.staffNumber)
 
@@ -525,7 +546,7 @@ async function createTeacher(auth: Authed, input: Record<string, unknown>) {
     userId: result.user.id,
   })
 
-  return ok({ ...result, temporaryPassword: password }, "Teacher added successfully", 201)
+  return ok({ ...result, passwordWasGenerated: !suppliedPassword, temporaryPassword: suppliedPassword ? undefined : password }, "Teacher added successfully", 201)
 }
 
 async function updateTeacher(auth: Authed, teacherId: string, input: Record<string, unknown>) {
@@ -611,7 +632,9 @@ async function createGuardian(auth: Authed, input: Record<string, unknown>) {
   if (Object.keys(errors).length) return fail("Please complete the parent/guardian form", errors)
 
   const schoolId = auth.schoolId!
-  const password = clean(input.password) || temporaryPassword()
+  const suppliedPassword = clean(input.password)
+  if (suppliedPassword && suppliedPassword.length < 8) return fail("Password must contain at least 8 characters", { password: ["Use at least 8 characters"] })
+  const password = suppliedPassword || temporaryPassword()
   const email = normalizeEmail(input.email)
   const exists = await prisma.user.findUnique({ where: { email }, select: { id: true } })
   if (exists) return apiError("A user with this email already exists", 409, "CONFLICT")
@@ -685,7 +708,7 @@ async function createGuardian(auth: Authed, input: Record<string, unknown>) {
     userId: result.user.id,
   })
 
-  return ok({ ...result, temporaryPassword: password }, "Parent/guardian added", 201)
+  return ok({ ...result, passwordWasGenerated: !suppliedPassword, temporaryPassword: suppliedPassword ? undefined : password }, "Parent/guardian added", 201)
 }
 
 async function updateGuardian(auth: Authed, guardianId: string, input: Record<string, unknown>) {
@@ -998,6 +1021,7 @@ export async function GET(request: Request, context: Context) {
   const schoolId = auth.schoolId!
 
   if (path[0] === "dashboard") return ok(await getDashboard(auth))
+  if (path[0] === "notifications") return ok(await getNotifications(auth, request))
   if (path[0] === "academic-setup") return ok(await getAcademicSetup(schoolId))
   if (path[0] === "classes" && path[1]) {
     const item = await prisma.class.findFirst({ where: { id: path[1], schoolId }, select: classSelect })

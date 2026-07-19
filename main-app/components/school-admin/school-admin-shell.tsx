@@ -132,6 +132,11 @@ export function SchoolAdminShell({
               </SidebarMenuItem>
             ))}
             <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link href="/forgot-password"><MaterialSymbol icon="password" /><span>Reset Password</span></Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={signOut}
                 disabled={signingOut}
@@ -172,10 +177,10 @@ export function SchoolAdminShell({
               <span className="grid size-10 place-items-center rounded-lg text-on-surface-variant hover:bg-surface-container">
                 <MaterialSymbol icon="fingerprint" />
               </span>
-              <span className="relative grid size-10 place-items-center rounded-lg text-on-surface-variant hover:bg-surface-container">
+              <Link href="/admin/notifications" className="relative grid size-10 place-items-center rounded-lg text-on-surface-variant hover:bg-surface-container" aria-label="View notifications">
                 <MaterialSymbol icon="notifications" />
                 <span className="absolute top-2 right-2 size-2 rounded-full bg-destructive" />
-              </span>
+              </Link>
               <span className="grid size-10 place-items-center rounded-lg text-on-surface-variant hover:bg-surface-container">
                 <MaterialSymbol icon="help_outline" />
               </span>

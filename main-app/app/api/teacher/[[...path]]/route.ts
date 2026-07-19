@@ -243,6 +243,22 @@ async function getDashboard(auth: TeacherAuth) {
   }
 }
 
+async function getNotifications(auth: TeacherAuth, request: Request) {
+  const limit = Number(new URL(request.url).searchParams.get("limit") || 50)
+  const take = Number.isFinite(limit) ? Math.min(Math.max(limit, 1), 100) : 50
+  const where = { userId: auth.user!.id }
+  const [notifications, unreadCount] = await Promise.all([
+    prisma.notification.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      take,
+      select: { id: true, title: true, message: true, type: true, channel: true, status: true, readAt: true, createdAt: true },
+    }),
+    prisma.notification.count({ where: { ...where, readAt: null } }),
+  ])
+  return { notifications, unreadCount }
+}
+
 async function getStudents(auth: TeacherAuth, request: Request) {
   const schoolId = auth.schoolId!
   const classIds = await assignedClassIds(auth.teacher!.id)
@@ -353,6 +369,7 @@ export async function GET(request: Request, context: Context) {
   const path = (await context.params).path || []
 
   if (path[0] === "dashboard") return ok(await getDashboard(auth))
+  if (path[0] === "notifications") return ok(await getNotifications(auth, request))
   if (path[0] === "classes") return ok({ classes: await getAssignedClasses(auth) })
   if (path[0] === "fingerprints" && path[1] === "sync-roster") {
     return ok({
@@ -475,6 +492,17 @@ export async function PATCH(request: Request, context: Context) {
   if (auth.response) return auth.response
   const path = (await context.params).path || []
   const input = await body(request)
+
+  if (path[0] === "notifications" && path[1] === "read-all") {
+    await prisma.notification.updateMany({ where: { userId: auth.user!.id, readAt: null }, data: { readAt: new Date() } })
+    return ok({}, "Notifications marked as read")
+  }
+  if (path[0] === "notifications" && path[1] && path[2] === "read") {
+    const notification = await prisma.notification.findFirst({ where: { id: path[1], userId: auth.user!.id }, select: { id: true } })
+    if (!notification) return apiError("Notification not found", 404, "NOT_FOUND")
+    await prisma.notification.update({ where: { id: notification.id }, data: { readAt: new Date() } })
+    return ok({}, "Notification marked as read")
+  }
 
   if (path[0] === "attendance-sessions" && path[1] && path[2] === "records" && path[3]) {
     try {

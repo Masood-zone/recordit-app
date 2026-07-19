@@ -125,6 +125,11 @@ export function ParentShell({
               </SidebarMenuItem>
             ))}
             <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link href="/forgot-password"><MaterialSymbol icon="password" /><span>Reset Password</span></Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
               <SidebarMenuButton
                 onClick={signOut}
                 disabled={signingOut}

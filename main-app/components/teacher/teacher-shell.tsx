@@ -34,6 +34,7 @@ const nav = [
   },
   // { href: "/teacher/pending-attendance", icon: "pending_actions", label: "Pending Attendance" },
   { href: "/teacher/reports", icon: "analytics", label: "Reports" },
+  { href: "/teacher/notifications", icon: "notifications", label: "Notifications" },
 ]
 
 export function TeacherShell({
@@ -113,6 +114,11 @@ export function TeacherShell({
         <SidebarFooter className="border-t border-sidebar-border">
           <SidebarMenu>
             <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link href="/forgot-password"><MaterialSymbol icon="password" /><span>Reset Password</span></Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
                 isActive={pathname.startsWith("/teacher/attendance-sessions")}
@@ -166,9 +172,9 @@ export function TeacherShell({
               <span className="grid size-10 place-items-center rounded-lg text-on-surface-variant hover:bg-surface-container">
                 <MaterialSymbol icon="fingerprint" />
               </span>
-              <span className="grid size-10 place-items-center rounded-lg text-on-surface-variant hover:bg-surface-container">
+              <Link href="/teacher/notifications" className="grid size-10 place-items-center rounded-lg text-on-surface-variant hover:bg-surface-container" aria-label="View notifications">
                 <MaterialSymbol icon="notifications" />
-              </span>
+              </Link>
               <div className="ml-2 hidden border-l border-outline-variant pl-4 text-right sm:block">
                 <p className="text-sm font-bold text-on-surface">{userName}</p>
                 <p className="text-xs text-on-surface-variant">{schoolName}</p>

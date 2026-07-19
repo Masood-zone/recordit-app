@@ -6,6 +6,7 @@ import { FormEvent, useState } from "react"
 import { toast } from "sonner"
 
 import { MaterialSymbol } from "@/components/common/MaterialSymbol"
+import { NotificationInbox } from "@/components/common/notification-inbox"
 import { Button } from "@/components/ui/button"
 import {
   EmptyState,
@@ -941,10 +942,12 @@ function PersonForm({ role }: { role: "teacher" | "parent" }) {
   const create = useAdminPost(role === "teacher" ? "/admin/teachers" : "/admin/parents")
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     const { data } = submitData(event)
+    if (text(data.password) && text(data.password).length < 8) return toast.error("Password must contain at least 8 characters")
+    if (text(data.password) !== text(data.confirmPassword)) return toast.error("Passwords do not match")
     try {
       const result = await create.mutateAsync(data)
       const password = text(result.temporaryPassword)
-      toast.success(`${role === "teacher" ? "Teacher" : "Parent/guardian"} added${password ? ` / temp password: ${password}` : ""}`)
+      toast.success(`${role === "teacher" ? "Teacher" : "Parent/guardian"} added${password ? ` / temporary password: ${password}` : " with the password you set"}`)
       router.push("/admin/users")
     } catch (error) {
       toast.error(
@@ -964,6 +967,8 @@ function PersonForm({ role }: { role: "teacher" | "parent" }) {
         <InputField name="firstName" label="First Name" /><InputField name="lastName" label="Last Name" /><InputField name="email" label="Email" type="email" /><InputField name="phone" label="Phone" />
         {role === "teacher" ? <><InputField name="staffNumber" label="Staff Number" /><InputField name="department" label="Department" /><InputField name="title" label="Title" /><SelectField name="assignedClassId" label="Assigned Class"><option value="">No class</option>{classes.map((item) => <option key={text(item.id)} value={text(item.id)}>{text(item.name)}</option>)}</SelectField></> : <><InputField name="relationship" label="Relationship" /><InputField name="occupation" label="Occupation" /><InputField name="address" label="Address" /><SelectField name="linkedStudentId" label="Linked Student"><option value="">No student</option>{students.map((item) => <option key={text(item.id)} value={text(item.id)}>{text(item.firstName)} {text(item.lastName)}</option>)}</SelectField></>}
         <SelectField name="status" label="Account Status"><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option><option value="SUSPENDED">Suspended</option></SelectField>
+        <InputField name="password" label="Password" type="password" placeholder="Leave blank to generate one" /><InputField name="confirmPassword" label="Confirm Password" type="password" placeholder="Repeat the password" />
+        <p className="text-sm text-on-surface-variant md:col-span-2">Set a password for the new account, or leave both fields blank to generate a temporary password automatically.</p>
         <div className="flex gap-3 md:col-span-2">
           <Button disabled={create.isPending}>
             {pendingText(
@@ -1069,4 +1074,8 @@ export function SettingsPage() {
 
 export function AdminPlaceholder({ title }: { title: string }) {
   return <PlaceholderPage title={title} />
+}
+
+export function AdminNotificationsPage() {
+  return <div><PageHeader title="Notifications" description="Review notification delivery and activity across your school." /><NotificationInbox audienceLabel="School" basePath="/admin" canMarkRead={false} /></div>
 }
