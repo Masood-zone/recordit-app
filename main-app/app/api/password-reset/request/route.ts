@@ -1,10 +1,11 @@
-import { createHash, randomUUID } from "node:crypto"
+import { createHash, randomBytes, randomUUID } from "node:crypto"
 
 import { NextResponse } from "next/server"
 
 import { UserStatus } from "@/app/generated/prisma/enums"
-import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { emailService } from "@/services/email/email-service"
+import { smsService } from "@/services/sms/sms-service"
 
 const GENERIC_MESSAGE = "Account Reset instructions have been sent."
 const THROTTLE_PREFIX = "recordit-password-reset"
@@ -79,17 +80,17 @@ async function isThrottled(identifier: string) {
   return false
 }
 
-async function findEmailForIdentifier(identifier: string) {
+async function findUserForIdentifier(identifier: string) {
   if (isEmail(identifier)) {
     const user = await prisma.user.findFirst({
       where: {
         email: identifier.toLowerCase(),
         status: UserStatus.ACTIVE,
       },
-      select: { email: true },
+      select: { id: true, email: true, name: true, phone: true },
     })
 
-    return user?.email ?? null
+    return user
   }
 
   const normalizedPhone = normalizePhone(identifier)
@@ -105,10 +106,7 @@ async function findEmailForIdentifier(identifier: string) {
       ],
       status: UserStatus.ACTIVE,
     },
-    select: {
-      email: true,
-      phone: true,
-    },
+    select: { id: true, email: true, name: true, phone: true },
     take: 25,
   })
 
@@ -118,7 +116,49 @@ async function findEmailForIdentifier(identifier: string) {
 
   if (matches.length !== 1) return null
 
-  return matches[0].email
+  return matches[0]
+}
+
+async function createAndSendResetMessage(user: {
+  id: string
+  email: string
+  name: string
+  phone: string | null
+}, request: Request) {
+  // This format is intentionally the same one consumed by Better Auth's
+  // reset-password endpoint, while message delivery stays owned by this route.
+  const token = randomBytes(32).toString("base64url")
+  await prisma.verification.deleteMany({
+    where: { identifier: { startsWith: "reset-password:" }, value: user.id },
+  })
+  await prisma.verification.create({
+    data: {
+      id: randomUUID(),
+      identifier: `reset-password:${token}`,
+      value: user.id,
+      expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+    },
+  })
+
+  const resetUrl = new URL("/reset-password", request.url)
+  resetUrl.searchParams.set("token", token)
+  const userName = user.name || "there"
+  const jobs: Promise<void>[] = [
+    emailService.sendPasswordResetEmail({
+      resetUrl: resetUrl.toString(),
+      userEmail: user.email,
+      userName,
+    }),
+  ]
+
+  if (user.phone) {
+    jobs.push(smsService.sendPasswordResetSMS({ phoneNumber: user.phone, resetUrl: resetUrl.toString(), userName }))
+  }
+
+  const results = await Promise.allSettled(jobs)
+  for (const result of results) {
+    if (result.status === "rejected") console.error("Password reset delivery failed:", result.reason)
+  }
 }
 
 export async function POST(request: Request) {
@@ -153,16 +193,11 @@ export async function POST(request: Request) {
     return jsonSuccess()
   }
 
-  const email = await findEmailForIdentifier(identifier)
-  if (!email) return jsonSuccess()
+  const user = await findUserForIdentifier(identifier)
+  if (!user) return jsonSuccess()
 
   try {
-    await auth.api.requestPasswordReset({
-      body: {
-        email,
-        redirectTo: new URL("/reset-password", request.url).toString(),
-      },
-    })
+    await createAndSendResetMessage(user, request)
   } catch (error) {
     console.error("Password reset request failed:", error)
   }
