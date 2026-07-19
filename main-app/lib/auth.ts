@@ -27,4 +27,11 @@ export const auth = betterAuth({
       console.info(`RecordIT password reset completed for ${user.email}`)
     },
   },
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 60,
+      strategy: "compact",
+    },
+  },
 })

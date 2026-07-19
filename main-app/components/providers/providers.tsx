@@ -16,7 +16,16 @@ interface ProvidersProps {
  * - Toaster: Toast notifications
  * - Future: Authentication, Analytics, etc.
  */
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: 10 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 30 * 1000,
+    },
+  },
+})
 
 export function Providers({ children }: ProvidersProps) {
   return (

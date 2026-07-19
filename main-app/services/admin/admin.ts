@@ -11,6 +11,7 @@ export type AdminEntity = Record<string, unknown>
 export const adminKeys = {
   all: ["admin"] as const,
   academicSetup: ["admin", "academic-setup"] as const,
+  attendanceSetup: ["admin", "attendance-setup"] as const,
   classes: ["admin", "classes"] as const,
   dashboard: ["admin", "dashboard"] as const,
   options: ["admin", "options"] as const,
@@ -21,6 +22,7 @@ export const adminKeys = {
   teachers: ["admin", "teachers"] as const,
   users: ["admin", "users"] as const,
   attendanceSessions: ["admin", "attendance-sessions"] as const,
+  syncRoster: ["admin", "fingerprints", "sync-roster"] as const,
 }
 
 async function unwrap<T>(promise: Promise<{ data: ApiResponse<T> }>, fallback: string) {
@@ -82,6 +84,18 @@ export function useAdminAttendanceSessions(enabled = true) {
   })
 }
 
+export function useAdminAttendanceSetup(enabled = true) {
+  return useQuery({
+    enabled,
+    queryKey: adminKeys.attendanceSetup,
+    queryFn: () =>
+      unwrap<AdminEntity>(
+        api.get("/admin/attendance-setup"),
+        "Attendance workspace could not be loaded"
+      ),
+  })
+}
+
 export function useAdminReports(params?: Record<string, string>, enabled = true) {
   return useQuery({
     enabled,
@@ -94,7 +108,7 @@ export function useAdminReports(params?: Record<string, string>, enabled = true)
 export function useAdminSyncRoster(enabled = true) {
   return useQuery({
     enabled,
-    queryKey: ["admin", "fingerprints", "sync-roster"] as const,
+    queryKey: adminKeys.syncRoster,
     queryFn: () =>
       unwrap<AdminEntity>(
         api.get("/admin/fingerprints/sync-roster"),
@@ -155,13 +169,40 @@ export function useAdminSettings() {
   })
 }
 
-function useInvalidateAdmin() {
+function useInvalidateAdmin(path?: string) {
   const queryClient = useQueryClient()
-  return () => queryClient.invalidateQueries({ queryKey: adminKeys.all })
+  return () => {
+    if (!path) {
+      void queryClient.invalidateQueries({ queryKey: adminKeys.all })
+      return
+    }
+
+    if (path.includes("/attendance-sessions")) return
+
+    const keys: ReadonlyArray<readonly unknown[]> = path.includes("/fingerprints")
+      ? [adminKeys.students, adminKeys.syncRoster]
+      : path.includes("/students")
+        ? [adminKeys.students, adminKeys.options, adminKeys.attendanceSetup, adminKeys.dashboard]
+        : path.includes("/classes")
+          ? [adminKeys.classes, adminKeys.options, adminKeys.attendanceSetup, adminKeys.academicSetup]
+          : path.includes("/teachers")
+            ? [adminKeys.teachers, adminKeys.users, adminKeys.options, adminKeys.dashboard]
+            : path.includes("/parents")
+              ? [adminKeys.parents, adminKeys.users, adminKeys.options, adminKeys.dashboard]
+              : path.includes("/reports")
+                ? [["admin", "reports"], adminKeys.dashboard]
+                : path.includes("/settings")
+                  ? [adminKeys.settings]
+                  : [adminKeys.all]
+
+    for (const queryKey of keys) {
+      void queryClient.invalidateQueries({ queryKey })
+    }
+  }
 }
 
 export function useAdminPost(path: string) {
-  const invalidate = useInvalidateAdmin()
+  const invalidate = useInvalidateAdmin(path)
   return useMutation({
     mutationFn: (input: AdminEntity) => unwrap<AdminEntity>(api.post(path, input), "Save failed"),
     onSuccess: invalidate,
@@ -169,7 +210,7 @@ export function useAdminPost(path: string) {
 }
 
 export function useAdminGenerateReport() {
-  const invalidate = useInvalidateAdmin()
+  const invalidate = useInvalidateAdmin("/admin/reports")
   return useMutation({
     mutationFn: (input: AdminEntity) =>
       unwrap<AdminEntity>(api.post("/admin/reports", input), "Report could not be generated"),
@@ -178,7 +219,7 @@ export function useAdminGenerateReport() {
 }
 
 export function useAdminPatch(path: string) {
-  const invalidate = useInvalidateAdmin()
+  const invalidate = useInvalidateAdmin(path)
   return useMutation({
     mutationFn: (input: AdminEntity) => unwrap<AdminEntity>(api.patch(path, input), "Update failed"),
     onSuccess: invalidate,
@@ -186,7 +227,7 @@ export function useAdminPatch(path: string) {
 }
 
 export function useAdminDelete(path: string) {
-  const invalidate = useInvalidateAdmin()
+  const invalidate = useInvalidateAdmin(path)
   return useMutation({
     mutationFn: () => unwrap<AdminEntity>(api.delete(path), "Delete failed"),
     onSuccess: invalidate,
@@ -194,7 +235,7 @@ export function useAdminDelete(path: string) {
 }
 
 export function useBulkImportStudents() {
-  const invalidate = useInvalidateAdmin()
+  const invalidate = useInvalidateAdmin("/admin/students")
   return useMutation({
     mutationFn: async ({ commit, file }: { commit: boolean; file: File }) => {
       const formData = new FormData()

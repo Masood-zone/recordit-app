@@ -228,14 +228,12 @@ export function useSuperAdminSchool(schoolId: string) {
 function useInvalidateSchoolQueries() {
   const queryClient = useQueryClient()
 
-  return async (schoolId: string) => {
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: superAdminSchoolKeys.all }),
-      queryClient.invalidateQueries({
-        queryKey: superAdminSchoolKeys.detail(schoolId),
-      }),
-      queryClient.invalidateQueries({ queryKey: superAdminDashboardKeys.all }),
-    ])
+  return (schoolId: string) => {
+    void queryClient.invalidateQueries({ queryKey: superAdminSchoolKeys.all })
+    void queryClient.invalidateQueries({
+      queryKey: superAdminSchoolKeys.detail(schoolId),
+    })
+    void queryClient.invalidateQueries({ queryKey: superAdminDashboardKeys.all })
   }
 }
 
@@ -244,8 +242,8 @@ export function useUpdateSuperAdminSchool() {
 
   return useMutation({
     mutationFn: updateSuperAdminSchool,
-    onSuccess: async (_school, variables) => {
-      await invalidate(variables.schoolId)
+    onSuccess: (_school, variables) => {
+      invalidate(variables.schoolId)
     },
   })
 }
@@ -255,8 +253,8 @@ export function useApproveSuperAdminSchool() {
 
   return useMutation({
     mutationFn: (schoolId: string) => mutateSchoolStatus(schoolId, "approve"),
-    onSuccess: async (_data, schoolId) => {
-      await invalidate(schoolId)
+    onSuccess: (_data, schoolId) => {
+      invalidate(schoolId)
     },
   })
 }
@@ -266,8 +264,8 @@ export function useSuspendSuperAdminSchool() {
 
   return useMutation({
     mutationFn: (schoolId: string) => mutateSchoolStatus(schoolId, "suspend"),
-    onSuccess: async (_data, schoolId) => {
-      await invalidate(schoolId)
+    onSuccess: (_data, schoolId) => {
+      invalidate(schoolId)
     },
   })
 }
@@ -278,8 +276,8 @@ export function useReactivateSuperAdminSchool() {
   return useMutation({
     mutationFn: (schoolId: string) =>
       mutateSchoolStatus(schoolId, "reactivate"),
-    onSuccess: async (_data, schoolId) => {
-      await invalidate(schoolId)
+    onSuccess: (_data, schoolId) => {
+      invalidate(schoolId)
     },
   })
 }

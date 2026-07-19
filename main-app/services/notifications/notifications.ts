@@ -117,8 +117,8 @@ export function useMarkNotificationRead() {
 
   return useMutation({
     mutationFn: markNotificationRead,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: notificationKeys.all })
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: notificationKeys.all })
     },
   })
 }
@@ -128,8 +128,8 @@ export function useMarkAllNotificationsRead() {
 
   return useMutation({
     mutationFn: markAllNotificationsRead,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: notificationKeys.all })
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: notificationKeys.all })
     },
   })
 }
@@ -139,8 +139,8 @@ export function useDeleteNotification() {
 
   return useMutation({
     mutationFn: deleteNotification,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: notificationKeys.all })
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: notificationKeys.all })
     },
   })
 }

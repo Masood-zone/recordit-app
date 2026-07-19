@@ -105,13 +105,17 @@ export function useContactSchool(studentId?: string) {
   })
 }
 
-function useInvalidateParent() {
+function useInvalidateParent(...queryKeys: ReadonlyArray<readonly unknown[]>) {
   const queryClient = useQueryClient()
-  return () => queryClient.invalidateQueries({ queryKey: parentKeys.all })
+  return () => {
+    for (const queryKey of queryKeys.length ? queryKeys : [parentKeys.all]) {
+      void queryClient.invalidateQueries({ queryKey })
+    }
+  }
 }
 
 export function useMarkParentNotificationRead() {
-  const invalidate = useInvalidateParent()
+  const invalidate = useInvalidateParent(parentKeys.notifications, parentKeys.dashboard)
   return useMutation({
     mutationFn: (notificationId: string) =>
       unwrap<ParentEntity>(
@@ -123,7 +127,7 @@ export function useMarkParentNotificationRead() {
 }
 
 export function useMarkAllParentNotificationsRead() {
-  const invalidate = useInvalidateParent()
+  const invalidate = useInvalidateParent(parentKeys.notifications, parentKeys.dashboard)
   return useMutation({
     mutationFn: () =>
       unwrap<ParentEntity>(
@@ -135,7 +139,7 @@ export function useMarkAllParentNotificationsRead() {
 }
 
 export function useDeleteParentNotification() {
-  const invalidate = useInvalidateParent()
+  const invalidate = useInvalidateParent(parentKeys.notifications, parentKeys.dashboard)
   return useMutation({
     mutationFn: (notificationId: string) =>
       unwrap<ParentEntity>(
@@ -147,7 +151,7 @@ export function useDeleteParentNotification() {
 }
 
 export function useSaveParentPreferences() {
-  const invalidate = useInvalidateParent()
+  const invalidate = useInvalidateParent(parentKeys.preferences)
   return useMutation({
     mutationFn: (input: ParentEntity) =>
       unwrap<ParentEntity>(
@@ -159,7 +163,7 @@ export function useSaveParentPreferences() {
 }
 
 export function useSaveParentProfile() {
-  const invalidate = useInvalidateParent()
+  const invalidate = useInvalidateParent(parentKeys.profile, parentKeys.dashboard)
   return useMutation({
     mutationFn: (input: ParentEntity) =>
       unwrap<ParentEntity>(api.patch("/parent/profile", input), "Profile could not be saved"),

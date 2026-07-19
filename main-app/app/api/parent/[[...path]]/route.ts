@@ -189,44 +189,43 @@ async function getLinkedStudents(auth: ParentAuth) {
 async function findLinkedStudent(auth: ParentAuth, studentId: string) {
   const link = await prisma.studentGuardian.findFirst({
     where: { guardianId: auth.guardian!.id, studentId },
-    select: { studentId: true },
-  })
-
-  if (!link) return null
-
-  return prisma.student.findFirst({
-    where: { id: studentId, schoolId: auth.schoolId!, isActive: true },
     select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      otherName: true,
-      photoUrl: true,
-      studentNumber: true,
-      class: {
+      student: {
         select: {
           id: true,
-          name: true,
-          code: true,
-          level: true,
-          teacherAssignments: {
-            where: { isLead: true },
-            take: 1,
+          firstName: true,
+          lastName: true,
+          otherName: true,
+          photoUrl: true,
+          studentNumber: true,
+          class: {
             select: {
-              teacher: {
+              id: true,
+              name: true,
+              code: true,
+              level: true,
+              teacherAssignments: {
+                where: { isLead: true },
+                take: 1,
                 select: {
-                  id: true,
-                  title: true,
-                  user: { select: { name: true, email: true, phone: true, image: true } },
+                  teacher: {
+                    select: {
+                      id: true,
+                      title: true,
+                      user: { select: { name: true, email: true, phone: true, image: true } },
+                    },
+                  },
                 },
               },
             },
           },
+          school: { select: { id: true, name: true } },
         },
       },
-      school: { select: { id: true, name: true } },
     },
   })
+
+  return link?.student ?? null
 }
 
 function rangeFor(request: Request) {
@@ -246,35 +245,36 @@ function rangeFor(request: Request) {
 }
 
 async function attendanceForStudent(auth: ParentAuth, studentId: string, request: Request) {
-  const student = await findLinkedStudent(auth, studentId)
-  if (!student) return null
-
   const range = rangeFor(request)
-  const records = await prisma.attendanceRecord.findMany({
-    where: {
-      schoolId: auth.schoolId!,
-      studentId,
-      markedAt: { gte: range.start, lt: range.end },
-    },
-    orderBy: { markedAt: "desc" },
-    select: {
-      id: true,
-      markedAt: true,
-      remarks: true,
-      status: true,
-      verificationMethod: true,
-      session: {
-        select: {
-          id: true,
-          title: true,
-          sessionDate: true,
-          startsAt: true,
-          teacher: { select: { user: { select: { name: true, email: true, phone: true } } } },
-          class: { select: { name: true } },
+  const [student, records] = await Promise.all([
+    findLinkedStudent(auth, studentId),
+    prisma.attendanceRecord.findMany({
+      where: {
+        schoolId: auth.schoolId!,
+        studentId,
+        markedAt: { gte: range.start, lt: range.end },
+      },
+      orderBy: { markedAt: "desc" },
+      select: {
+        id: true,
+        markedAt: true,
+        remarks: true,
+        status: true,
+        verificationMethod: true,
+        session: {
+          select: {
+            id: true,
+            title: true,
+            sessionDate: true,
+            startsAt: true,
+            teacher: { select: { user: { select: { name: true, email: true, phone: true } } } },
+            class: { select: { name: true } },
+          },
         },
       },
-    },
-  })
+    }),
+  ])
+  if (!student) return null
 
   const present = records.filter((record) => record.status === AttendanceStatus.PRESENT).length
   const absent = records.filter((record) => record.status === AttendanceStatus.ABSENT).length
@@ -306,11 +306,13 @@ async function attendanceForStudent(auth: ParentAuth, studentId: string, request
 }
 
 async function dashboard(auth: ParentAuth) {
-  const children = await getLinkedStudents(auth)
+  const [children, unreadCount] = await Promise.all([
+    getLinkedStudents(auth),
+    prisma.notification.count({
+      where: { userId: auth.user!.id, readAt: null },
+    }),
+  ])
   const selectedChild = children.find((child) => child.isPrimary) ?? children[0] ?? null
-  const unreadCount = await prisma.notification.count({
-    where: { userId: auth.user!.id, readAt: null },
-  })
 
   return {
     parent: {
@@ -347,28 +349,30 @@ async function preferences(auth: ParentAuth) {
 async function notifications(auth: ParentAuth, request: Request) {
   const { searchParams } = new URL(request.url)
   const limit = Number(searchParams.get("limit") || 30)
-  const items = await prisma.notification.findMany({
-    where: { userId: auth.user!.id },
-    orderBy: { createdAt: "desc" },
-    take: Number.isFinite(limit) ? Math.min(Math.max(limit, 1), 100) : 30,
-    select: {
-      id: true,
-      title: true,
-      message: true,
-      type: true,
-      channel: true,
-      status: true,
-      readAt: true,
-      createdAt: true,
-      studentId: true,
-      attendanceRecordId: true,
-      student: { select: { firstName: true, lastName: true, otherName: true } },
-      attendanceRecord: { select: { id: true, markedAt: true, status: true } },
-    },
-  })
-  const unreadCount = await prisma.notification.count({
-    where: { userId: auth.user!.id, readAt: null },
-  })
+  const [items, unreadCount] = await Promise.all([
+    prisma.notification.findMany({
+      where: { userId: auth.user!.id },
+      orderBy: { createdAt: "desc" },
+      take: Number.isFinite(limit) ? Math.min(Math.max(limit, 1), 100) : 30,
+      select: {
+        id: true,
+        title: true,
+        message: true,
+        type: true,
+        channel: true,
+        status: true,
+        readAt: true,
+        createdAt: true,
+        studentId: true,
+        attendanceRecordId: true,
+        student: { select: { firstName: true, lastName: true, otherName: true } },
+        attendanceRecord: { select: { id: true, markedAt: true, status: true } },
+      },
+    }),
+    prisma.notification.count({
+      where: { userId: auth.user!.id, readAt: null },
+    }),
+  ])
 
   return { notifications: items, unreadCount }
 }

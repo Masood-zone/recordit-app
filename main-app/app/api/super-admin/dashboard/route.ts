@@ -13,20 +13,14 @@ export async function GET(request: Request) {
   }
 
   const [
-    totalSchools,
-    activeSchools,
-    pendingSchools,
-    suspendedSchools,
+    schoolStatusCounts,
     totalStudents,
     totalTeachers,
     totalUsers,
     attendanceRecords,
     recentSchools,
   ] = await Promise.all([
-    prisma.school.count(),
-    prisma.school.count({ where: { status: SchoolStatus.ACTIVE } }),
-    prisma.school.count({ where: { status: SchoolStatus.PENDING } }),
-    prisma.school.count({ where: { status: SchoolStatus.SUSPENDED } }),
+    prisma.school.groupBy({ by: ["status"], _count: { _all: true } }),
     prisma.student.count(),
     prisma.teacher.count(),
     prisma.user.count({ where: { role: { not: UserRole.SUPER_ADMIN } } }),
@@ -45,6 +39,13 @@ export async function GET(request: Request) {
       },
     }),
   ])
+  const schoolsByStatus = new Map(
+    schoolStatusCounts.map((item) => [item.status, item._count._all])
+  )
+  const totalSchools = schoolStatusCounts.reduce((total, item) => total + item._count._all, 0)
+  const activeSchools = schoolsByStatus.get(SchoolStatus.ACTIVE) ?? 0
+  const pendingSchools = schoolsByStatus.get(SchoolStatus.PENDING) ?? 0
+  const suspendedSchools = schoolsByStatus.get(SchoolStatus.SUSPENDED) ?? 0
 
   return NextResponse.json<ApiResponse>({
     success: true,

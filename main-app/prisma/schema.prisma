@@ -197,6 +197,7 @@ model AcademicYear {
   @@unique([schoolId, name])
   @@index([schoolId])
   @@index([isActive])
+  @@index([schoolId, isActive])
 }
 
 model AcademicTerm {
@@ -220,6 +221,7 @@ model AcademicTerm {
   @@index([schoolId])
   @@index([academicYearId])
   @@index([isActive])
+  @@index([schoolId, isActive])
 }
 
 model SchoolSetting {
@@ -400,6 +402,8 @@ model Student {
   @@index([classId])
   @@index([isActive])
   @@index([lastName, firstName])
+  @@index([schoolId, classId, isActive])
+  @@index([schoolId, lastName, firstName])
 }
 
 model StudentGuardian {
@@ -485,6 +489,7 @@ model BiometricDevice {
   @@unique([schoolId, serialNumber])
   @@index([schoolId])
   @@index([status])
+  @@index([schoolId, bridgeUrl])
 }
 
 model FingerprintTemplate {
@@ -518,6 +523,7 @@ model FingerprintTemplate {
   @@index([studentId])
   @@index([deviceId])
   @@index([status])
+  @@index([schoolId, status])
 }
 
 model BiometricScanLog {
@@ -548,6 +554,7 @@ model BiometricScanLog {
   @@index([purpose])
   @@index([status])
   @@index([scannedAt])
+  @@index([schoolId, scannedAt])
 }
 
 model AttendanceSession {
@@ -581,6 +588,10 @@ model AttendanceSession {
   @@index([teacherId])
   @@index([sessionDate])
   @@index([status])
+  @@index([schoolId, sessionDate, createdAt])
+  @@index([schoolId, status])
+  @@index([classId, sessionDate])
+  @@index([teacherId, sessionDate])
 }
 
 model AttendanceRecord {
@@ -621,6 +632,10 @@ model AttendanceRecord {
   @@index([status])
   @@index([markedAt])
   @@index([verificationMethod])
+  @@index([schoolId, markedAt])
+  @@index([schoolId, status, markedAt])
+  @@index([sessionId, markedAt])
+  @@index([studentId, markedAt])
 }
 
 model Report {
@@ -688,6 +703,10 @@ model Notification {
   @@index([channel])
   @@index([type])
   @@index([readAt])
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+  @@index([schoolId, createdAt])
+  @@index([schoolId, readAt])
 }
 
 model ParentNotificationPreference {
@@ -736,4 +755,5 @@ model AuditLog {
   @@index([action])
   @@index([entity])
   @@index([createdAt])
+  @@index([schoolId, createdAt])
 }

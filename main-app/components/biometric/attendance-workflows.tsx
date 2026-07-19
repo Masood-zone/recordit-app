@@ -26,18 +26,17 @@ import {
   TableShell,
 } from "@/components/school-admin/school-admin-ui"
 import {
-  useAdminAttendanceSessions,
-  useAdminOptions,
+  adminKeys,
+  useAdminAttendanceSetup,
   useAdminPost,
   useAdminStudent,
-  useAdminStudents,
   useAdminSyncRoster,
 } from "@/services/admin/admin"
 import {
-  useTeacherAttendanceSessions,
+  teacherKeys,
+  useTeacherAttendanceSetup,
   useTeacherPost,
   useTeacherStudent,
-  useTeacherStudents,
   useTeacherSyncRoster,
 } from "@/services/teacher/teacher"
 
@@ -89,6 +88,26 @@ function time(value: unknown) {
 
 function apiBase(role: Role) {
   return role === "admin" ? "/admin" : "/teacher"
+}
+
+function attendanceSetupKey(role: Role) {
+  return role === "admin" ? adminKeys.attendanceSetup : teacherKeys.attendanceSetup
+}
+
+function updateCachedSession(queryClient: ReturnType<typeof useQueryClient>, role: Role, value: unknown) {
+  const session = obj(value)
+  const sessionId = text(session.id)
+  if (!sessionId) return
+
+  queryClient.setQueryData<R>(attendanceSetupKey(role), (current) => {
+    const data = obj(current)
+    const sessions = list(data.sessions)
+    const index = sessions.findIndex((item) => text(item.id) === sessionId)
+    const nextSessions = [...sessions]
+    if (index >= 0) nextSessions[index] = session
+    else nextSessions.unshift(session)
+    return { ...data, sessions: nextSessions }
+  })
 }
 
 async function pollUntilDone<T extends { status: string }>(
@@ -163,13 +182,16 @@ function useRoleEnrollment(role: Role, studentId: string) {
   const teacherStudent = useTeacherStudent(role === "teacher" ? studentId : undefined)
   const adminSave = useAdminPost(`/admin/students/${studentId}/fingerprints`)
   const teacherSave = useTeacherPost(`/teacher/students/${studentId}/fingerprints`)
-  const adminRoster = useAdminSyncRoster(role === "admin")
-  const teacherRoster = useTeacherSyncRoster(role === "teacher")
+  const adminRoster = useAdminSyncRoster(false)
+  const teacherRoster = useTeacherSyncRoster(false)
 
   return {
     data: role === "admin" ? adminStudent.data : teacherStudent.data,
     isLoading: role === "admin" ? adminStudent.isLoading : teacherStudent.isLoading,
-    roster: role === "admin" ? adminRoster.data : teacherRoster.data,
+    loadRoster: async () => {
+      const result = role === "admin" ? await adminRoster.refetch() : await teacherRoster.refetch()
+      return result.data
+    },
     save: role === "admin" ? adminSave : teacherSave,
   }
 }
@@ -177,7 +199,7 @@ function useRoleEnrollment(role: Role, studentId: string) {
 export function FingerprintEnrollmentWorkflow({ role }: { role: Role }) {
   const params = useParams<{ studentId: string }>()
   const router = useRouter()
-  const { data, isLoading, roster, save } = useRoleEnrollment(role, params.studentId)
+  const { data, isLoading, loadRoster, save } = useRoleEnrollment(role, params.studentId)
   const student = obj(data?.student)
   const klass = obj(student.class)
   const [finger, setFinger] = useState<FingerName>("LEFT_THUMB")
@@ -189,6 +211,7 @@ export function FingerprintEnrollmentWorkflow({ role }: { role: Role }) {
   async function syncRoster() {
     setSyncing(true)
     try {
+      const roster = await loadRoster()
       const students = list(roster?.students)
       await bridgeApi.syncStudents(students as never)
       toast.success("Persisted fingerprint templates synced to bridge")
@@ -328,26 +351,24 @@ export function FingerprintEnrollmentWorkflow({ role }: { role: Role }) {
 }
 
 function useRoleAttendance(role: Role) {
-  const adminSessions = useAdminAttendanceSessions(role === "admin")
-  const teacherSessions = useTeacherAttendanceSessions(role === "teacher")
-  const adminOptions = useAdminOptions(role === "admin")
-  const teacherStudents = useTeacherStudents(undefined, role === "teacher")
-  const adminStudents = useAdminStudents(undefined, role === "admin")
-  const adminRoster = useAdminSyncRoster(role === "admin")
-  const teacherRoster = useTeacherSyncRoster(role === "teacher")
+  const adminSetup = useAdminAttendanceSetup(role === "admin")
+  const teacherSetup = useTeacherAttendanceSetup(role === "teacher")
+  const adminRoster = useAdminSyncRoster(false)
+  const teacherRoster = useTeacherSyncRoster(false)
   const adminPost = useAdminPost(`${apiBase(role)}/attendance-sessions`)
   const teacherPost = useTeacherPost(`${apiBase(role)}/attendance-sessions`)
+  const setup = role === "admin" ? adminSetup.data : teacherSetup.data
 
   return {
-    classes: role === "admin" ? list(adminOptions.data?.classes) : list(teacherStudents.data?.classes),
+    classes: list(setup?.classes),
     post: role === "admin" ? adminPost : teacherPost,
     roster: role === "admin" ? adminRoster.data : teacherRoster.data,
     refreshRoster: async () => {
       const result = role === "admin" ? await adminRoster.refetch() : await teacherRoster.refetch()
       return result.data
     },
-    sessions: role === "admin" ? list(adminSessions.data?.sessions) : list(teacherSessions.data?.sessions),
-    students: role === "admin" ? list(adminStudents.data?.students) : list(teacherStudents.data?.students),
+    sessions: list(setup?.sessions),
+    students: list(setup?.students),
   }
 }
 
@@ -471,7 +492,7 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
     }
 
     setSyncedThisRun(synced)
-    await queryClient.invalidateQueries({ queryKey: [role] })
+    void queryClient.invalidateQueries({ queryKey: attendanceSetupKey(role) })
     await refreshQueue()
     setSyncingQueue(false)
     syncQueueRunningRef.current = false
@@ -526,6 +547,7 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
     try {
       const result = await post.mutateAsync(data)
       const session = obj(result.session)
+      updateCachedSession(queryClient, role, session)
       setSessionId(text(session.id))
       toast.success("Attendance session opened")
     } catch (error) {
@@ -612,12 +634,11 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
       }
       if (!done.matched || !done.studentId) {
         await submitOrQueue()
-        await queryClient.invalidateQueries({ queryKey: [role] })
         toast.error("Student not found")
         return
       }
       const result = await submitOrQueue()
-      await queryClient.invalidateQueries({ queryKey: [role] })
+      if (result) updateCachedSession(queryClient, role, result.session)
       if (result) toast.success(Boolean(result.duplicate) ? "Student was already marked" : "Attendance recorded")
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Scan failed")
@@ -649,7 +670,7 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
       return
     }
     try {
-      await fetch(`/api${apiBase(role)}/attendance-sessions/${text(selectedSession.id)}/records/${studentId}`, {
+      const result = await fetch(`/api${apiBase(role)}/attendance-sessions/${text(selectedSession.id)}/records/${studentId}`, {
         body: JSON.stringify({ ...data, clientRequestId, capturedAt }),
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -657,8 +678,9 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
       }).then(async (res) => {
         const payload = await res.json()
         if (!res.ok || !payload.success) throw new Error(payload.message || "Adjustment failed")
+        return payload.data as R
       })
-      await queryClient.invalidateQueries({ queryKey: [role] })
+      updateCachedSession(queryClient, role, result.session)
       toast.success("Attendance adjusted")
     } catch (error) {
       await queueAdjustment(error instanceof Error ? `Adjustment queued: ${error.message}` : "Adjustment saved to queue")
@@ -684,7 +706,7 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
       return
     }
     try {
-      await fetch(`/api${apiBase(role)}/attendance-sessions/${text(selectedSession.id)}/close`, {
+      const result = await fetch(`/api${apiBase(role)}/attendance-sessions/${text(selectedSession.id)}/close`, {
         body: JSON.stringify({ clientRequestId, capturedAt }),
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -692,8 +714,9 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
       }).then(async (res) => {
         const payload = await res.json()
         if (!res.ok || !payload.success) throw new Error(payload.message || "Close failed")
+        return payload.data as R
       })
-      await queryClient.invalidateQueries({ queryKey: [role] })
+      updateCachedSession(queryClient, role, result.session)
       toast.success("Session closed")
     } catch (error) {
       await queueClose(error instanceof Error ? `Close queued: ${error.message}` : "Close session saved to queue")

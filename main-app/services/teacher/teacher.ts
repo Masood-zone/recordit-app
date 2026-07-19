@@ -10,6 +10,7 @@ export type TeacherEntity = Record<string, unknown>
 
 export const teacherKeys = {
   all: ["teacher"] as const,
+  attendanceSetup: ["teacher", "attendance-setup"] as const,
   attendanceSessions: ["teacher", "attendance-sessions"] as const,
   dashboard: ["teacher", "dashboard"] as const,
   reports: (params?: Record<string, string>) => ["teacher", "reports", params] as const,
@@ -72,6 +73,18 @@ export function useTeacherAttendanceSessions(enabled = true) {
   })
 }
 
+export function useTeacherAttendanceSetup(enabled = true) {
+  return useQuery({
+    enabled,
+    queryKey: teacherKeys.attendanceSetup,
+    queryFn: () =>
+      unwrap<TeacherEntity>(
+        api.get("/teacher/attendance-setup"),
+        "Attendance workspace could not be loaded"
+      ),
+  })
+}
+
 export function useTeacherReports(params?: Record<string, string>, enabled = true) {
   return useQuery({
     enabled,
@@ -99,7 +112,13 @@ export function useTeacherPost(path: string) {
   return useMutation({
     mutationFn: (input: TeacherEntity) =>
       unwrap<TeacherEntity>(api.post(path, input), "Save failed"),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: teacherKeys.all }),
+    onSuccess: () => {
+      if (path.includes("/attendance-sessions")) return
+      const keys = path.includes("/fingerprints")
+        ? [["teacher", "students"] as const, teacherKeys.syncRoster]
+        : [teacherKeys.all]
+      for (const queryKey of keys) void queryClient.invalidateQueries({ queryKey })
+    },
   })
 }
 
@@ -109,7 +128,10 @@ export function useTeacherGenerateReport() {
   return useMutation({
     mutationFn: (input: TeacherEntity) =>
       unwrap<TeacherEntity>(api.post("/teacher/reports", input), "Report could not be generated"),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: teacherKeys.all }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["teacher", "reports"] })
+      void queryClient.invalidateQueries({ queryKey: teacherKeys.dashboard })
+    },
   })
 }
 
@@ -119,6 +141,9 @@ export function useTeacherPatch(path: string) {
   return useMutation({
     mutationFn: (input: TeacherEntity) =>
       unwrap<TeacherEntity>(api.patch(path, input), "Update failed"),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: teacherKeys.all }),
+    onSuccess: () => {
+      if (path.includes("/attendance-sessions")) return
+      void queryClient.invalidateQueries({ queryKey: teacherKeys.all })
+    },
   })
 }

@@ -16,6 +16,7 @@ import { createAttendanceReport, getAttendanceReport } from "@/lib/attendance-re
 import {
   adjustAttendanceRecord,
   closeAttendanceSession,
+  getAttendanceSetup,
   getAttendanceSession,
   getTemplateSyncRoster,
   listAttendanceSessions,
@@ -202,7 +203,6 @@ async function getDashboard(auth: Authed) {
     totalTeachers,
     totalParents,
     totalClasses,
-    todayRecords,
     weeklyRecords,
     recentAudit,
     noFingerprint,
@@ -216,10 +216,6 @@ async function getDashboard(auth: Authed) {
     prisma.teacher.count({ where: { schoolId } }),
     prisma.parentGuardian.count({ where: { schoolId } }),
     prisma.class.count({ where: { schoolId } }),
-    prisma.attendanceRecord.findMany({
-      where: { schoolId, markedAt: { gte: today, lt: tomorrow } },
-      select: { status: true },
-    }),
     prisma.attendanceRecord.findMany({
       where: { schoolId, markedAt: { gte: weekStart } },
       select: { markedAt: true, status: true },
@@ -237,6 +233,9 @@ async function getDashboard(auth: Authed) {
     prisma.academicTerm.findFirst({ where: { schoolId, isActive: true }, select: { name: true } }),
   ])
 
+  const todayRecords = weeklyRecords.filter(
+    (record) => record.markedAt >= today && record.markedAt < tomorrow
+  )
   const present = todayRecords.filter((r) => r.status === AttendanceStatus.PRESENT).length
   const late = todayRecords.filter((r) => r.status === AttendanceStatus.LATE).length
   const absent = todayRecords.filter((r) => r.status === AttendanceStatus.ABSENT).length
@@ -921,10 +920,13 @@ async function bulkImportStudents(auth: Authed, request: Request) {
 
   if (rows.length > 500) return fail("Bulk import supports up to 500 records")
 
-  const classes = await prisma.class.findMany({ where: { schoolId }, select: { id: true, code: true, name: true } })
+  const [classes, studentsWithNumbers] = await Promise.all([
+    prisma.class.findMany({ where: { schoolId }, select: { id: true, code: true, name: true } }),
+    prisma.student.findMany({ where: { schoolId }, select: { studentNumber: true } }),
+  ])
   const classByKey = new Map(classes.flatMap((item) => [[item.code?.toLowerCase(), item.id], [item.name.toLowerCase(), item.id]]).filter(([key]) => Boolean(key)) as Array<[string, string]>)
   const existingNumbers = new Set(
-    (await prisma.student.findMany({ where: { schoolId }, select: { studentNumber: true } })).map((student) => student.studentNumber.toLowerCase())
+    studentsWithNumbers.map((student) => student.studentNumber.toLowerCase())
   )
   const seen = new Set<string>()
 
@@ -959,34 +961,29 @@ async function bulkImportStudents(auth: Authed, request: Request) {
     return ok({ preview, valid: preview.every((row) => row.issues.length === 0) }, "Import validated")
   }
 
-  const created = await prisma.$transaction(async (tx) => {
-    const students = await Promise.all(
-      preview.map((row) =>
-        tx.student.create({
-          data: {
-            classId: row.classId,
-            firstName: row.firstName,
-            gender: row.gender,
-            lastName: row.lastName,
-            schoolId,
-            studentNumber: row.studentNumber,
-          },
-        })
-      )
-    )
-    await tx.auditLog.create({
+  await prisma.$transaction([
+    prisma.student.createMany({
+      data: preview.map((row) => ({
+        classId: row.classId,
+        firstName: row.firstName,
+        gender: row.gender,
+        lastName: row.lastName,
+        schoolId,
+        studentNumber: row.studentNumber,
+      })),
+    }),
+    prisma.auditLog.create({
       data: {
         action: AuditAction.CREATE,
-        description: `Bulk imported ${students.length} students from ${file.name}.`,
+        description: `Bulk imported ${preview.length} students from ${file.name}.`,
         entity: "Student",
         schoolId,
         userId: auth.user!.id,
       },
-    })
-    return students
-  })
+    }),
+  ])
 
-  return ok({ count: created.length, preview }, "Students imported")
+  return ok({ count: preview.length, preview }, "Students imported")
 }
 
 async function resetUserPassword(auth: Authed, userId: string) {
@@ -1072,6 +1069,9 @@ export async function GET(request: Request, context: Context) {
   }
   if (path[0] === "fingerprints" && path[1] === "sync-roster") {
     return ok({ students: await getTemplateSyncRoster({ schoolId, userId: auth.user!.id }) })
+  }
+  if (path[0] === "attendance-setup") {
+    return ok(await getAttendanceSetup({ schoolId, userId: auth.user!.id }))
   }
   if (path[0] === "attendance-sessions" && path[1]) {
     try {
@@ -1352,28 +1352,34 @@ export async function PATCH(request: Request, context: Context) {
   if (path[0] === "settings") {
     const schoolData = input.school as Record<string, unknown> | undefined
     const settings = input.settings as Record<string, unknown> | undefined
-    if (schoolData) {
-      await prisma.school.update({
-        where: { id: schoolId },
-        data: {
-          ...(schoolData.name ? { name: clean(schoolData.name) } : {}),
-          ...(schoolData.email !== undefined ? { email: optionalClean(schoolData.email) } : {}),
-          ...(schoolData.phone !== undefined ? { phone: optionalClean(schoolData.phone) } : {}),
-          ...(schoolData.address !== undefined ? { address: optionalClean(schoolData.address) } : {}),
-          ...(schoolData.city !== undefined ? { city: optionalClean(schoolData.city) } : {}),
-          ...(schoolData.region !== undefined ? { region: optionalClean(schoolData.region) } : {}),
-        },
-      })
-    }
-    if (settings) {
-      for (const [key, value] of Object.entries(settings)) {
-        await prisma.schoolSetting.upsert({
-          where: { schoolId_key: { schoolId, key } },
-          create: { schoolId, key, value: clean(value) },
-          update: { value: clean(value) },
-        })
-      }
-    }
+    const settingEntries = Object.entries(settings || {})
+    await prisma.$transaction([
+      ...(schoolData
+        ? [
+            prisma.school.update({
+              where: { id: schoolId },
+              data: {
+                ...(schoolData.name ? { name: clean(schoolData.name) } : {}),
+                ...(schoolData.email !== undefined ? { email: optionalClean(schoolData.email) } : {}),
+                ...(schoolData.phone !== undefined ? { phone: optionalClean(schoolData.phone) } : {}),
+                ...(schoolData.address !== undefined ? { address: optionalClean(schoolData.address) } : {}),
+                ...(schoolData.city !== undefined ? { city: optionalClean(schoolData.city) } : {}),
+                ...(schoolData.region !== undefined ? { region: optionalClean(schoolData.region) } : {}),
+              },
+            }),
+          ]
+        : []),
+      ...(settingEntries.length
+        ? [
+            prisma.schoolSetting.deleteMany({
+              where: { schoolId, key: { in: settingEntries.map(([key]) => key) } },
+            }),
+            prisma.schoolSetting.createMany({
+              data: settingEntries.map(([key, value]) => ({ schoolId, key, value: clean(value) })),
+            }),
+          ]
+        : []),
+    ])
     return ok({}, "Settings updated")
   }
 

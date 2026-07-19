@@ -4,6 +4,83 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import type { ApiResponse, UserRole } from "@/types"
 
+const API_ACCESS_CACHE_TTL_MS = 15 * 1000
+
+async function findApiUser(userId: string) {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      firstName: true,
+      lastName: true,
+      phone: true,
+      image: true,
+      role: true,
+      status: true,
+      schoolId: true,
+      school: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          address: true,
+          city: true,
+          region: true,
+          status: true,
+        },
+      },
+      teacherProfile: {
+        select: {
+          id: true,
+          department: true,
+          staffNumber: true,
+          title: true,
+        },
+      },
+      guardianProfile: {
+        select: {
+          id: true,
+          address: true,
+          occupation: true,
+          relationship: true,
+          schoolId: true,
+        },
+      },
+    },
+  })
+}
+
+type ApiUser = Awaited<ReturnType<typeof findApiUser>>
+type ApiAccessCacheEntry = { expiresAt: number; value: Promise<ApiUser> }
+
+const globalForApiAuth = globalThis as typeof globalThis & {
+  recorditApiAccessCache?: Map<string, ApiAccessCacheEntry>
+}
+const apiAccessCache =
+  globalForApiAuth.recorditApiAccessCache ?? new Map<string, ApiAccessCacheEntry>()
+
+if (process.env.NODE_ENV !== "production") {
+  globalForApiAuth.recorditApiAccessCache = apiAccessCache
+}
+
+async function getApiUser(userId: string) {
+  const cached = apiAccessCache.get(userId)
+  if (cached && cached.expiresAt > Date.now()) return cached.value
+
+  const value = findApiUser(userId).catch((error) => {
+    apiAccessCache.delete(userId)
+    throw error
+  })
+  apiAccessCache.set(userId, {
+    expiresAt: Date.now() + API_ACCESS_CACHE_TTL_MS,
+    value,
+  })
+  return value
+}
+
 export function apiError(message: string, status: number, code?: string) {
   return NextResponse.json<ApiResponse>(
     {
@@ -27,16 +104,7 @@ export async function requireApiRole(request: Request, roles: UserRole[]) {
     }
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      role: true,
-      status: true,
-    },
-  })
+  const user = await getApiUser(session.user.id)
 
   if (!user || user.status !== "ACTIVE") {
     return {
@@ -66,23 +134,7 @@ export async function requireSchoolAdminApi(request: Request) {
     return { response: auth.response, user: null, schoolId: null }
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: auth.user!.id },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      role: true,
-      schoolId: true,
-      school: {
-        select: {
-          id: true,
-          name: true,
-          status: true,
-        },
-      },
-    },
-  })
+  const user = auth.user!
 
   if (!user?.schoolId || user.school?.status !== "ACTIVE") {
     return {
@@ -107,31 +159,7 @@ export async function requireTeacherApi(request: Request) {
     return { response: auth.response, user: null, schoolId: null, teacher: null }
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: auth.user!.id },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      role: true,
-      schoolId: true,
-      school: {
-        select: {
-          id: true,
-          name: true,
-          status: true,
-        },
-      },
-      teacherProfile: {
-        select: {
-          id: true,
-          department: true,
-          staffNumber: true,
-          title: true,
-        },
-      },
-    },
-  })
+  const user = auth.user!
 
   if (!user?.schoolId || user.school?.status !== "ACTIVE" || !user.teacherProfile) {
     return {
@@ -164,41 +192,7 @@ export async function requireParentGuardianApi(request: Request) {
     }
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: auth.user!.id },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      role: true,
-      schoolId: true,
-      firstName: true,
-      lastName: true,
-      phone: true,
-      image: true,
-      school: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          phone: true,
-          address: true,
-          city: true,
-          region: true,
-          status: true,
-        },
-      },
-      guardianProfile: {
-        select: {
-          id: true,
-          address: true,
-          occupation: true,
-          relationship: true,
-          schoolId: true,
-        },
-      },
-    },
-  })
+  const user = auth.user!
 
   if (
     !user?.guardianProfile ||

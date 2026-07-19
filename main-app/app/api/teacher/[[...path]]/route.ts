@@ -6,6 +6,7 @@ import { createAttendanceReport, getAttendanceReport } from "@/lib/attendance-re
 import {
   adjustAttendanceRecord,
   closeAttendanceSession,
+  getAttendanceSetup,
   getAttendanceSession,
   getTemplateSyncRoster,
   listAttendanceSessions,
@@ -157,7 +158,6 @@ async function getAssignedClasses(auth: TeacherAuth) {
 async function getDashboard(auth: TeacherAuth) {
   const schoolId = auth.schoolId!
   const teacherId = auth.teacher!.id
-  const classIds = await assignedClassIds(teacherId)
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const tomorrow = new Date(today)
@@ -168,15 +168,20 @@ async function getDashboard(auth: TeacherAuth) {
   const [classes, studentsAssigned, todaySessions, pendingSessions, weeklyRecords] =
     await Promise.all([
       getAssignedClasses(auth),
-      classIds.length
-        ? prisma.student.count({
-            where: { schoolId, classId: { in: classIds }, isActive: true },
-          })
-        : Promise.resolve(0),
+      prisma.student.count({
+        where: {
+          schoolId,
+          isActive: true,
+          class: { teacherAssignments: { some: { teacherId } } },
+        },
+      }),
       prisma.attendanceSession.findMany({
         where: {
           schoolId,
-          OR: [{ teacherId }, { classId: { in: classIds.length ? classIds : [""] } }],
+          OR: [
+            { teacherId },
+            { class: { teacherAssignments: { some: { teacherId } } } },
+          ],
           sessionDate: { gte: today, lt: tomorrow },
         },
         orderBy: { sessionDate: "asc" },
@@ -192,20 +197,21 @@ async function getDashboard(auth: TeacherAuth) {
       prisma.attendanceSession.count({
         where: {
           schoolId,
-          OR: [{ teacherId }, { classId: { in: classIds.length ? classIds : [""] } }],
+          OR: [
+            { teacherId },
+            { class: { teacherAssignments: { some: { teacherId } } } },
+          ],
           status: { in: ["SCHEDULED", "OPEN"] },
         },
       }),
-      classIds.length
-        ? prisma.attendanceRecord.findMany({
-            where: {
-              schoolId,
-              markedAt: { gte: weekStart },
-              student: { classId: { in: classIds } },
-            },
-            select: { markedAt: true, status: true },
-          })
-        : Promise.resolve([]),
+      prisma.attendanceRecord.findMany({
+        where: {
+          schoolId,
+          markedAt: { gte: weekStart },
+          student: { class: { teacherAssignments: { some: { teacherId } } } },
+        },
+        select: { markedAt: true, status: true },
+      }),
     ])
 
   const trend = Array.from({ length: 7 }, (_, index) => {
@@ -261,7 +267,10 @@ async function getNotifications(auth: TeacherAuth, request: Request) {
 
 async function getStudents(auth: TeacherAuth, request: Request) {
   const schoolId = auth.schoolId!
-  const classIds = await assignedClassIds(auth.teacher!.id)
+  const [classIds, classes] = await Promise.all([
+    assignedClassIds(auth.teacher!.id),
+    getAssignedClasses(auth),
+  ])
   const { searchParams } = new URL(request.url)
   const search = searchParams.get("search")?.trim()
   const classId = searchParams.get("classId")
@@ -288,19 +297,15 @@ async function getStudents(auth: TeacherAuth, request: Request) {
       })
     : []
 
-  const classes = await getAssignedClasses(auth)
   return { classes, students }
 }
 
 async function getStudent(auth: TeacherAuth, studentId: string) {
-  const classIds = await assignedClassIds(auth.teacher!.id)
-  if (!classIds.length) return null
-
   return prisma.student.findFirst({
     where: {
       id: studentId,
       schoolId: auth.schoolId!,
-      classId: { in: classIds },
+      class: { teacherAssignments: { some: { teacherId: auth.teacher!.id } } },
     },
     select: studentSelect,
   })
@@ -380,6 +385,16 @@ export async function GET(request: Request, context: Context) {
         userId: auth.user!.id,
       }),
     })
+  }
+  if (path[0] === "attendance-setup") {
+    return ok(
+      await getAttendanceSetup({
+        restrictToAssignedClasses: true,
+        schoolId: auth.schoolId!,
+        teacherId: auth.teacher!.id,
+        userId: auth.user!.id,
+      })
+    )
   }
   if (path[0] === "attendance-sessions" && path[1]) {
     try {

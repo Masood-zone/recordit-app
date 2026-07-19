@@ -42,8 +42,8 @@ export function NotificationInbox({
       const response = await api.patch(`${basePath}/notifications/read-all`, {})
       if (!response.data.success) throw new Error(response.data.message || "Notifications could not be updated")
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey })
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey })
       toast.success("All notifications marked as read")
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : "Update failed"),
@@ -53,7 +53,9 @@ export function NotificationInbox({
       const response = await api.patch(`${basePath}/notifications/${id}/read`, {})
       if (!response.data.success) throw new Error(response.data.message || "Notification could not be updated")
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey })
+    },
     onError: (error) => toast.error(error instanceof Error ? error.message : "Update failed"),
   })
   const items = inbox.data?.notifications || []

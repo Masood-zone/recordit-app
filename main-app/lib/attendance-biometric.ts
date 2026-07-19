@@ -31,6 +31,20 @@ type DevicePayload = {
   model?: string | null
 }
 
+type CachedDevice = { expiresAt: number; id: string }
+
+const globalForBiometric = globalThis as typeof globalThis & {
+  recorditDeviceCache?: Map<string, CachedDevice>
+}
+const deviceCache =
+  globalForBiometric.recorditDeviceCache ?? new Map<string, CachedDevice>()
+
+if (process.env.NODE_ENV !== "production") {
+  globalForBiometric.recorditDeviceCache = deviceCache
+}
+
+const DEVICE_CACHE_TTL_MS = 5 * 60 * 1000
+
 export function normalizeFingerLabel(value: unknown) {
   const raw = String(value || "")
     .trim()
@@ -69,12 +83,22 @@ function templateHash(template10: string) {
 async function ensureDevice(schoolId: string, device?: DevicePayload) {
   const serialNumber = clean(device?.serialNumber) || null
   const bridgeUrl = clean(device?.bridgeUrl) || "http://127.0.0.1:5050"
+  const cacheKey = `${schoolId}:${serialNumber || bridgeUrl}`
+  const cached = deviceCache.get(cacheKey)
+  if (cached && cached.expiresAt > Date.now()) return { id: cached.id }
+
   const existing = serialNumber
-    ? await prisma.biometricDevice.findFirst({ where: { schoolId, serialNumber } })
-    : await prisma.biometricDevice.findFirst({ where: { schoolId, bridgeUrl } })
+    ? await prisma.biometricDevice.findUnique({
+        where: { schoolId_serialNumber: { schoolId, serialNumber } },
+        select: { id: true, model: true, name: true },
+      })
+    : await prisma.biometricDevice.findFirst({
+        where: { schoolId, bridgeUrl },
+        select: { id: true, model: true, name: true },
+      })
 
   if (existing) {
-    return prisma.biometricDevice.update({
+    const saved = await prisma.biometricDevice.update({
       where: { id: existing.id },
       data: {
         bridgeUrl,
@@ -83,10 +107,13 @@ async function ensureDevice(schoolId: string, device?: DevicePayload) {
         name: clean(device?.name) || existing.name,
         serialNumber,
       },
+      select: { id: true },
     })
+    deviceCache.set(cacheKey, { expiresAt: Date.now() + DEVICE_CACHE_TTL_MS, id: saved.id })
+    return saved
   }
 
-  return prisma.biometricDevice.create({
+  const saved = await prisma.biometricDevice.create({
     data: {
       bridgeUrl,
       lastSeenAt: new Date(),
@@ -95,7 +122,10 @@ async function ensureDevice(schoolId: string, device?: DevicePayload) {
       schoolId,
       serialNumber,
     },
+    select: { id: true },
   })
+  deviceCache.set(cacheKey, { expiresAt: Date.now() + DEVICE_CACHE_TTL_MS, id: saved.id })
+  return saved
 }
 
 async function assertStudentScope(scope: ActorScope, studentId: string) {
@@ -122,38 +152,76 @@ async function assertStudentScope(scope: ActorScope, studentId: string) {
 }
 
 export async function getTemplateSyncRoster(scope: ActorScope) {
-  const students = await prisma.student.findMany({
-    where: {
-      schoolId: scope.schoolId,
-      isActive: true,
-      ...(scope.restrictToAssignedClasses
-        ? { class: { teacherAssignments: { some: { teacherId: scope.teacherId } } } }
-        : {}),
-    },
-    orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
-    select: {
-      class: { select: { name: true } },
-      fingerprints: {
-        where: { status: FingerprintTemplateStatus.ACTIVE },
-        select: { finger: true, id: true, templateData: true },
-      },
-      firstName: true,
-      id: true,
-      lastName: true,
-      otherName: true,
-      studentNumber: true,
-    },
-  })
+  type RosterRow = {
+    className: string | null
+    finger: FingerLabel | null
+    fingerprintId: string | null
+    firstName: string
+    lastName: string
+    otherName: string | null
+    studentId: string
+    studentNumber: string
+    templateData: Uint8Array | null
+  }
 
-  return students.map((student) => ({
-    className: student.class?.name || "Unassigned",
-    name: [student.firstName, student.otherName, student.lastName].filter(Boolean).join(" "),
-    studentId: student.id,
+  const teacherFilter = scope.restrictToAssignedClasses
+    ? `AND EXISTS (
+        SELECT 1 FROM "ClassTeacher" ct
+        WHERE ct."classId" = s."classId" AND ct."teacherId" = $2
+      )`
+    : ""
+  const rows = await prisma.$queryRawUnsafe<RosterRow[]>(
+    `SELECT
+      s.id AS "studentId",
+      s."studentNumber",
+      s."firstName",
+      s."otherName",
+      s."lastName",
+      c.name AS "className",
+      ft.id AS "fingerprintId",
+      ft.finger,
+      ft."templateData"
+    FROM "Student" s
+    LEFT JOIN "Class" c ON c.id = s."classId"
+    LEFT JOIN "FingerprintTemplate" ft
+      ON ft."studentId" = s.id AND ft.status = 'ACTIVE'
+    WHERE s."schoolId" = $1 AND s."isActive" = true
+      ${teacherFilter}
+    ORDER BY s."lastName" ASC, s."firstName" ASC`,
+    scope.schoolId,
+    ...(scope.restrictToAssignedClasses ? [scope.teacherId] : [])
+  )
+
+  const students = new Map<string, {
+    className: string
+    fingers: Array<{ finger: FingerLabel; templateData: Uint8Array }>
+    name: string
+    studentId: string
+    studentNumber: string
+  }>()
+  for (const row of rows) {
+    const student = students.get(row.studentId) ?? {
+      className: row.className || "Unassigned",
+      fingers: [],
+      name: [row.firstName, row.otherName, row.lastName].filter(Boolean).join(" "),
+      studentId: row.studentId,
+      studentNumber: row.studentNumber,
+    }
+    if (row.finger && row.fingerprintId && row.templateData) {
+      student.fingers.push({ finger: row.finger, templateData: row.templateData })
+    }
+    students.set(row.studentId, student)
+  }
+
+  return Array.from(students.values()).map((student) => ({
+    className: student.className,
+    name: student.name,
+    studentId: student.studentId,
     studentNumber: student.studentNumber,
-    fingers: student.fingerprints
+    fingers: student.fingers
       .map((fingerprint) => {
         try {
-          const parsed = JSON.parse(Buffer.from(fingerprint.templateData || []).toString("utf8")) as {
+          const parsed = JSON.parse(Buffer.from(fingerprint.templateData).toString("utf8")) as {
             fpId?: number
             template9?: string
             template10?: string
@@ -185,14 +253,15 @@ export async function persistFingerprintEnrollment(scope: ActorScope, input: Rec
     throw new Error("Student, finger, and both SDK templates are required")
   }
 
-  const student = await assertStudentScope(scope, studentId)
+  const [student, device, existing] = await Promise.all([
+    assertStudentScope(scope, studentId),
+    ensureDevice(scope.schoolId, input.device as DevicePayload | undefined),
+    prisma.fingerprintTemplate.findFirst({
+      where: { studentId, finger, status: FingerprintTemplateStatus.ACTIVE },
+      select: { id: true },
+    }),
+  ])
   if (!student) throw new Error("Student not found")
-
-  const device = await ensureDevice(scope.schoolId, input.device as DevicePayload | undefined)
-  const existing = await prisma.fingerprintTemplate.findFirst({
-    where: { studentId, finger, status: FingerprintTemplateStatus.ACTIVE },
-    select: { id: true },
-  })
 
   const data = {
     deviceId: device.id,
@@ -207,11 +276,11 @@ export async function persistFingerprintEnrollment(scope: ActorScope, input: Rec
     templateHash: templateHash(template10),
   }
 
-  const saved = existing
-    ? await prisma.fingerprintTemplate.update({ where: { id: existing.id }, data })
-    : await prisma.fingerprintTemplate.create({ data })
-
-  await prisma.$transaction([
+  const fingerprintId = existing?.id ?? randomUUID()
+  const [saved] = await prisma.$transaction([
+    existing
+      ? prisma.fingerprintTemplate.update({ where: { id: fingerprintId }, data })
+      : prisma.fingerprintTemplate.create({ data: { ...data, id: fingerprintId } }),
     prisma.biometricScanLog.create({
       data: {
         deviceId: device.id,
@@ -222,7 +291,7 @@ export async function persistFingerprintEnrollment(scope: ActorScope, input: Rec
         schoolId: scope.schoolId,
         status: BiometricScanStatus.SUCCESS,
         studentId,
-        templateId: saved.id,
+        templateId: fingerprintId,
       },
     }),
     prisma.auditLog.create({
@@ -230,7 +299,7 @@ export async function persistFingerprintEnrollment(scope: ActorScope, input: Rec
         action: AuditAction.ENROLL_FINGERPRINT,
         description: `Enrolled ${finger} for ${student.firstName} ${student.lastName}.`,
         entity: "FingerprintTemplate",
-        entityId: saved.id,
+        entityId: fingerprintId,
         schoolId: scope.schoolId,
         userId: scope.userId,
       },
@@ -254,96 +323,157 @@ async function classWhere(scope: ActorScope, classId?: string) {
   })
 }
 
+async function queryAttendanceSessions(scope: ActorScope, sessionId?: string) {
+  const parameters: unknown[] = [scope.schoolId]
+  const teacherFilter = scope.restrictToAssignedClasses
+    ? `AND (
+        s."teacherId" = $2 OR EXISTS (
+          SELECT 1 FROM "ClassTeacher" ct
+          WHERE ct."classId" = s."classId" AND ct."teacherId" = $2
+        )
+      )`
+    : ""
+  if (scope.restrictToAssignedClasses) parameters.push(scope.teacherId)
+  const sessionFilter = sessionId ? `AND s.id = $${parameters.length + 1}` : ""
+  if (sessionId) parameters.push(sessionId)
+
+  return prisma.$queryRawUnsafe<Array<Record<string, unknown>>>(
+    `SELECT
+      s.id,
+      s."classId",
+      s.title,
+      s."sessionDate",
+      s."startsAt",
+      s."endsAt",
+      s.status,
+      s."createdAt",
+      CASE WHEN c.id IS NULL THEN NULL ELSE jsonb_build_object(
+        'id', c.id,
+        'name', c.name,
+        'code', c.code
+      ) END AS class,
+      COALESCE(
+        jsonb_agg(
+          jsonb_build_object(
+            'id', r.id,
+            'fingerprintMatched', r."fingerprintMatched",
+            'fingerprintScore', r."fingerprintScore",
+            'markedAt', r."markedAt",
+            'remarks', r.remarks,
+            'status', r.status,
+            'verificationMethod', r."verificationMethod",
+            'student', jsonb_build_object(
+              'id', st.id,
+              'firstName', st."firstName",
+              'lastName', st."lastName",
+              'photoUrl', st."photoUrl",
+              'studentNumber', st."studentNumber"
+            )
+          ) ORDER BY r."markedAt" DESC
+        ) FILTER (WHERE r.id IS NOT NULL),
+        '[]'::jsonb
+      ) AS records,
+      jsonb_build_object('records', COUNT(r.id)) AS _count
+    FROM (
+      SELECT s.* FROM "AttendanceSession" s
+      WHERE s."schoolId" = $1
+        ${teacherFilter}
+        ${sessionFilter}
+      ORDER BY "sessionDate" DESC, "createdAt" DESC
+      LIMIT ${sessionId ? 1 : 30}
+    ) s
+    LEFT JOIN "Class" c ON c.id = s."classId"
+    LEFT JOIN "AttendanceRecord" r ON r."sessionId" = s.id
+    LEFT JOIN "Student" st ON st.id = r."studentId"
+    GROUP BY s.id, s."classId", s.title, s."sessionDate", s."startsAt", s."endsAt",
+      s.status, s."createdAt", c.id, c.name, c.code
+    ORDER BY s."sessionDate" DESC, s."createdAt" DESC`,
+    ...parameters
+  )
+}
+
 export async function listAttendanceSessions(scope: ActorScope) {
-  return prisma.attendanceSession.findMany({
-    where: {
-      schoolId: scope.schoolId,
-      ...(scope.restrictToAssignedClasses
-        ? {
-            OR: [
-              { teacherId: scope.teacherId },
-              { class: { teacherAssignments: { some: { teacherId: scope.teacherId } } } },
-            ],
-          }
-        : {}),
-    },
-    orderBy: [{ sessionDate: "desc" }, { createdAt: "desc" }],
-    take: 30,
-    select: attendanceSessionSelect,
-  })
+  return queryAttendanceSessions(scope)
+}
+
+export async function getAttendanceSetup(scope: ActorScope) {
+  const classScope = scope.restrictToAssignedClasses
+    ? { teacherAssignments: { some: { teacherId: scope.teacherId } } }
+    : {}
+  const studentScope = scope.restrictToAssignedClasses
+    ? { class: { teacherAssignments: { some: { teacherId: scope.teacherId } } } }
+    : {}
+
+  const [classes, sessions, students] = await Promise.all([
+    prisma.class.findMany({
+      where: { schoolId: scope.schoolId, ...classScope },
+      orderBy: { name: "asc" },
+      select: { code: true, id: true, name: true },
+    }),
+    listAttendanceSessions(scope),
+    prisma.student.findMany({
+      where: { schoolId: scope.schoolId, isActive: true, ...studentScope },
+      orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
+      select: {
+        classId: true,
+        firstName: true,
+        id: true,
+        lastName: true,
+        otherName: true,
+        studentNumber: true,
+      },
+    }),
+  ])
+
+  return { classes, sessions, students }
 }
 
 export async function openAttendanceSession(scope: ActorScope, input: Record<string, unknown>) {
   const classId = clean(input.classId)
-  const klass = await classWhere(scope, classId)
+  const [klass, year, term] = await Promise.all([
+    classWhere(scope, classId),
+    prisma.academicYear.findFirst({ where: { schoolId: scope.schoolId, isActive: true }, select: { id: true } }),
+    prisma.academicTerm.findFirst({ where: { schoolId: scope.schoolId, isActive: true }, select: { id: true } }),
+  ])
   if (!klass) throw new Error("Class not found")
 
   const sessionDate = clean(input.sessionDate) ? new Date(clean(input.sessionDate)) : new Date()
   const sessionType = clean(input.sessionType) || "Morning"
-  const [year, term] = await Promise.all([
-    prisma.academicYear.findFirst({ where: { schoolId: scope.schoolId, isActive: true }, select: { id: true } }),
-    prisma.academicTerm.findFirst({ where: { schoolId: scope.schoolId, isActive: true }, select: { id: true } }),
+  const sessionId = randomUUID()
+
+  await prisma.$transaction([
+    prisma.attendanceSession.create({
+      data: {
+        id: sessionId,
+        academicTermId: term?.id,
+        academicYearId: year?.id,
+        classId,
+        createdByUserId: scope.userId,
+        schoolId: scope.schoolId,
+        sessionDate,
+        startsAt: new Date(),
+        status: AttendanceSessionStatus.OPEN,
+        teacherId: scope.teacherId,
+        title: `${klass.name} ${sessionType} Attendance`,
+      },
+      select: { id: true },
+    }),
+    prisma.auditLog.create({
+      data: {
+        action: AuditAction.CREATE,
+        description: `Opened attendance session for ${klass.name}.`,
+        entity: "AttendanceSession",
+        entityId: sessionId,
+        schoolId: scope.schoolId,
+        userId: scope.userId,
+      },
+    }),
   ])
 
-  const session = await prisma.attendanceSession.create({
-    data: {
-      academicTermId: term?.id,
-      academicYearId: year?.id,
-      classId,
-      createdByUserId: scope.userId,
-      schoolId: scope.schoolId,
-      sessionDate,
-      startsAt: new Date(),
-      status: AttendanceSessionStatus.OPEN,
-      teacherId: scope.teacherId,
-      title: `${klass.name} ${sessionType} Attendance`,
-    },
-    select: attendanceSessionSelect,
-  })
-
-  await prisma.auditLog.create({
-    data: {
-      action: AuditAction.CREATE,
-      description: `Opened attendance session for ${klass.name}.`,
-      entity: "AttendanceSession",
-      entityId: session.id,
-      schoolId: scope.schoolId,
-      userId: scope.userId,
-    },
-  })
-
-  return session
+  return getAttendanceSession(scope, sessionId)
 }
 
-const attendanceSessionSelect = {
-  class: { select: { id: true, name: true, code: true } },
-  classId: true,
-  createdAt: true,
-  endsAt: true,
-  id: true,
-  records: {
-    orderBy: { markedAt: "desc" as const },
-    select: {
-      fingerprintMatched: true,
-      fingerprintScore: true,
-      id: true,
-      markedAt: true,
-      remarks: true,
-      status: true,
-      student: {
-        select: { firstName: true, id: true, lastName: true, photoUrl: true, studentNumber: true },
-      },
-      verificationMethod: true,
-    },
-  },
-  sessionDate: true,
-  startsAt: true,
-  status: true,
-  title: true,
-  _count: { select: { records: true } },
-} as const
-
-async function getSession(scope: ActorScope, sessionId: string) {
+async function getSessionForWrite(scope: ActorScope, sessionId: string) {
   return prisma.attendanceSession.findFirst({
     where: {
       id: sessionId,
@@ -357,12 +487,12 @@ async function getSession(scope: ActorScope, sessionId: string) {
           }
         : {}),
     },
-    select: attendanceSessionSelect,
+    select: { classId: true, id: true, status: true, title: true },
   })
 }
 
 export async function getAttendanceSession(scope: ActorScope, sessionId: string) {
-  const session = await getSession(scope, sessionId)
+  const [session] = await queryAttendanceSessions(scope, sessionId)
   if (!session) throw new Error("Attendance session not found")
   return session
 }
@@ -458,10 +588,6 @@ async function notifyParentsForAttendance(recordId: string) {
 }
 
 export async function recordFingerprintScan(scope: ActorScope, sessionId: string, input: Record<string, unknown>) {
-  const session = await getSession(scope, sessionId)
-  if (!session) throw new Error("Attendance session not found")
-  if (session.status !== AttendanceSessionStatus.OPEN) throw new Error("Attendance session is not open")
-
   const studentId = clean(input.studentId)
   const finger = normalizeFingerLabel(input.finger)
   const score = Number(input.score || input.matchScore || 0) || null
@@ -470,106 +596,126 @@ export async function recordFingerprintScan(scope: ActorScope, sessionId: string
   const capturedOffline = input.capturedOffline === true || input.capturedOffline === "true"
   if (!studentId) throw new Error("Matched student is required")
 
-  if (clientRequestId) {
-    const [existingRequest, existingScanLog] = await Promise.all([
-      prisma.attendanceRecord.findUnique({
-        where: { clientRequestId },
-        select: { id: true },
-      }),
-      prisma.biometricScanLog.findUnique({
-        where: { clientRequestId },
-        select: { id: true },
-      }),
-    ])
-    if (existingRequest || existingScanLog) {
-      return {
-        duplicate: true,
-        record: existingRequest,
-        session: await getAttendanceSession(scope, sessionId),
-      }
+  const [
+    session,
+    existingRequest,
+    existingScanLog,
+    student,
+    device,
+    template,
+    existing,
+  ] = await Promise.all([
+    getSessionForWrite(scope, sessionId),
+    clientRequestId
+      ? prisma.attendanceRecord.findUnique({
+          where: { clientRequestId },
+          select: { id: true },
+        })
+      : Promise.resolve(null),
+    clientRequestId
+      ? prisma.biometricScanLog.findUnique({
+          where: { clientRequestId },
+          select: { id: true },
+        })
+      : Promise.resolve(null),
+    assertStudentScope(scope, studentId),
+    ensureDevice(scope.schoolId, input.device as DevicePayload | undefined),
+    finger
+      ? prisma.fingerprintTemplate.findFirst({
+          where: { studentId, finger, status: FingerprintTemplateStatus.ACTIVE },
+          select: { id: true },
+        })
+      : Promise.resolve(null),
+    prisma.attendanceRecord.findUnique({
+      where: { sessionId_studentId: { sessionId, studentId } },
+      select: { id: true, status: true },
+    }),
+  ])
+
+  if (!session) throw new Error("Attendance session not found")
+  if (session.status !== AttendanceSessionStatus.OPEN) throw new Error("Attendance session is not open")
+  if (existingRequest || existingScanLog) {
+    return {
+      duplicate: true,
+      record: existingRequest,
+      session: await getAttendanceSession(scope, sessionId),
     }
   }
-
-  const student = await assertStudentScope(scope, studentId)
   if (!student || student.classId !== session.classId) throw new Error("Student is not in this attendance class")
 
-  const device = await ensureDevice(scope.schoolId, input.device as DevicePayload | undefined)
-  const template = finger
-    ? await prisma.fingerprintTemplate.findFirst({
-        where: { studentId, finger, status: FingerprintTemplateStatus.ACTIVE },
-        select: { id: true },
-      })
-    : null
-
-  const existing = await prisma.attendanceRecord.findUnique({
-    where: { sessionId_studentId: { sessionId, studentId } },
-    select: { id: true, status: true },
-  })
-
-  const record = await prisma.attendanceRecord.upsert({
-    where: { sessionId_studentId: { sessionId, studentId } },
-    create: {
-      capturedOffline,
-      clientRequestId,
-      deviceId: device.id,
-      fingerprintMatched: true,
-      fingerprintScore: score,
-      markedAt,
-      markedByUserId: scope.userId,
-      schoolId: scope.schoolId,
-      sessionId,
-      status: AttendanceStatus.PRESENT,
-      studentId,
-      syncedAt: capturedOffline ? new Date() : undefined,
-      templateId: template?.id,
-      verificationMethod: AttendanceVerificationMethod.FINGERPRINT,
-    },
-    update: {
-      capturedOffline,
-      deviceId: device.id,
-      fingerprintMatched: true,
-      fingerprintScore: score,
-      ...(markedAt ? { markedAt } : {}),
-      markedByUserId: scope.userId,
-      syncedAt: capturedOffline ? new Date() : undefined,
-      templateId: template?.id,
-      verificationMethod: AttendanceVerificationMethod.FINGERPRINT,
-    },
-  })
-
-  await prisma.biometricScanLog.create({
-    data: {
-      attendanceRecordId: record.id,
-      clientRequestId,
-      deviceId: device.id,
-      matchScore: score,
-      message: existing ? "Student was already marked for this session" : "Fingerprint attendance recorded",
-      performedById: scope.userId,
-      purpose: BiometricScanPurpose.ATTENDANCE_VERIFICATION,
-      schoolId: scope.schoolId,
-      status: BiometricScanStatus.SUCCESS,
-      studentId,
-      templateId: template?.id,
-    },
-  })
-
-  await notifyParentsForAttendance(record.id)
+  const recordId = existing?.id ?? randomUUID()
+  const scanLogId = randomUUID()
+  const syncedAt = capturedOffline ? new Date() : null
+  const [record] = await prisma.$queryRawUnsafe<Array<Record<string, unknown>>>(
+    `WITH saved AS (
+      INSERT INTO "AttendanceRecord" (
+        id, "schoolId", "sessionId", "studentId", "deviceId", "templateId",
+        "clientRequestId", status, "markedAt", "markedByUserId", "verificationMethod",
+        "fingerprintMatched", "fingerprintScore", "capturedOffline", "syncedAt",
+        "createdAt", "updatedAt"
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7, 'PRESENT', COALESCE($8, CURRENT_TIMESTAMP),
+        $9, 'FINGERPRINT', true, $10, $11, $12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+      )
+      ON CONFLICT ("sessionId", "studentId") DO UPDATE SET
+        "deviceId" = EXCLUDED."deviceId",
+        "templateId" = EXCLUDED."templateId",
+        status = 'PRESENT',
+        "markedAt" = COALESCE($8, "AttendanceRecord"."markedAt"),
+        "markedByUserId" = EXCLUDED."markedByUserId",
+        "verificationMethod" = 'FINGERPRINT',
+        "fingerprintMatched" = true,
+        "fingerprintScore" = EXCLUDED."fingerprintScore",
+        "capturedOffline" = EXCLUDED."capturedOffline",
+        "syncedAt" = EXCLUDED."syncedAt",
+        "updatedAt" = CURRENT_TIMESTAMP
+      RETURNING *
+    ), logged AS (
+      INSERT INTO "BiometricScanLog" (
+        id, "schoolId", "studentId", "deviceId", "templateId", "performedById",
+        "attendanceRecordId", "clientRequestId", purpose, status, "matchScore", message,
+        "scannedAt"
+      )
+      SELECT
+        $13, $2, $4, $5, $6, $9, saved.id, $7,
+        'ATTENDANCE_VERIFICATION', 'SUCCESS', $10, $14, CURRENT_TIMESTAMP
+      FROM saved
+      RETURNING id
+    )
+    SELECT saved.* FROM saved, logged`,
+    recordId,
+    scope.schoolId,
+    sessionId,
+    studentId,
+    device.id,
+    template?.id ?? null,
+    clientRequestId ?? null,
+    markedAt ?? null,
+    scope.userId,
+    score,
+    capturedOffline,
+    syncedAt,
+    scanLogId,
+    existing ? "Student was already marked for this session" : "Fingerprint attendance recorded"
+  )
 
   return { duplicate: Boolean(existing), record, session: await getAttendanceSession(scope, sessionId) }
 }
 
 export async function recordFailedScan(scope: ActorScope, sessionId: string, input: Record<string, unknown>) {
-  const session = await getSession(scope, sessionId)
-  if (!session) throw new Error("Attendance session not found")
   const clientRequestId = optionalClientRequestId(input.clientRequestId)
-  if (clientRequestId) {
-    const existing = await prisma.biometricScanLog.findUnique({
-      where: { clientRequestId },
-      select: { id: true },
-    })
-    if (existing) return { duplicate: true, session }
-  }
-  const device = await ensureDevice(scope.schoolId, input.device as DevicePayload | undefined)
+  const [session, existing, device] = await Promise.all([
+    getSessionForWrite(scope, sessionId),
+    clientRequestId
+      ? prisma.biometricScanLog.findUnique({
+          where: { clientRequestId },
+          select: { id: true },
+        })
+      : Promise.resolve(null),
+    ensureDevice(scope.schoolId, input.device as DevicePayload | undefined),
+  ])
+  if (!session) throw new Error("Attendance session not found")
+  if (existing) return { duplicate: true, sessionId }
   await prisma.biometricScanLog.create({
     data: {
       clientRequestId,
@@ -582,7 +728,7 @@ export async function recordFailedScan(scope: ActorScope, sessionId: string, inp
       status: BiometricScanStatus.NO_MATCH,
     },
   })
-  return { session }
+  return { duplicate: false, sessionId }
 }
 
 export async function syncAttendanceScans(scope: ActorScope, sessionId: string, input: Record<string, unknown>) {
@@ -631,90 +777,159 @@ export async function adjustAttendanceRecord(
   studentId: string,
   input: Record<string, unknown>
 ) {
-  const session = await getSession(scope, sessionId)
+  const [session, student, existing] = await Promise.all([
+    getSessionForWrite(scope, sessionId),
+    assertStudentScope(scope, studentId),
+    prisma.attendanceRecord.findUnique({
+      where: { sessionId_studentId: { sessionId, studentId } },
+      select: { id: true },
+    }),
+  ])
   if (!session) throw new Error("Attendance session not found")
   if (session.status === AttendanceSessionStatus.CLOSED) throw new Error("Attendance session is closed")
-
-  const student = await assertStudentScope(scope, studentId)
   if (!student || student.classId !== session.classId) throw new Error("Student is not in this attendance class")
 
   const status = clean(input.status).toUpperCase() as AttendanceStatus
   if (!Object.values(AttendanceStatus).includes(status)) throw new Error("Invalid attendance status")
 
-  const record = await prisma.attendanceRecord.upsert({
-    where: { sessionId_studentId: { sessionId, studentId } },
-    create: {
-      markedByUserId: scope.userId,
-      remarks: clean(input.remarks) || null,
-      schoolId: scope.schoolId,
-      sessionId,
-      status,
-      studentId,
-      verificationMethod: AttendanceVerificationMethod.MANUAL,
-    },
-    update: {
-      markedAt: new Date(),
-      markedByUserId: scope.userId,
-      remarks: clean(input.remarks) || null,
-      status,
-      verificationMethod: AttendanceVerificationMethod.MANUAL,
-    },
-  })
+  const recordId = existing?.id ?? randomUUID()
+  const [record] = await prisma.$transaction([
+    prisma.attendanceRecord.upsert({
+      where: { sessionId_studentId: { sessionId, studentId } },
+      create: {
+        id: recordId,
+        markedByUserId: scope.userId,
+        remarks: clean(input.remarks) || null,
+        schoolId: scope.schoolId,
+        sessionId,
+        status,
+        studentId,
+        verificationMethod: AttendanceVerificationMethod.MANUAL,
+      },
+      update: {
+        markedAt: new Date(),
+        markedByUserId: scope.userId,
+        remarks: clean(input.remarks) || null,
+        status,
+        verificationMethod: AttendanceVerificationMethod.MANUAL,
+      },
+    }),
+    prisma.auditLog.create({
+      data: {
+        action: AuditAction.UPDATE,
+        description: `Manual attendance adjustment: ${status}.`,
+        entity: "AttendanceRecord",
+        entityId: recordId,
+        schoolId: scope.schoolId,
+        userId: scope.userId,
+      },
+    }),
+  ])
 
-  await prisma.auditLog.create({
-    data: {
-      action: AuditAction.UPDATE,
-      description: `Manual attendance adjustment: ${status}.`,
-      entity: "AttendanceRecord",
-      entityId: record.id,
-      schoolId: scope.schoolId,
-      userId: scope.userId,
-    },
-  })
+  const refreshedSession = getAttendanceSession(scope, sessionId)
+  if (status === AttendanceStatus.ABSENT || status === AttendanceStatus.LATE) {
+    const [, refreshed] = await Promise.all([
+      notifyParentsForAttendance(record.id),
+      refreshedSession,
+    ])
+    return { record, session: refreshed }
+  }
 
-  await notifyParentsForAttendance(record.id)
-
-  return { record, session: await getAttendanceSession(scope, sessionId) }
+  return { record, session: await refreshedSession }
 }
 
 export async function closeAttendanceSession(scope: ActorScope, sessionId: string) {
-  const session = await getSession(scope, sessionId)
+  const session = await getSessionForWrite(scope, sessionId)
   if (!session) throw new Error("Attendance session not found")
   if (!session.classId) throw new Error("Attendance session has no class")
 
-  const students = await prisma.student.findMany({
-    where: { classId: session.classId, schoolId: scope.schoolId, isActive: true },
-    select: { id: true },
-  })
-  const existing = await prisma.attendanceRecord.findMany({
-    where: { sessionId },
-    select: { studentId: true },
-  })
+  const [students, existing] = await Promise.all([
+    prisma.student.findMany({
+      where: { classId: session.classId, schoolId: scope.schoolId, isActive: true },
+      select: {
+        firstName: true,
+        id: true,
+        lastName: true,
+        otherName: true,
+        guardians: {
+          select: {
+            guardian: {
+              select: {
+                notificationPreferences: true,
+                user: { select: { email: true, id: true, phone: true } },
+              },
+            },
+          },
+        },
+      },
+    }),
+    prisma.attendanceRecord.findMany({
+      where: { sessionId },
+      select: { studentId: true },
+    }),
+  ])
   const marked = new Set(existing.map((item) => item.studentId))
   const missing = students.filter((student) => !marked.has(student.id))
+  const markedAt = new Date()
+  const createdMissing = missing.map((student) => ({ id: randomUUID(), student }))
+  const notifications = createdMissing.flatMap(({ id: attendanceRecordId, student }) => {
+    const studentName = [student.firstName, student.otherName, student.lastName]
+      .filter(Boolean)
+      .join(" ")
+    const title = `${studentName} was marked absent`
+    const message = `${studentName} was marked absent for ${session.title} on ${markedAt.toLocaleDateString()}.`
 
-  const createdMissing: string[] = []
+    return student.guardians.flatMap(({ guardian }) => {
+      const prefs = guardian.notificationPreferences
+      if (prefs?.absentAlerts === false) return []
+
+      const channels: NotificationChannel[] = []
+      if (prefs?.inAppEnabled !== false) channels.push(NotificationChannel.IN_APP)
+      if (prefs?.emailEnabled !== false && guardian.user.email) channels.push(NotificationChannel.EMAIL)
+      if (prefs?.smsEnabled !== false && guardian.user.phone) channels.push(NotificationChannel.SMS)
+
+      return channels.map((channel) => ({
+        attendanceRecordId,
+        channel,
+        message,
+        schoolId: scope.schoolId,
+        sentAt: channel === NotificationChannel.IN_APP ? markedAt : null,
+        status:
+          channel === NotificationChannel.IN_APP
+            ? NotificationStatus.SENT
+            : NotificationStatus.PENDING,
+        studentId: student.id,
+        title,
+        type: NotificationType.ABSENCE_ALERT,
+        userId: guardian.user.id,
+      }))
+    })
+  })
 
   await prisma.$transaction([
-    ...missing.map((student) => {
-      const id = randomUUID()
-      createdMissing.push(id)
-      return prisma.attendanceRecord.create({
-        data: {
-          id,
-          markedByUserId: scope.userId,
-          remarks: "Automatically marked absent when session closed.",
-          schoolId: scope.schoolId,
-          sessionId,
-          status: AttendanceStatus.ABSENT,
-          studentId: student.id,
-          verificationMethod: AttendanceVerificationMethod.MANUAL,
-        },
-      })
-    }),
+    ...(createdMissing.length
+      ? [
+          prisma.attendanceRecord.createMany({
+            data: createdMissing.map(({ id, student }) => ({
+              id,
+              markedAt,
+              markedByUserId: scope.userId,
+              remarks: "Automatically marked absent when session closed.",
+              schoolId: scope.schoolId,
+              sessionId,
+              status: AttendanceStatus.ABSENT,
+              studentId: student.id,
+              verificationMethod: AttendanceVerificationMethod.MANUAL,
+            })),
+          }),
+        ]
+      : []),
+    ...(notifications.length
+      ? [prisma.notification.createMany({ data: notifications })]
+      : []),
     prisma.attendanceSession.update({
       where: { id: sessionId },
-      data: { endsAt: new Date(), status: AttendanceSessionStatus.CLOSED },
+      data: { endsAt: markedAt, status: AttendanceSessionStatus.CLOSED },
     }),
     prisma.auditLog.create({
       data: {
@@ -727,8 +942,6 @@ export async function closeAttendanceSession(scope: ActorScope, sessionId: strin
       },
     }),
   ])
-
-  await Promise.allSettled(createdMissing.map((recordId) => notifyParentsForAttendance(recordId)))
 
   return getAttendanceSession(scope, sessionId)
 }
