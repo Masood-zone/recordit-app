@@ -46,6 +46,7 @@ type Role = "admin" | "teacher"
 
 const FINGERPRINT_OPERATION_TIMEOUT_MS = 60_000
 const FINGERPRINT_ENROLLMENT_TIMEOUT_MS = 120_000
+const FINGERPRINT_ENROLLMENT_POLL_INTERVAL_MS = 250
 
 const fingerOptions = [
   ["LEFT_THUMB", "Left thumb"],
@@ -94,11 +95,12 @@ async function pollUntilDone<T extends { status: string }>(
   load: () => Promise<T>,
   apply: (value: T) => void,
   timeoutMs = FINGERPRINT_OPERATION_TIMEOUT_MS,
-  operationName = "Fingerprint operation"
+  operationName = "Fingerprint operation",
+  pollIntervalMs = 900
 ) {
   const startedAt = Date.now()
   while (Date.now() - startedAt < timeoutMs) {
-    await new Promise((resolve) => window.setTimeout(resolve, 900))
+    await new Promise((resolve) => window.setTimeout(resolve, pollIntervalMs))
     const next = await load()
     apply(next)
     if (next.status === "SUCCESS" || next.status === "FAILED") return next
@@ -227,7 +229,8 @@ export function FingerprintEnrollmentWorkflow({ role }: { role: Role }) {
         bridgeApi.enrollmentStatus,
         setEnrollment,
         FINGERPRINT_ENROLLMENT_TIMEOUT_MS,
-        "Fingerprint enrollment"
+        "Fingerprint enrollment",
+        FINGERPRINT_ENROLLMENT_POLL_INTERVAL_MS
       )
       if (done.status !== "SUCCESS" || !done.template9 || !done.template10) {
         throw new Error(done.message || "Enrollment did not return a usable template")

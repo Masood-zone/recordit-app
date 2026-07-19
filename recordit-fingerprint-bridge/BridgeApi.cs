@@ -104,7 +104,13 @@ namespace Biokey01
                 {
                     enrollmentStatus = StatusCapturing;
                     enrollIndex = axZKFPEngX1.EnrollIndex;
-                    enrollmentScanCount = Math.Min(EnrollmentScanTotal, Math.Max(enrollmentScanCount, enrollIndex));
+                    // The ZKTeco SDK reports EnrollIndex as the number of placements still
+                    // required (the stock control itself says "still press finger {0} times").
+                    // Convert it to completed scans before sending progress to the app.
+                    int completedScans = EnrollmentScanTotal - enrollIndex;
+                    enrollmentScanCount = Math.Min(
+                        EnrollmentScanTotal,
+                        Math.Max(enrollmentScanCount, Math.Max(0, completedScans)));
                 }
                 else if (bridgeMode == "CaptureOnly")
                 {

@@ -133,17 +133,19 @@ function terminal(status: string) {
 
 const FINGERPRINT_OPERATION_TIMEOUT_MS = 60_000
 const FINGERPRINT_ENROLLMENT_TIMEOUT_MS = 500_000
+const FINGERPRINT_ENROLLMENT_POLL_INTERVAL_MS = 250
 
 async function pollUntilDone<T extends { status: string }>(
   load: () => Promise<T>,
   apply: (value: T) => void,
   timeoutMs = FINGERPRINT_OPERATION_TIMEOUT_MS,
-  operationName = "Operation"
+  operationName = "Operation",
+  pollIntervalMs = 1000
 ) {
   const startedAt = Date.now()
 
   while (Date.now() - startedAt < timeoutMs) {
-    await new Promise((resolve) => window.setTimeout(resolve, 1000))
+    await new Promise((resolve) => window.setTimeout(resolve, pollIntervalMs))
     const next = await load()
     apply(next)
     if (terminal(next.status)) return
@@ -344,7 +346,8 @@ export const useFingerprintPocStore = create<FingerprintPocStore>(
           set({ enrollment })
         },
         FINGERPRINT_ENROLLMENT_TIMEOUT_MS,
-        "Fingerprint enrollment"
+        "Fingerprint enrollment",
+        FINGERPRINT_ENROLLMENT_POLL_INTERVAL_MS
       )
       get().addFrontendLog(`Enrollment ${get().enrollment.status}`)
     },
