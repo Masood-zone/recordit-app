@@ -342,6 +342,10 @@ function useRoleAttendance(role: Role) {
     classes: role === "admin" ? list(adminOptions.data?.classes) : list(teacherStudents.data?.classes),
     post: role === "admin" ? adminPost : teacherPost,
     roster: role === "admin" ? adminRoster.data : teacherRoster.data,
+    refreshRoster: async () => {
+      const result = role === "admin" ? await adminRoster.refetch() : await teacherRoster.refetch()
+      return result.data
+    },
     sessions: role === "admin" ? list(adminSessions.data?.sessions) : list(teacherSessions.data?.sessions),
     students: role === "admin" ? list(adminStudents.data?.students) : list(teacherStudents.data?.students),
   }
@@ -349,7 +353,7 @@ function useRoleAttendance(role: Role) {
 
 export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
   const queryClient = useQueryClient()
-  const { classes, post, roster, sessions, students } = useRoleAttendance(role)
+  const { classes, post, refreshRoster, roster, sessions, students } = useRoleAttendance(role)
   const [sessionId, setSessionId] = useState("")
   const [scan, setScan] = useState<IdentifyState | null>(null)
   const [queueItems, setQueueItems] = useState<OfflineAttendanceQueueItem[]>([])
@@ -358,6 +362,7 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
   const syncQueueRunningRef = useRef(false)
   const [syncing, setSyncing] = useState(false)
   const [scanning, setScanning] = useState(false)
+  const [rosterSynced, setRosterSynced] = useState(false)
   const selectedSession = useMemo(
     () => sessions.find((session) => text(session.id) === sessionId) || sessions.find((session) => text(session.status) === "OPEN") || sessions[0],
     [sessionId, sessions]
@@ -488,17 +493,24 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
     }
   }, [refreshQueue, syncOfflineQueue])
 
-  async function syncRoster() {
+  async function syncRoster(silent = false) {
     if (typeof navigator !== "undefined" && !navigator.onLine) {
-      toast.warning("Offline mode is active. Template sync will run when internet returns.")
+      if (!silent) toast.warning("Offline mode is active. Template sync will run when internet returns.")
       return
     }
     setSyncing(true)
     try {
-      await bridgeApi.syncStudents(list(roster?.students) as never)
-      toast.success("Bridge roster synced")
+      // Refetch just before syncing so newly enrolled templates are available even
+      // when this attendance page has been open for some time.
+      const latestRoster = await refreshRoster()
+      const rosterStudents = list(latestRoster?.students ?? roster?.students)
+      await bridgeApi.syncStudents(rosterStudents as never)
+      setRosterSynced(true)
+      if (!silent) toast.success("Bridge roster synced")
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Roster sync failed")
+      const message = error instanceof Error ? error.message : "Roster sync failed"
+      if (!silent) toast.error(message)
+      throw new Error(message)
     } finally {
       setSyncing(false)
     }
@@ -528,6 +540,11 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
     }
     setScanning(true)
     try {
+      if (!rosterSynced) {
+        // The fingerprint bridge loses its cache when it is restarted. Sync it on
+        // the first scan so scanning works without requiring a separate manual step.
+        await syncRoster(true)
+      }
       const start = await bridgeApi.startIdentify()
       setScan({
         className: null,
