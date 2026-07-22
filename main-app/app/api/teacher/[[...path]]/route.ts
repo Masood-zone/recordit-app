@@ -6,6 +6,7 @@ import { createAttendanceReport, getAttendanceReport } from "@/lib/attendance-re
 import {
   adjustAttendanceRecord,
   closeAttendanceSession,
+  FingerprintAlreadyRegisteredError,
   getAttendanceSetup,
   getAttendanceSession,
   getTemplateSyncRoster,
@@ -461,6 +462,9 @@ export async function POST(request: Request, context: Context) {
     try {
       return ok(await persistFingerprintEnrollment(scope, { ...input, studentId: path[1] }), "Fingerprint enrolled", 201)
     } catch (error) {
+      if (error instanceof FingerprintAlreadyRegisteredError) {
+        return apiError(error.message, 409, "CONFLICT")
+      }
       return fail(error instanceof Error ? error.message : "Fingerprint enrollment failed")
     }
   }

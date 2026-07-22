@@ -523,6 +523,7 @@ model FingerprintTemplate {
   @@index([studentId])
   @@index([deviceId])
   @@index([status])
+  @@index([templateHash])
   @@index([schoolId, status])
 }
 

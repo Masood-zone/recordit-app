@@ -33,6 +33,13 @@ type DevicePayload = {
 
 type CachedDevice = { expiresAt: number; id: string }
 
+export class FingerprintAlreadyRegisteredError extends Error {
+  constructor() {
+    super("This finger is already registered")
+    this.name = "FingerprintAlreadyRegisteredError"
+  }
+}
+
 const globalForBiometric = globalThis as typeof globalThis & {
   recorditDeviceCache?: Map<string, CachedDevice>
 }
@@ -253,15 +260,24 @@ export async function persistFingerprintEnrollment(scope: ActorScope, input: Rec
     throw new Error("Student, finger, and both SDK templates are required")
   }
 
-  const [student, device, existing] = await Promise.all([
+  const nextTemplateHash = templateHash(template10)
+  const [student, existing, registeredTemplate] = await Promise.all([
     assertStudentScope(scope, studentId),
-    ensureDevice(scope.schoolId, input.device as DevicePayload | undefined),
     prisma.fingerprintTemplate.findFirst({
       where: { studentId, finger, status: FingerprintTemplateStatus.ACTIVE },
       select: { id: true },
     }),
+    prisma.fingerprintTemplate.findFirst({
+      where: { templateHash: nextTemplateHash },
+      select: { id: true },
+    }),
   ])
   if (!student) throw new Error("Student not found")
+  if (registeredTemplate && registeredTemplate.id !== existing?.id) {
+    throw new FingerprintAlreadyRegisteredError()
+  }
+
+  const device = await ensureDevice(scope.schoolId, input.device as DevicePayload | undefined)
 
   const data = {
     deviceId: device.id,
@@ -273,38 +289,60 @@ export async function persistFingerprintEnrollment(scope: ActorScope, input: Rec
     status: FingerprintTemplateStatus.ACTIVE,
     studentId,
     templateData: templatePayload(template9, template10, fpId),
-    templateHash: templateHash(template10),
+    templateHash: nextTemplateHash,
   }
 
   const fingerprintId = existing?.id ?? randomUUID()
-  const [saved] = await prisma.$transaction([
-    existing
-      ? prisma.fingerprintTemplate.update({ where: { id: fingerprintId }, data })
-      : prisma.fingerprintTemplate.create({ data: { ...data, id: fingerprintId } }),
-    prisma.biometricScanLog.create({
-      data: {
-        deviceId: device.id,
-        matchScore: qualityScore,
-        message: `Enrolled ${finger}`,
-        performedById: scope.userId,
-        purpose: BiometricScanPurpose.ENROLLMENT,
-        schoolId: scope.schoolId,
-        status: BiometricScanStatus.SUCCESS,
-        studentId,
-        templateId: fingerprintId,
-      },
-    }),
-    prisma.auditLog.create({
-      data: {
-        action: AuditAction.ENROLL_FINGERPRINT,
-        description: `Enrolled ${finger} for ${student.firstName} ${student.lastName}.`,
-        entity: "FingerprintTemplate",
-        entityId: fingerprintId,
-        schoolId: scope.schoolId,
-        userId: scope.userId,
-      },
-    }),
-  ])
+  let saved
+  try {
+    saved = await prisma.$transaction(async (tx) => {
+      const duplicate = await tx.fingerprintTemplate.findFirst({
+        where: { templateHash: nextTemplateHash, NOT: { id: fingerprintId } },
+        select: { id: true },
+      })
+      if (duplicate) throw new FingerprintAlreadyRegisteredError()
+
+      const fingerprint = existing
+        ? await tx.fingerprintTemplate.update({ where: { id: fingerprintId }, data })
+        : await tx.fingerprintTemplate.create({ data: { ...data, id: fingerprintId } })
+
+      await tx.biometricScanLog.create({
+        data: {
+          deviceId: device.id,
+          matchScore: qualityScore,
+          message: `Enrolled ${finger}`,
+          performedById: scope.userId,
+          purpose: BiometricScanPurpose.ENROLLMENT,
+          schoolId: scope.schoolId,
+          status: BiometricScanStatus.SUCCESS,
+          studentId,
+          templateId: fingerprintId,
+        },
+      })
+      await tx.auditLog.create({
+        data: {
+          action: AuditAction.ENROLL_FINGERPRINT,
+          description: `Enrolled ${finger} for ${student.firstName} ${student.lastName}.`,
+          entity: "FingerprintTemplate",
+          entityId: fingerprintId,
+          schoolId: scope.schoolId,
+          userId: scope.userId,
+        },
+      })
+
+      return fingerprint
+    }, { isolationLevel: "Serializable" })
+  } catch (error) {
+    if (error instanceof FingerprintAlreadyRegisteredError) throw error
+    if (error && typeof error === "object" && "code" in error && error.code === "P2034") {
+      const duplicate = await prisma.fingerprintTemplate.findFirst({
+        where: { templateHash: nextTemplateHash, NOT: { id: fingerprintId } },
+        select: { id: true },
+      })
+      if (duplicate) throw new FingerprintAlreadyRegisteredError()
+    }
+    throw error
+  }
 
   return { fingerprint: saved, student }
 }
