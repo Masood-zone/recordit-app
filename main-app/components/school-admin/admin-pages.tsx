@@ -553,7 +553,11 @@ export function BulkImportPage() {
     try {
       const result = await importer.mutateAsync({ file, commit })
       setPreview(list(result.preview))
-      toast.success(commit ? `${text(result.count, String(preview.length))} students imported` : "Records validated")
+      toast.success(
+        commit
+          ? `${text(result.count, String(preview.length))} students imported · ${text(result.classCount, "0")} classes created`
+          : "Records validated"
+      )
       if (commit) {
         setFile(null)
         setPreview([])
@@ -586,7 +590,7 @@ export function BulkImportPage() {
         </label>
         <div className="rounded-xl bg-secondary-container p-6 text-white shadow-card">
           <h2 className="text-2xl font-bold">Import format</h2>
-          <p className="mt-2 text-white/80">Required: StudentID, FirstName, LastName, Gender. Use Grade and Section to assign an existing class; dates use YYYY-MM-DD.</p>
+          <p className="mt-2 text-white/80">Required: StudentID, FirstName, LastName, Gender. Grade and Section assign an existing class or create it automatically during import; dates use YYYY-MM-DD.</p>
           <Button type="button" variant="secondary" className="mt-6" onClick={downloadTemplate}>
             <MaterialSymbol icon="download" />Download CSV Template
           </Button>
@@ -606,7 +610,7 @@ export function BulkImportPage() {
           <tbody className="divide-y divide-outline-variant">
             {preview.map((row) => {
               const issues = list(row.issues).map((issue) => text(issue)).join(", ")
-              return <tr key={text(row.index)} className={issues ? "bg-red-50" : ""}><td className="p-4"><StatusBadge status={issues ? "ERROR" : "ACTIVE"} /></td><td className="p-4">{text(row.studentNumber)}</td><td className="p-4">{text(row.firstName)}</td><td className="p-4">{text(row.lastName)}</td><td className="p-4">{text(row.grade)}</td><td className="p-4 text-destructive">{issues || "-"}</td></tr>
+              return <tr key={text(row.index)} className={issues ? "bg-red-50" : ""}><td className="p-4"><StatusBadge status={issues ? "ERROR" : row.createsClass ? "NEW CLASS" : "ACTIVE"} /></td><td className="p-4">{text(row.studentNumber)}</td><td className="p-4">{text(row.firstName)}</td><td className="p-4">{text(row.lastName)}</td><td className="p-4">{text(row.grade)}</td><td className={`p-4 ${issues ? "text-destructive" : "text-on-surface-variant"}`}>{issues || (row.createsClass ? `Will create ${text(row.className)}` : "-")}</td></tr>
             })}
             {!preview.length ? <tr><td colSpan={6} className="p-8 text-center text-on-surface-variant">Select a file and validate it to preview real records.</td></tr> : null}
           </tbody>

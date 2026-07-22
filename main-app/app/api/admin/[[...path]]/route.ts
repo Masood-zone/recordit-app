@@ -988,13 +988,12 @@ async function bulkImportStudents(auth: Authed, request: Request) {
     const dateOfBirth = dateOfBirthValue ? importDate(dateOfBirthValue) : undefined
     const grade = clean(value("grade", "class", "classname"))
     const section = clean(value("section", "stream"))
-    const classCandidates = [
-      [grade, section].filter(Boolean).join(" "),
-      grade,
-      section,
-    ].map(normalizeKey).filter(Boolean)
+    const className = [grade, section].filter(Boolean).join(" ")
+    const classCandidates = (section ? [className] : [grade || section]).map(normalizeKey).filter(Boolean)
     const classId = classCandidates.map((key) => classByKey.get(key)).find(Boolean)
     const classLabel = [grade, section].filter(Boolean).join(" / ")
+    const classKey = normalizeKey(className)
+    const createsClass = Boolean(classKey && !classId)
     const key = studentNumber.toLowerCase()
     const issues: string[] = []
     if (!studentNumber) issues.push("Missing Student ID")
@@ -1007,10 +1006,12 @@ async function bulkImportStudents(auth: Authed, request: Request) {
     if (dateOfBirthValue && !dateOfBirth) issues.push("Invalid Date of Birth (use YYYY-MM-DD)")
     if (key && seen.has(key)) issues.push("Duplicate ID in file")
     if (key && existingNumbers.has(key)) issues.push("Student ID already exists")
-    if (classLabel && !classId) issues.push("Invalid class/section")
     if (key) seen.add(key)
     return {
       classId,
+      classKey,
+      className,
+      createsClass,
       dateOfBirth,
       gender: toGender(genderText),
       grade: classLabel,
@@ -1028,10 +1029,38 @@ async function bulkImportStudents(auth: Authed, request: Request) {
   }
 
   try {
-    const count = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
+      const activeAcademicYear = await tx.academicYear.findFirst({
+        where: { schoolId, isActive: true },
+        select: { id: true },
+      })
+      const classIds = new Map(classByKey)
+      const classesToCreate = Array.from(
+        new Map(
+          preview
+            .filter((row) => row.createsClass)
+            .map((row) => [row.classKey, { key: row.classKey, level: clean(row.grade).split(" / ")[0], name: row.className }])
+        ).values()
+      )
+
+      for (const item of classesToCreate) {
+        const savedClass = await tx.class.upsert({
+          where: { schoolId_name: { schoolId, name: item.name } },
+          create: {
+            academicYearId: activeAcademicYear?.id,
+            level: item.level || undefined,
+            name: item.name,
+            schoolId,
+          },
+          update: {},
+          select: { id: true },
+        })
+        classIds.set(item.key, savedClass.id)
+      }
+
       const result = await tx.student.createMany({
         data: preview.map((row) => ({
-          classId: row.classId,
+          classId: row.classId || classIds.get(row.classKey),
           dateOfBirth: row.dateOfBirth,
           firstName: row.firstName,
           gender: row.gender,
@@ -1044,16 +1073,20 @@ async function bulkImportStudents(auth: Authed, request: Request) {
       await tx.auditLog.create({
         data: {
           action: AuditAction.CREATE,
-          description: `Bulk imported ${result.count} students from ${file.name}.`,
+          description: `Bulk imported ${result.count} students and created ${classesToCreate.length} classes from ${file.name}.`,
           entity: "Student",
           schoolId,
           userId: auth.user!.id,
         },
       })
-      return result.count
+      return { classCount: classesToCreate.length, count: result.count }
     })
 
-    return ok({ count, preview }, `${count} students imported`, 201)
+    return ok(
+      { classCount: result.classCount, count: result.count, preview },
+      `${result.count} students imported and ${result.classCount} classes created`,
+      201
+    )
   } catch (error) {
     if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
       return apiError("A student ID was added after validation. Validate the file again", 409, "CONFLICT")
