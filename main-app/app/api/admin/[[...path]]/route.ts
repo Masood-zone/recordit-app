@@ -913,46 +913,112 @@ async function bulkImportStudents(auth: Authed, request: Request) {
 
   if (!(file instanceof File)) return fail("Upload a CSV or XLSX file")
 
-  const buffer = Buffer.from(await file.arrayBuffer())
-  const workbook = XLSX.read(buffer, { type: "buffer" })
-  const sheet = workbook.Sheets[workbook.SheetNames[0]]
-  const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: "" })
+  const extension = file.name.split(".").pop()?.toLowerCase()
+  if (!extension || !["csv", "xls", "xlsx"].includes(extension)) {
+    return fail("Only CSV or Excel files are supported")
+  }
+  if (file.size === 0) return fail("The selected file is empty")
+  if (file.size > 25 * 1024 * 1024) return fail("The selected file exceeds the 25MB limit")
 
+  let rows: Record<string, unknown>[]
+  try {
+    const buffer = Buffer.from(await file.arrayBuffer())
+    const workbook = XLSX.read(buffer, { cellDates: true, type: "buffer" })
+    const firstSheetName = workbook.SheetNames[0]
+    const sheet = firstSheetName ? workbook.Sheets[firstSheetName] : undefined
+    if (!sheet) return fail("The file does not contain a worksheet")
+    rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, {
+      blankrows: false,
+      defval: "",
+      raw: true,
+    })
+  } catch {
+    return fail("The file could not be read. Check that it is a valid CSV or Excel file")
+  }
+
+  if (rows.length === 0) return fail("The file does not contain any student records")
   if (rows.length > 500) return fail("Bulk import supports up to 500 records")
 
   const [classes, studentsWithNumbers] = await Promise.all([
     prisma.class.findMany({ where: { schoolId }, select: { id: true, code: true, name: true } }),
     prisma.student.findMany({ where: { schoolId }, select: { studentNumber: true } }),
   ])
-  const classByKey = new Map(classes.flatMap((item) => [[item.code?.toLowerCase(), item.id], [item.name.toLowerCase(), item.id]]).filter(([key]) => Boolean(key)) as Array<[string, string]>)
+  const normalizeKey = (value: unknown) => clean(value).toLowerCase().replace(/[\s_-]+/g, " ").trim()
+  const classByKey = new Map<string, string>()
+  for (const item of classes) {
+    for (const key of [item.code, item.name]) {
+      const normalized = normalizeKey(key)
+      if (normalized && !classByKey.has(normalized)) classByKey.set(normalized, item.id)
+    }
+  }
   const existingNumbers = new Set(
     studentsWithNumbers.map((student) => student.studentNumber.toLowerCase())
   )
   const seen = new Set<string>()
 
+  function valuesByHeader(row: Record<string, unknown>) {
+    return new Map(
+      Object.entries(row).map(([key, value]) => [key.toLowerCase().replace(/[^a-z0-9]/g, ""), value])
+    )
+  }
+
+  function importDate(value: unknown) {
+    if (value instanceof Date && !Number.isNaN(value.getTime())) return value
+    if (typeof value === "number") {
+      const parsed = XLSX.SSF.parse_date_code(value)
+      if (parsed) return new Date(Date.UTC(parsed.y, parsed.m - 1, parsed.d))
+    }
+    const valueText = clean(value)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(valueText)) return undefined
+    const parsed = new Date(`${valueText}T00:00:00.000Z`)
+    return Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== valueText
+      ? undefined
+      : parsed
+  }
+
   const preview = rows.map((row, index) => {
-    const studentNumber = clean(row.StudentID || row.StudentId || row.studentNumber || row["Student ID"])
-    const firstName = clean(row.FirstName || row["First Name"] || row.firstName)
-    const lastName = clean(row.LastName || row["Last Name"] || row.lastName)
-    const grade = clean(row.Grade || row.Class || row.Section || row.className)
+    const fields = valuesByHeader(row)
+    const value = (...names: string[]) => names.map((name) => fields.get(name)).find((item) => clean(item))
+    const studentNumber = clean(value("studentid", "studentnumber", "admissionnumber", "admissionno"))
+    const firstName = clean(value("firstname", "givenname"))
+    const lastName = clean(value("lastname", "surname", "familyname"))
+    const otherName = optionalClean(value("othername", "middlename"))
+    const genderText = clean(value("gender", "sex")).toUpperCase()
+    const dateOfBirthValue = value("dateofbirth", "dob", "birthdate")
+    const dateOfBirth = dateOfBirthValue ? importDate(dateOfBirthValue) : undefined
+    const grade = clean(value("grade", "class", "classname"))
+    const section = clean(value("section", "stream"))
+    const classCandidates = [
+      [grade, section].filter(Boolean).join(" "),
+      grade,
+      section,
+    ].map(normalizeKey).filter(Boolean)
+    const classId = classCandidates.map((key) => classByKey.get(key)).find(Boolean)
+    const classLabel = [grade, section].filter(Boolean).join(" / ")
     const key = studentNumber.toLowerCase()
     const issues: string[] = []
     if (!studentNumber) issues.push("Missing Student ID")
     if (!firstName) issues.push("Missing First Name")
     if (!lastName) issues.push("Missing Last Name")
+    if (!genderText) issues.push("Missing Gender")
+    else if (!["F", "FEMALE", "M", "MALE", "O", "OTHER"].includes(genderText)) {
+      issues.push("Invalid Gender")
+    }
+    if (dateOfBirthValue && !dateOfBirth) issues.push("Invalid Date of Birth (use YYYY-MM-DD)")
     if (key && seen.has(key)) issues.push("Duplicate ID in file")
     if (key && existingNumbers.has(key)) issues.push("Student ID already exists")
-    const classId = grade ? classByKey.get(grade.toLowerCase()) : undefined
-    if (grade && !classId) issues.push("Invalid class/section")
-    seen.add(key)
+    if (classLabel && !classId) issues.push("Invalid class/section")
+    if (key) seen.add(key)
     return {
       classId,
-      gender: toGender(row.Gender || row.gender),
-      grade,
+      dateOfBirth,
+      gender: toGender(genderText),
+      grade: classLabel,
       index: index + 1,
       issues,
       firstName,
       lastName,
+      otherName,
       studentNumber,
     }
   })
@@ -961,29 +1027,39 @@ async function bulkImportStudents(auth: Authed, request: Request) {
     return ok({ preview, valid: preview.every((row) => row.issues.length === 0) }, "Import validated")
   }
 
-  await prisma.$transaction([
-    prisma.student.createMany({
-      data: preview.map((row) => ({
-        classId: row.classId,
-        firstName: row.firstName,
-        gender: row.gender,
-        lastName: row.lastName,
-        schoolId,
-        studentNumber: row.studentNumber,
-      })),
-    }),
-    prisma.auditLog.create({
-      data: {
-        action: AuditAction.CREATE,
-        description: `Bulk imported ${preview.length} students from ${file.name}.`,
-        entity: "Student",
-        schoolId,
-        userId: auth.user!.id,
-      },
-    }),
-  ])
+  try {
+    const count = await prisma.$transaction(async (tx) => {
+      const result = await tx.student.createMany({
+        data: preview.map((row) => ({
+          classId: row.classId,
+          dateOfBirth: row.dateOfBirth,
+          firstName: row.firstName,
+          gender: row.gender,
+          lastName: row.lastName,
+          otherName: row.otherName,
+          schoolId,
+          studentNumber: row.studentNumber,
+        })),
+      })
+      await tx.auditLog.create({
+        data: {
+          action: AuditAction.CREATE,
+          description: `Bulk imported ${result.count} students from ${file.name}.`,
+          entity: "Student",
+          schoolId,
+          userId: auth.user!.id,
+        },
+      })
+      return result.count
+    })
 
-  return ok({ count: preview.length, preview }, "Students imported")
+    return ok({ count, preview }, `${count} students imported`, 201)
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
+      return apiError("A student ID was added after validation. Validate the file again", 409, "CONFLICT")
+    }
+    throw error
+  }
 }
 
 async function resetUserPassword(auth: Authed, userId: string) {

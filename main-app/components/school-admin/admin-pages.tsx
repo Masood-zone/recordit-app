@@ -522,13 +522,42 @@ export function BulkImportPage() {
   const [preview, setPreview] = useState<R[]>([])
   const [bulkAction, setBulkAction] = useState<"validate" | "import" | null>(null)
 
+  function selectFile(nextFile: File | null) {
+    setPreview([])
+    if (!nextFile) return setFile(null)
+    const extension = nextFile.name.split(".").pop()?.toLowerCase()
+    if (!extension || !["csv", "xls", "xlsx"].includes(extension)) {
+      setFile(null)
+      return toast.error("Choose a CSV or Excel file")
+    }
+    if (nextFile.size > 25 * 1024 * 1024) {
+      setFile(null)
+      return toast.error("The file must be 25MB or smaller")
+    }
+    setFile(nextFile)
+  }
+
+  function downloadTemplate() {
+    const csv = "StudentID,FirstName,LastName,OtherName,Gender,DateOfBirth,Grade,Section\nCH-2026-0001,Ama,Mensah,,Female,2012-04-18,Grade 8,A\n"
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }))
+    const link = document.createElement("a")
+    link.href = url
+    link.download = "recordit-student-import-template.csv"
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
   async function validate(commit: boolean) {
     if (!file) return toast.error("Choose a CSV or XLSX file first")
     setBulkAction(commit ? "import" : "validate")
     try {
       const result = await importer.mutateAsync({ file, commit })
       setPreview(list(result.preview))
-      toast.success(commit ? "Students imported" : "Records validated")
+      toast.success(commit ? `${text(result.count, String(preview.length))} students imported` : "Records validated")
+      if (commit) {
+        setFile(null)
+        setPreview([])
+      }
     } catch (error) {
       toast.error(errorMessage(error, "Student import failed"))
     } finally {
@@ -540,17 +569,27 @@ export function BulkImportPage() {
     <div>
       <PageHeader title="Bulk Student Import" description="Upload, validate, and commit student records in one controlled flow." />
       <section className="mb-8 grid gap-6 xl:grid-cols-[1fr_360px]">
-        <label className="flex min-h-[280px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-outline-variant bg-surface-container-low p-8 text-center">
+        <label
+          className="flex min-h-[280px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-outline-variant bg-surface-container-low p-8 text-center"
+          onDragOver={(event) => event.preventDefault()}
+          onDrop={(event) => {
+            event.preventDefault()
+            selectFile(event.dataTransfer.files[0] || null)
+          }}
+        >
           <MaterialSymbol icon="upload_file" className="mb-4 text-[54px] text-primary" />
           <h2 className="text-2xl font-bold">Drag and drop CSV or XLSX file here</h2>
           <p className="mt-2 text-on-surface-variant">Maximum file size: 25MB. Maximum 500 records per import.</p>
           <Button type="button" className="mt-6">Upload File</Button>
-          <input className="hidden" type="file" accept=".csv,.xlsx,.xls" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+          <input className="hidden" type="file" accept=".csv,.xlsx,.xls" onChange={(e) => selectFile(e.target.files?.[0] || null)} />
           {file ? <p className="mt-4 font-semibold text-primary">{file.name}</p> : null}
         </label>
         <div className="rounded-xl bg-secondary-container p-6 text-white shadow-card">
-          <h2 className="text-2xl font-bold">Need Help?</h2>
-          <p className="mt-2 text-white/80">Headers: StudentID, FirstName, LastName, Gender, Grade.</p>
+          <h2 className="text-2xl font-bold">Import format</h2>
+          <p className="mt-2 text-white/80">Required: StudentID, FirstName, LastName, Gender. Use Grade and Section to assign an existing class; dates use YYYY-MM-DD.</p>
+          <Button type="button" variant="secondary" className="mt-6" onClick={downloadTemplate}>
+            <MaterialSymbol icon="download" />Download CSV Template
+          </Button>
         </div>
       </section>
       <div className="mb-6 flex justify-end gap-3">
@@ -561,7 +600,7 @@ export function BulkImportPage() {
           {bulkAction === "import" ? "Importing..." : "Import Students"}
         </Button>
       </div>
-      <TableShell title={<h2 className="text-xl font-bold">Data Preview & Validation</h2>}>
+      <TableShell title={<div><h2 className="text-xl font-bold">Data Preview & Validation</h2>{preview.length ? <p className="text-sm font-normal text-on-surface-variant">{preview.length} records · {preview.filter((row) => !list(row.issues).length).length} valid · {preview.filter((row) => list(row.issues).length).length} with errors</p> : null}</div>}>
         <table className="w-full min-w-[900px] text-left">
           <thead className="bg-surface-container"><tr>{["Status", "Student ID", "First Name", "Last Name", "Grade/Section", "Issue"].map((h) => <th key={h} className="p-4">{h}</th>)}</tr></thead>
           <tbody className="divide-y divide-outline-variant">
@@ -569,6 +608,7 @@ export function BulkImportPage() {
               const issues = list(row.issues).map((issue) => text(issue)).join(", ")
               return <tr key={text(row.index)} className={issues ? "bg-red-50" : ""}><td className="p-4"><StatusBadge status={issues ? "ERROR" : "ACTIVE"} /></td><td className="p-4">{text(row.studentNumber)}</td><td className="p-4">{text(row.firstName)}</td><td className="p-4">{text(row.lastName)}</td><td className="p-4">{text(row.grade)}</td><td className="p-4 text-destructive">{issues || "-"}</td></tr>
             })}
+            {!preview.length ? <tr><td colSpan={6} className="p-8 text-center text-on-surface-variant">Select a file and validate it to preview real records.</td></tr> : null}
           </tbody>
         </table>
       </TableShell>
