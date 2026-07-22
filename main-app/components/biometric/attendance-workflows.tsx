@@ -210,12 +210,13 @@ function useRoleEnrollment(role: Role, studentId: string) {
   const teacherStudent = useTeacherStudent(role === "teacher" ? studentId : undefined)
   const adminSave = useAdminPost(`/admin/students/${studentId}/fingerprints`)
   const teacherSave = useTeacherPost(`/teacher/students/${studentId}/fingerprints`)
-  const adminRoster = useAdminSyncRoster(false)
-  const teacherRoster = useTeacherSyncRoster(false)
+  const adminRoster = useAdminSyncRoster(role === "admin")
+  const teacherRoster = useTeacherSyncRoster(role === "teacher")
 
   return {
     data: role === "admin" ? adminStudent.data : teacherStudent.data,
     isLoading: role === "admin" ? adminStudent.isLoading : teacherStudent.isLoading,
+    roster: role === "admin" ? adminRoster.data : teacherRoster.data,
     loadRoster: async () => {
       const result = role === "admin" ? await adminRoster.refetch() : await teacherRoster.refetch()
       return result.data
@@ -227,33 +228,61 @@ function useRoleEnrollment(role: Role, studentId: string) {
 export function FingerprintEnrollmentWorkflow({ role }: { role: Role }) {
   const params = useParams<{ studentId: string }>()
   const router = useRouter()
-  const { data, isLoading, loadRoster, save } = useRoleEnrollment(role, params.studentId)
+  const { data, isLoading, loadRoster, roster, save } = useRoleEnrollment(role, params.studentId)
   const student = obj(data?.student)
   const klass = obj(student.class)
   const [finger, setFinger] = useState<FingerName>("LEFT_THUMB")
   const [enrollment, setEnrollment] = useState<EnrollmentState | null>(null)
   const [syncing, setSyncing] = useState(false)
   const [working, setWorking] = useState(false)
+  const [rosterSynced, setRosterSynced] = useState(false)
+  const rosterSyncPromiseRef = useRef<Promise<void> | null>(null)
   const backHref = role === "admin" ? `/admin/students/${params.studentId}` : `/teacher/students/${params.studentId}`
 
-  async function syncRoster() {
+  async function syncRoster(silent = false, refresh = true) {
+    if (rosterSyncPromiseRef.current) {
+      await rosterSyncPromiseRef.current
+      return
+    }
     setSyncing(true)
+    const task = (async () => {
+      const latestRoster = refresh ? await loadRoster() : roster
+      const students = list(latestRoster?.students ?? roster?.students)
+      await bridgeApi.syncStudents(
+        students as never,
+        text(latestRoster?.version ?? roster?.version)
+      )
+      setRosterSynced(true)
+    })()
+    rosterSyncPromiseRef.current = task
     try {
-      const roster = await loadRoster()
-      const students = list(roster?.students)
-      await bridgeApi.syncStudents(students as never, text(roster?.version))
-      toast.success("Persisted fingerprint templates synced to bridge")
+      await task
+      if (!silent) toast.success("Persisted fingerprint templates synced to bridge")
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Roster sync failed")
+      if (!silent) toast.error(error instanceof Error ? error.message : "Roster sync failed")
+      throw error
     } finally {
+      rosterSyncPromiseRef.current = null
       setSyncing(false)
     }
   }
+
+  const prewarmEnrollmentRoster = useEffectEvent(() => syncRoster(true, false))
+
+  useEffect(() => {
+    if (!roster || rosterSynced || rosterSyncPromiseRef.current) return
+    void prewarmEnrollmentRoster().catch(() => {
+      // Enrollment retries with a fresh roster and surfaces the error.
+    })
+  }, [roster, rosterSynced])
 
   async function enroll() {
     if (!student.id) return
     setWorking(true)
     try {
+      // The ZKTeco cache must contain the latest enrolled fingers before capture
+      // so it can reject a physical finger already owned by another student.
+      await syncRoster(true)
       await bridgeApi.registerStudent({
         className: text(klass.name, "Unassigned"),
         name: fullName(student),
@@ -361,7 +390,7 @@ export function FingerprintEnrollmentWorkflow({ role }: { role: Role }) {
           </div>
         </div>
         <div className="space-y-6">
-          <BridgeStatusPanel onSync={syncRoster} syncing={syncing} />
+          <BridgeStatusPanel onSync={() => syncRoster()} syncing={syncing} />
           <TableShell title={<h2 className="text-lg font-bold">Saved Fingerprints</h2>}>
             <div className="divide-y divide-outline-variant">
               {enrolled.length ? enrolled.map((item) => (
@@ -818,7 +847,7 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
               </Button>
             </div>
           </form>
-          <BridgeStatusPanel onSync={syncRoster} syncing={syncing} />
+          <BridgeStatusPanel onSync={() => syncRoster()} syncing={syncing} />
           <section className="rounded-xl border border-outline-variant bg-white p-5 shadow-card">
             <div className="mb-4 flex items-start justify-between gap-4">
               <div>

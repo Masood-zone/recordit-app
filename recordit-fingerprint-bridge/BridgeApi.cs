@@ -8,7 +8,7 @@ namespace Biokey01
     public partial class Form1
     {
         private const string BridgeServiceName = "RecordIT Fingerprint Bridge";
-        private const string BridgeVersion = "0.3.0";
+        private const string BridgeVersion = "0.3.1";
         private const string MockStudentId = "REC-MOCK-001";
         private const string MockStudentName = "Mock Student";
         private const string MockStudentClassName = "RecordIT Demo Class";
@@ -189,6 +189,36 @@ namespace Biokey01
 
         private void BridgeOnCapture(object sender, AxZKFPEngXControl.IZKFPEngXEvents_OnCaptureEvent e)
         {
+            if (bridgeMode == "Enrollment")
+            {
+                int score = 8;
+                int processedNum = 1;
+                int matchedFpId = axZKFPEngX1.IdentificationInFPCacheDB(
+                    fpcHandle,
+                    e.aTemplate,
+                    ref score,
+                    ref processedNum);
+                FingerOwner matchedOwner = matchedFpId != -1 && fpOwners.ContainsKey(matchedFpId)
+                    ? fpOwners[matchedFpId]
+                    : null;
+
+                // A student may re-enroll their own finger, but one student's
+                // biometric identity must never be assigned to another student.
+                if (matchedOwner != null && matchedOwner.StudentId != activeStudentId)
+                {
+                    axZKFPEngX1.CancelEnroll();
+                    lock (bridgeLock)
+                    {
+                        enrollmentStatus = StatusFailed;
+                        enrollIndex = 0;
+                        enrollmentScanCount = 0;
+                        bridgeMode = "None";
+                    }
+                    SetBridgeMessage("This finger is already registered");
+                    return;
+                }
+            }
+
             if (bridgeMode == "CaptureOnly")
             {
                 capturedTemplate = axZKFPEngX1.GetTemplateAsString();
