@@ -199,8 +199,8 @@ export const bridgeApi = {
   students: () => bridgeFetch<StudentsResponse>("/students"),
   registerStudent: (student: RegisterStudentInput) =>
     post<RegisterStudentResponse>("/students/register", student),
-  syncStudents: (students: SyncStudent[]) =>
-    post<SyncStudentsResponse>("/students/fingerprint/sync", { students }),
+  syncStudents: (students: SyncStudent[], version?: string) =>
+    post<SyncStudentsResponse>("/students/fingerprint/sync", { students, version }),
   startEnrollment: (payload: FingerPayload) =>
     post<StartResponse>("/students/fingerprint/enroll/start", payload),
   enrollmentStatus: () =>

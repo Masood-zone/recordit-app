@@ -1178,7 +1178,7 @@ export async function GET(request: Request, context: Context) {
     return ok({ students })
   }
   if (path[0] === "fingerprints" && path[1] === "sync-roster") {
-    return ok({ students: await getTemplateSyncRoster({ schoolId, userId: auth.user!.id }) })
+    return ok(await getTemplateSyncRoster({ schoolId, userId: auth.user!.id }))
   }
   if (path[0] === "attendance-setup") {
     return ok(await getAttendanceSetup({ schoolId, userId: auth.user!.id }))

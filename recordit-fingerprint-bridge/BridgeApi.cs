@@ -8,7 +8,7 @@ namespace Biokey01
     public partial class Form1
     {
         private const string BridgeServiceName = "RecordIT Fingerprint Bridge";
-        private const string BridgeVersion = "0.2.0";
+        private const string BridgeVersion = "0.3.0";
         private const string MockStudentId = "REC-MOCK-001";
         private const string MockStudentName = "Mock Student";
         private const string MockStudentClassName = "RecordIT Demo Class";
@@ -45,6 +45,9 @@ namespace Biokey01
         private string activeStudentId = MockStudentId;
         private string activeFinger = FingerLeft;
         private int nextFpId = 1;
+        private string rosterVersion = "";
+        private int syncedStudentCount = 0;
+        private int syncedTemplateCount = 0;
 
         protected override void OnLoad(EventArgs e)
         {
@@ -482,6 +485,19 @@ namespace Biokey01
                 return BridgeFailure("Students payload must be an array", null);
             }
 
+            string nextRosterVersion = ReadString(body, "version", "").Trim();
+            if (!String.IsNullOrEmpty(nextRosterVersion) && nextRosterVersion == rosterVersion)
+            {
+                SetBridgeMessage("Fingerprint roster is already up to date");
+                Dictionary<string, object> unchanged = new Dictionary<string, object>();
+                unchanged["success"] = true;
+                unchanged["students"] = syncedStudentCount;
+                unchanged["templates"] = syncedTemplateCount;
+                unchanged["unchanged"] = true;
+                unchanged["message"] = bridgeMessage;
+                return unchanged;
+            }
+
             students.Clear();
             nextFpId = 1;
             int templateCount = 0;
@@ -541,6 +557,10 @@ namespace Biokey01
             {
                 RebuildFingerprintCache();
             }
+
+            rosterVersion = nextRosterVersion;
+            syncedStudentCount = students.Count;
+            syncedTemplateCount = templateCount;
 
             SetBridgeMessage("Synced " + students.Count.ToString() + " students and " + templateCount.ToString() + " fingerprint templates");
             Dictionary<string, object> data = new Dictionary<string, object>();

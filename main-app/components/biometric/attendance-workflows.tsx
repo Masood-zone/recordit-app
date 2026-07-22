@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useQueryClient } from "@tanstack/react-query"
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { FormEvent, useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 
 import { MaterialSymbol } from "@/components/common/MaterialSymbol"
@@ -45,7 +45,7 @@ type Role = "admin" | "teacher"
 
 const FINGERPRINT_OPERATION_TIMEOUT_MS = 60_000
 const FINGERPRINT_ENROLLMENT_TIMEOUT_MS = 120_000
-const FINGERPRINT_ENROLLMENT_POLL_INTERVAL_MS = 250
+const FINGERPRINT_ENROLLMENT_POLL_INTERVAL_MS = 125
 
 const fingerOptions = [
   ["LEFT_THUMB", "Left thumb"],
@@ -110,19 +110,47 @@ function updateCachedSession(queryClient: ReturnType<typeof useQueryClient>, rol
   })
 }
 
+function updateCachedAttendanceRecord(
+  queryClient: ReturnType<typeof useQueryClient>,
+  role: Role,
+  sessionId: string,
+  value: unknown
+) {
+  const record = obj(value)
+  const recordId = text(record.id)
+  if (!recordId) return
+
+  queryClient.setQueryData<R>(attendanceSetupKey(role), (current) => {
+    const data = obj(current)
+    const sessions = list(data.sessions)
+    return {
+      ...data,
+      sessions: sessions.map((session) => {
+        if (text(session.id) !== sessionId) return session
+        const records = list(session.records)
+        const existingIndex = records.findIndex((item) => text(item.id) === recordId)
+        const nextRecords = [...records]
+        if (existingIndex >= 0) nextRecords[existingIndex] = record
+        else nextRecords.unshift(record)
+        return { ...session, records: nextRecords, _count: { records: nextRecords.length } }
+      }),
+    }
+  })
+}
+
 async function pollUntilDone<T extends { status: string }>(
   load: () => Promise<T>,
   apply: (value: T) => void,
   timeoutMs = FINGERPRINT_OPERATION_TIMEOUT_MS,
   operationName = "Fingerprint operation",
-  pollIntervalMs = 900
+  pollIntervalMs = 125
 ) {
   const startedAt = Date.now()
   while (Date.now() - startedAt < timeoutMs) {
-    await new Promise((resolve) => window.setTimeout(resolve, pollIntervalMs))
     const next = await load()
     apply(next)
     if (next.status === "SUCCESS" || next.status === "FAILED") return next
+    await new Promise((resolve) => window.setTimeout(resolve, pollIntervalMs))
   }
   throw new Error(`${operationName} timed out after ${timeoutMs / 1000} seconds.`)
 }
@@ -213,7 +241,7 @@ export function FingerprintEnrollmentWorkflow({ role }: { role: Role }) {
     try {
       const roster = await loadRoster()
       const students = list(roster?.students)
-      await bridgeApi.syncStudents(students as never)
+      await bridgeApi.syncStudents(students as never, text(roster?.version))
       toast.success("Persisted fingerprint templates synced to bridge")
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Roster sync failed")
@@ -353,8 +381,8 @@ export function FingerprintEnrollmentWorkflow({ role }: { role: Role }) {
 function useRoleAttendance(role: Role) {
   const adminSetup = useAdminAttendanceSetup(role === "admin")
   const teacherSetup = useTeacherAttendanceSetup(role === "teacher")
-  const adminRoster = useAdminSyncRoster(false)
-  const teacherRoster = useTeacherSyncRoster(false)
+  const adminRoster = useAdminSyncRoster(role === "admin")
+  const teacherRoster = useTeacherSyncRoster(role === "teacher")
   const adminPost = useAdminPost(`${apiBase(role)}/attendance-sessions`)
   const teacherPost = useTeacherPost(`${apiBase(role)}/attendance-sessions`)
   const setup = role === "admin" ? adminSetup.data : teacherSetup.data
@@ -381,6 +409,7 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
   const [syncingQueue, setSyncingQueue] = useState(false)
   const [syncedThisRun, setSyncedThisRun] = useState(0)
   const syncQueueRunningRef = useRef(false)
+  const rosterSyncPromiseRef = useRef<Promise<void> | null>(null)
   const [syncing, setSyncing] = useState(false)
   const [scanning, setScanning] = useState(false)
   const [rosterSynced, setRosterSynced] = useState(false)
@@ -514,28 +543,47 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
     }
   }, [refreshQueue, syncOfflineQueue])
 
-  async function syncRoster(silent = false) {
+  async function syncRoster(silent = false, refresh = true) {
     if (typeof navigator !== "undefined" && !navigator.onLine) {
       if (!silent) toast.warning("Offline mode is active. Template sync will run when internet returns.")
       return
     }
+    if (rosterSyncPromiseRef.current) {
+      await rosterSyncPromiseRef.current
+      return
+    }
     setSyncing(true)
-    try {
-      // Refetch just before syncing so newly enrolled templates are available even
-      // when this attendance page has been open for some time.
-      const latestRoster = await refreshRoster()
+    const task = (async () => {
+      const latestRoster = refresh ? await refreshRoster() : roster
       const rosterStudents = list(latestRoster?.students ?? roster?.students)
-      await bridgeApi.syncStudents(rosterStudents as never)
+      await bridgeApi.syncStudents(
+        rosterStudents as never,
+        text(latestRoster?.version ?? roster?.version)
+      )
       setRosterSynced(true)
+    })()
+    rosterSyncPromiseRef.current = task
+    try {
+      await task
       if (!silent) toast.success("Bridge roster synced")
     } catch (error) {
       const message = error instanceof Error ? error.message : "Roster sync failed"
       if (!silent) toast.error(message)
       throw new Error(message)
     } finally {
+      rosterSyncPromiseRef.current = null
       setSyncing(false)
     }
   }
+  const prewarmRoster = useEffectEvent(() => syncRoster(true, false))
+
+  useEffect(() => {
+    if (!roster || rosterSynced || rosterSyncPromiseRef.current) return
+    void prewarmRoster().catch(() => {
+      // A disconnected local bridge is expected until the operator opens it.
+      // The first scan retries the sync and surfaces any error.
+    })
+  }, [roster, rosterSynced])
 
   async function openSession(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -638,7 +686,14 @@ export function AttendanceSessionsWorkflow({ role }: { role: Role }) {
         return
       }
       const result = await submitOrQueue()
-      if (result) updateCachedSession(queryClient, role, result.session)
+      if (result) {
+        updateCachedAttendanceRecord(
+          queryClient,
+          role,
+          text(selectedSession.id),
+          result.record
+        )
+      }
       if (result) toast.success(Boolean(result.duplicate) ? "Student was already marked" : "Attendance recorded")
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Scan failed")

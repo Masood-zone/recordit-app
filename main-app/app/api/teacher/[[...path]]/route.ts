@@ -378,14 +378,12 @@ export async function GET(request: Request, context: Context) {
   if (path[0] === "notifications") return ok(await getNotifications(auth, request))
   if (path[0] === "classes") return ok({ classes: await getAssignedClasses(auth) })
   if (path[0] === "fingerprints" && path[1] === "sync-roster") {
-    return ok({
-      students: await getTemplateSyncRoster({
-        restrictToAssignedClasses: true,
-        schoolId: auth.schoolId!,
-        teacherId: auth.teacher!.id,
-        userId: auth.user!.id,
-      }),
-    })
+    return ok(await getTemplateSyncRoster({
+      restrictToAssignedClasses: true,
+      schoolId: auth.schoolId!,
+      teacherId: auth.teacher!.id,
+      userId: auth.user!.id,
+    }))
   }
   if (path[0] === "attendance-setup") {
     return ok(

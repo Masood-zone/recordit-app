@@ -169,6 +169,7 @@ export async function getTemplateSyncRoster(scope: ActorScope) {
     studentId: string
     studentNumber: string
     templateData: Uint8Array | null
+    templateHash: string | null
   }
 
   const teacherFilter = scope.restrictToAssignedClasses
@@ -187,7 +188,8 @@ export async function getTemplateSyncRoster(scope: ActorScope) {
       c.name AS "className",
       ft.id AS "fingerprintId",
       ft.finger,
-      ft."templateData"
+      ft."templateData",
+      ft."templateHash"
     FROM "Student" s
     LEFT JOIN "Class" c ON c.id = s."classId"
     LEFT JOIN "FingerprintTemplate" ft
@@ -220,7 +222,7 @@ export async function getTemplateSyncRoster(scope: ActorScope) {
     students.set(row.studentId, student)
   }
 
-  return Array.from(students.values()).map((student) => ({
+  const roster = Array.from(students.values()).map((student) => ({
     className: student.className,
     name: student.name,
     studentId: student.studentId,
@@ -246,9 +248,30 @@ export async function getTemplateSyncRoster(scope: ActorScope) {
       })
       .filter(Boolean),
   }))
+
+  const version = createHash("sha256")
+    .update(
+      rows
+        .map((row) => [
+          row.studentId,
+          row.studentNumber,
+          row.firstName,
+          row.otherName,
+          row.lastName,
+          row.className,
+          row.fingerprintId,
+          row.finger,
+          row.templateHash,
+        ].join(":"))
+        .join("|")
+    )
+    .digest("hex")
+
+  return { students: roster, version }
 }
 
 export async function persistFingerprintEnrollment(scope: ActorScope, input: Record<string, unknown>) {
+  const startedAt = Date.now()
   const studentId = clean(input.studentId)
   const finger = normalizeFingerLabel(input.finger)
   const template9 = clean(input.template9)
@@ -274,6 +297,10 @@ export async function persistFingerprintEnrollment(scope: ActorScope, input: Rec
   ])
   if (!student) throw new Error("Student not found")
   if (registeredTemplate && registeredTemplate.id !== existing?.id) {
+    console.warn("[fingerprint.enrollment] duplicate rejected", {
+      durationMs: Date.now() - startedAt,
+      schoolId: scope.schoolId,
+    })
     throw new FingerprintAlreadyRegisteredError()
   }
 
@@ -344,6 +371,11 @@ export async function persistFingerprintEnrollment(scope: ActorScope, input: Rec
     throw error
   }
 
+  console.info("[fingerprint.enrollment] completed", {
+    durationMs: Date.now() - startedAt,
+    replaced: Boolean(existing),
+    schoolId: scope.schoolId,
+  })
   return { fingerprint: saved, student }
 }
 
@@ -626,6 +658,7 @@ async function notifyParentsForAttendance(recordId: string) {
 }
 
 export async function recordFingerprintScan(scope: ActorScope, sessionId: string, input: Record<string, unknown>) {
+  const startedAt = Date.now()
   const studentId = clean(input.studentId)
   const finger = normalizeFingerLabel(input.finger)
   const score = Number(input.score || input.matchScore || 0) || null
@@ -647,7 +680,23 @@ export async function recordFingerprintScan(scope: ActorScope, sessionId: string
     clientRequestId
       ? prisma.attendanceRecord.findUnique({
           where: { clientRequestId },
-          select: { id: true },
+          select: {
+            fingerprintMatched: true,
+            fingerprintScore: true,
+            id: true,
+            markedAt: true,
+            remarks: true,
+            status: true,
+            verificationMethod: true,
+            student: {
+              select: {
+                firstName: true,
+                id: true,
+                lastName: true,
+                studentNumber: true,
+              },
+            },
+          },
         })
       : Promise.resolve(null),
     clientRequestId
@@ -676,7 +725,7 @@ export async function recordFingerprintScan(scope: ActorScope, sessionId: string
     return {
       duplicate: true,
       record: existingRequest,
-      session: await getAttendanceSession(scope, sessionId),
+      sessionId,
     }
   }
   if (!student || student.classId !== session.classId) throw new Error("Student is not in this attendance class")
@@ -737,7 +786,22 @@ export async function recordFingerprintScan(scope: ActorScope, sessionId: string
     existing ? "Student was already marked for this session" : "Fingerprint attendance recorded"
   )
 
-  return { duplicate: Boolean(existing), record, session: await getAttendanceSession(scope, sessionId) }
+  const responseRecord = {
+    ...record,
+    student: {
+      firstName: student.firstName,
+      id: student.id,
+      lastName: student.lastName,
+      studentNumber: student.studentNumber,
+    },
+  }
+  console.info("[attendance.scan] completed", {
+    duplicate: Boolean(existing),
+    durationMs: Date.now() - startedAt,
+    schoolId: scope.schoolId,
+    sessionId,
+  })
+  return { duplicate: Boolean(existing), record: responseRecord, sessionId }
 }
 
 export async function recordFailedScan(scope: ActorScope, sessionId: string, input: Record<string, unknown>) {
